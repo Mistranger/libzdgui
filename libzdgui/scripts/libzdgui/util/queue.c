@@ -1,4 +1,4 @@
-#include "libzdgui.h"
+#include "system.h"
 
 #include "util/queue.h"
 
@@ -29,6 +29,7 @@ void queue_push(queue_t* queue, void* data)
 	queueNode_t *elem = (queueNode_t*)malloc(sizeof(queueNode_t));
 	elem->data = data;
 	elem->next = NULL;
+	++queue->count;
 	if (!queue->head) {
 		queue->head = queue->tail = elem;
 	} else {
@@ -39,13 +40,16 @@ void queue_push(queue_t* queue, void* data)
 
 void queue_pop(queue_t* queue)
 {
-	queueNode_t *elem = queue->head;
-	queue->head = queue->head->next;
-	if (elem->data) {
-		free(elem->data);
-	}
-	if (elem) {
-		free(elem);
+	if (queue->count > 0) {
+		queueNode_t *elem = queue->head;
+		queue->head = queue->head->next;
+		--queue->count;
+		if (elem->data) {
+			free(elem->data);
+		}
+		if (elem) {
+			free(elem);
+		}
 	}
 }
 

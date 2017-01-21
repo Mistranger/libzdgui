@@ -7,9 +7,16 @@ typedef struct stackNode_s
 	void *data;
 } stackNode_t;
 
-void stack_init(stackNode_t* stack);
-void stack_push(stackNode_t* stack, void *element);
-void stack_pop(stackNode_t* stack);
-void stack_free(stackNode_t* stack);
+typedef struct stack_s
+{
+	unsigned int count;
+	stackNode_t *head;
+} stack_t;
+
+stack_t* stack_init();
+void stack_push(stack_t* stack, void *element);
+void stack_pop(stack_t* stack);
+void stack_free(stack_t* stack);
+unsigned int  stack_size(stack_t* stack);
 
 #endif // STACK_H_INCLUDED

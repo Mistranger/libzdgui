@@ -1,4 +1,4 @@
-#include "libzdgui.h"
+#include "system.h"
 
 #include "util/list.h"
 
@@ -52,9 +52,14 @@ void list_push_back(list_t* list, void* data)
 	listNode_t *elem = (listNode_t*)malloc(sizeof(listNode_t));
 	elem->data = data;
 	elem->next = NULL;
-	elem->prev = list->tail;
-	list->tail->next = elem;
-	list->tail = elem;
+	if (!list->tail) { // list is empty
+		list->tail = list->head = elem;
+	} else {
+		elem->prev = list->tail;
+		list->tail->next = elem;
+		list->tail = elem;
+	}
+	++list->count;
 }
 
 void list_push_front(list_t* list, void* data)
@@ -62,9 +67,14 @@ void list_push_front(list_t* list, void* data)
 	listNode_t *elem = (listNode_t*)malloc(sizeof(listNode_t));
 	elem->data = data;
 	elem->prev = NULL;
-	elem->next = list->head;
-	list->head->prev = elem;
-	list->head = elem;
+	if (!list->head) { // list is empty
+		list->tail = list->head = elem;
+	} else {
+		elem->next = list->head;
+		list->head->prev = elem;
+		list->head = elem;
+	}
+	++list->count;
 }
 
 void list_pop_front(list_t* list)
@@ -72,6 +82,10 @@ void list_pop_front(list_t* list)
 	listNode_t *elem = list->head;
 	list->head = list->head->next;
 	list->head->prev = NULL;
+	--list->count;
+	if (!list->count) {
+		list->head = list->tail = NULL;
+	}
 	if (elem->data) {
 		free(elem->data);
 	}
@@ -85,6 +99,10 @@ void list_pop_back(list_t* list)
 	listNode_t *elem = list->tail;
 	list->tail = list->tail->prev;
 	list->tail->next = NULL;
+	--list->count;
+	if (!list->count) {
+		list->head = list->tail = NULL;
+	}
 	if (elem->data) {
 		free(elem->data);
 	}
@@ -101,7 +119,7 @@ void list_insert(list_t* list, listNode_t* at, bool before, void* data)
 	listNode_t *it = list->head;
 	listNode_t *head = list->head;
 	listNode_t *tail = list->tail;
-	
+	++list->count;
 	while (it) {
 		if (it == at) {
 			listNode_t *new_elem = (listNode_t*)malloc(sizeof(listNode_t));

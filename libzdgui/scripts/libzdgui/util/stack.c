@@ -1,35 +1,47 @@
-#include "libzdgui.h"
+#include "system.h"
 
 #include "util/stack.h"
 
-void stack_init(stackNode_t* stack)
+stack_t* stack_init()
 {
-	stack->next = stack->data = NULL;
+	stack_t *new_stack = (stack_t*)malloc(sizeof(stack_t));
+	new_stack->count = 0;
+    new_stack->head = NULL;
+	return new_stack;
 }
 
-void stack_push(stackNode_t* stack, void* element)
+void stack_push(stack_t* stack, void* element)
 {
-	stackNode_t *temp;
-	temp = (stackNode_t*)malloc(sizeof(stackNode_t));
-	temp->data = element;
-	temp->next = stack;
-	stack = temp;
-}
-
-void stack_pop(stackNode_t* stack)
-{
-	stackNode_t *temp;
-	if (stack == NULL) {
-		
-	} else {
-		temp = stack;
-		stack = stack->next;
-		free(temp);
+	if (!stack) {
+		return;
 	}
+	stackNode_t *temp = (stackNode_t*)malloc(sizeof(stackNode_t));
+	temp->data = element;
+	if (!stack->head) {
+		temp->next = NULL;
+		stack->head = temp;
+	} else {
+		temp->next = stack->head;
+		stack->head = temp;
+	}
+	++stack->count;
+}
+
+void stack_pop(stack_t* stack)
+{
+	if (!stack || !stack_size(stack)) {
+		return;
+	}
+	stackNode_t *temp;
+	temp = stack->head;
+	stack->head = stack->head->next;
+	--stack->count;
+	free(temp);
 }
 
 void stack_free(stackNode_t* stack)
 {
+	// FIXME rewrite
 	stackNode_t *temp;
 	while (stack->next) {
 		temp = stack->next;
@@ -38,4 +50,12 @@ void stack_free(stackNode_t* stack)
 	}
 	free(stack);
 	stack = NULL;
+}
+
+unsigned int stack_size(stack_t* stack)
+{
+	if (!stack) {
+		return 0;
+	}
+	return stack->count;
 }

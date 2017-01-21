@@ -2,6 +2,7 @@
 #define GUI_H_INCLUDED
 
 #include "graphics.h"
+#include "event.h"
 #include "input.h"
 #include "widget.h"
 
@@ -28,7 +29,8 @@ void gui_setInput(guiGUI_t *gui, guiInput_t* newInput);
 
 // Widget access
 guiWidget_t* gui_getWidgetAt(guiGUI_t *gui, int x, int y);
-guiWidget_t* getMouseEventSource(guiGUI_t *gui, int x, int y);
+guiWidget_t* gui_getMouseEventSource(guiGUI_t *gui, int x, int y);
+bool gui_isWidgetExisting(guiGUI_t *gui, const guiWidget_t* widget);
 
 // Drawing and logic
 void gui_draw(guiGUI_t *gui);
@@ -36,7 +38,10 @@ void gui_tick(guiGUI_t *gui);
 
 // Event handling functions
 static void gui_handleInput(guiGUI_t* gui);
-static void gui_handleMousePressed(guiGUI_t* gui, mouseEvent_t *event);
-static void gui_handleMouseReleased(guiGUI_t* gui, mouseEvent_t *event);
+static void gui_handleMousePressed(guiGUI_t* gui, event_t *event);
+static void gui_handleMouseReleased(guiGUI_t* gui, event_t *event);
+static void gui_distributeEvent(guiGUI_t* gui, guiWidget_t* source, event_t *event);
+static void gui_distributeMouseEvent(guiGUI_t* gui, guiWidget_t* widget, mouseEvent_t *event);
+
 
 #endif // GUI_H_INCLUDED

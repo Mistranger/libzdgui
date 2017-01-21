@@ -1,4 +1,4 @@
-#include "libzdgui.h"
+#include "system.h"
 
 #include "input.h"
 
@@ -11,6 +11,7 @@ void input_init(guiInput_t* input)
 	input->oldMouseInput = (inputMouse_t*)malloc(sizeof(inputMouse_t));
 	memset(input->mouseInput, 0, sizeof(inputMouse_t));
 	memset(input->oldMouseInput, 0, sizeof(inputMouse_t));
+	input->mouseEventQueue = queue_init();
 }
 
 void input_getInput(guiInput_t* input, guiGraphics_t *graphics)
@@ -28,11 +29,11 @@ void input_getInput(guiInput_t* input, guiGraphics_t *graphics)
 	int buttons = ACS_GetPlayerInput(-1, INPUT_BUTTONS);
 	
 	if (buttons & BT_ATTACK) {
-		input->mouseInput->button &= LEFT;
+		input->mouseInput->button |= LEFT;
 	}
 	
 	if (buttons & BT_ALTATTACK) {
-		input->mouseInput->button &= RIGHT;
+		input->mouseInput->button |= RIGHT;
 	}
 	
 	if ((input->mouseInput->button & LEFT) && !(input->oldMouseInput->button & LEFT)) {
@@ -41,7 +42,7 @@ void input_getInput(guiInput_t* input, guiGraphics_t *graphics)
 		mouseEvent_t *lpressed = (mouseEvent_t*)malloc(sizeof(mouseEvent_t));
 		lpressed->x = input->mouseInput->x;
 		lpressed->y = input->mouseInput->y;
-		lpressed->type = PRESSED;
+		lpressed->type = ME_PRESSED;
 		lpressed->button = LEFT;
 		event->events.mouse = lpressed;
 		queue_push(input->mouseEventQueue, event);
@@ -52,7 +53,7 @@ void input_getInput(guiInput_t* input, guiGraphics_t *graphics)
 		mouseEvent_t *lreleased = (mouseEvent_t*)malloc(sizeof(mouseEvent_t));
 		lreleased->x = input->mouseInput->x;
 		lreleased->y = input->mouseInput->y;
-		lreleased->type = RELEASED;
+		lreleased->type = ME_RELEASED;
 		lreleased->button = LEFT;
 		event->events.mouse = lreleased;
 		queue_push(input->mouseEventQueue, event);
@@ -63,7 +64,7 @@ void input_getInput(guiInput_t* input, guiGraphics_t *graphics)
 		mouseEvent_t *rpressed = (mouseEvent_t*)malloc(sizeof(mouseEvent_t));
 		rpressed->x = input->mouseInput->x;
 		rpressed->y = input->mouseInput->y;
-		rpressed->type = PRESSED;
+		rpressed->type = ME_PRESSED;
 		rpressed->button = RIGHT;
 		event->events.mouse = rpressed;
 		queue_push(input->mouseEventQueue, event);
@@ -74,7 +75,7 @@ void input_getInput(guiInput_t* input, guiGraphics_t *graphics)
 		mouseEvent_t *rreleased = (mouseEvent_t*)malloc(sizeof(mouseEvent_t));
 		rreleased->x = input->mouseInput->x;
 		rreleased->y = input->mouseInput->y;
-		rreleased->type = RELEASED;
+		rreleased->type = ME_RELEASED;
 		rreleased->button = RIGHT;
 		event->events.mouse = rreleased;
 		queue_push(input->mouseEventQueue, event);

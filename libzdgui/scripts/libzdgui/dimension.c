@@ -1,4 +1,4 @@
-#include "libzdgui.h"
+#include "system.h"
 #include "dimension.h"
 
 bool rect_isPointInRect(const guiRectangle_t *rect, int x, int y)

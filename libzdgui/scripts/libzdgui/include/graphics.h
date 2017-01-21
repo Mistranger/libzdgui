@@ -9,7 +9,7 @@
 
 typedef struct guiGraphics_s
 {
-	stackNode_t *clipStack;
+	stack_t *clipStack;
 	__str fontName;
 	
 	int screenWidth, screenHeight;

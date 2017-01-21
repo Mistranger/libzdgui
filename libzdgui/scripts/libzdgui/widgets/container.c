@@ -1,66 +1,86 @@
-#include "libzdgui.h"
+#include "system.h"
 
 #include "widgets/container.h"
 
 #include "dimension.h"
 #include "util/list.h"
 
+guiContainer_vf_t guiContainer_vtable = {
+	container_getChildrenArea,
+	container_getWidgetAt,
+	container_draw,
+	container_tick,
+	container_isWidgetExisting
+};
+
+guiContainer_t* container_new()
+{
+	guiContainer_t *container = (guiContainer_t*)malloc(sizeof(guiContainer_t));
+	container_init(container);
+	guiDebugPrint("new container created");
+	return container;
+}
+
 void container_init(guiContainer_t* container)
 {
-	container->widget->guiWidget_draw = container_draw;
-	container->widget->guiWidget_getChildrenArea = container_getChildrenArea;
-	container->widget->guiWidget_getWidgetAt = container_getWidgetAt;
-	container->widget->guiWidget_tick = container_tick;
+	widget_init(&container->widget);
+	container->widget.v = (guiWidget_vf_t*)&guiContainer_vtable;
 	container->children = list_init();
 }
 
 void container_add(guiContainer_t* container, guiWidget_t* widget)
 {
 	list_push_back(container->children, (void*)widget);
-	widget_setParent(widget, container->widget);
+	widget_setParent(widget, &container->widget);
+}
+
+void container_addAt(guiContainer_t* container, guiWidget_t* widget, int x, int y)
+{
+	widget_setPosition(widget, x, y);
+	container_add(container, widget);
+	guiDebugPrint("container item added");
 }
 
 void container_remove(guiContainer_t* container, guiWidget_t* widget)
 {
-	for (listNode_t *node = container->children->head; node != container->children->tail; node = node->next) {
+	for (listNode_t *node = container->children->head; node; node = node->next) {
 		if ((guiWidget_t*)node->data == widget) {
 			// FIXME list_er
 		}
 	}
 }
 
-void container_draw(const guiWidget_t *widget, guiGraphics_t *graphics)
+void container_draw(const guiContainer_t *container, guiGraphics_t *graphics)
 {
-	const guiContainer_t *container = (const guiContainer_t *)widget;
-	graph_pushClipArea(graphics, widget_getDimensions(widget));
+	guiDebugPrint("drawing container");
+	graph_pushClipArea(graphics, container->widget.v->w_getChildrenArea((guiWidget_t*)container));
 	for (listNode_t *node = container->children->head; node; node = node->next) {
 		guiWidget_t *it = (guiWidget_t*)node->data;
 		if (it->flags & WF_VISIBLE) {
-			graph_pushClipArea(graphics, *widget->guiWidget_getChildrenArea(it));
-			it->guiWidget_draw(it, graphics);
+			graph_pushClipArea(graphics, widget_getDimensions(it));
+			it->v->w_draw(it, graphics);
 			graph_popClipArea(graphics);
 		}
 	}
 	graph_popClipArea(graphics);
 }
 
-guiRectangle_t* container_getChildrenArea(const guiWidget_t* widget)
+guiRectangle_t container_getChildrenArea(const guiContainer_t* container)
 {
-	guiRectangle_t children = {0, 0, widget->dim.width, widget->dim.height};
-	return &children;
+	guiRectangle_t children = {0, 0, container->widget.dim.width, container->widget.dim.height};
+	return children;
 }
 
-guiWidget_t* container_getWidgetAt(const guiWidget_t *widget, int x, int y)
+guiWidget_t* container_getWidgetAt(const guiContainer_t *container, int x, int y)
 {
-	const guiContainer_t *container = (const guiContainer_t *)widget;
-	guiRectangle_t *r = widget->guiWidget_getChildrenArea(widget);
+	guiRectangle_t r = container->widget.v->w_getChildrenArea(&container->widget);
 
-	if (!rect_isPointInRect(r, x, y)) {
+	if (!rect_isPointInRect(&r, x, y)) {
 		return NULL;
 	}
 
-	x -= r->x;
-	y -= r->y;
+	x -= r.x;
+	y -= r.y;
 
 	for (listNode_t *node = container->children->tail; node; node = node->prev) {
 		guiWidget_t *it = (guiWidget_t*)node->data;
@@ -73,11 +93,29 @@ guiWidget_t* container_getWidgetAt(const guiWidget_t *widget, int x, int y)
 	return NULL;
 }
 
-void container_tick(guiWidget_t *widget)
+void container_tick(guiContainer_t *widget)
 {
+	guiDebugPrint("container wtick");
 	guiContainer_t *container = (guiContainer_t *)widget;
 	for (listNode_t *node = container->children->head; node; node = node->next) {
 		guiWidget_t *it = (guiWidget_t*)node->data;
-		it->guiWidget_tick(it);
+		if (it->v->w_tick != widget_tick) {
+			it->v->w_tick(it);
+		}
+		
 	}
+}
+
+bool container_isWidgetExisting(guiContainer_t* widget, const guiWidget_t* exist)
+{
+	bool result = false;
+	guiContainer_t *container = (guiContainer_t *)widget;
+	for (listNode_t *node = container->children->head; node; node = node->next) {
+		guiWidget_t *it = (guiWidget_t*)node->data;
+		result = it->v->w_isWidgetExisting(it, exist);
+		if (result) {
+			return true;
+		}
+	}
+	return false;
 }
