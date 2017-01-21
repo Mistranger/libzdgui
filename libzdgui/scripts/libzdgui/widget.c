@@ -183,8 +183,6 @@ list_t* widget_getListeners(guiWidget_t* widget)
 	return widget->eventListeners;
 }
 
-
-
 void widget_handleEvent(guiWidget_t* widget, event_t* event)
 {
 	for (listNode_t *node = widget->eventListeners->head; node; node = node->next) {

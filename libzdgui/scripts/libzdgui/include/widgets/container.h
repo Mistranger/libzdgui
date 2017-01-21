@@ -38,7 +38,8 @@ void container_init(guiContainer_t *container);
 void container_add(guiContainer_t *container, guiWidget_t *widget);
 void container_addAt(guiContainer_t *container, guiWidget_t *widget, int x, int y);
 void container_remove(guiContainer_t *container, guiWidget_t *widget);
-
+void container_moveToTop(guiContainer_t *container, guiWidget_t *widget);
+void container_moveToBottom(guiContainer_t *container, guiWidget_t *widget);
 
 
 #endif // CONTAINER_H_INCLUDED

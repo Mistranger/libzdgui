@@ -15,7 +15,6 @@ typedef struct inputMouse_s
 typedef struct guiInput_s {
 	queue_t *mouseEventQueue;
 	inputMouse_t *mouseInput, *oldMouseInput;
-	
 } guiInput_t;
 
 void input_init(guiInput_t *input);

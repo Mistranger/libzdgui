@@ -13,16 +13,7 @@ guiButton_vf_t guiButton_vtable = {
 	widget_isWidgetExisting
 };
 
-#define button_addMouseListener(eventType, mouseType, listenerFunc) \
-{\
-	eventListener_t *listener = (eventListener_t*)malloc(sizeof(eventListener_t));\
-	listener->type = eventType;\
-	mouseListener_t *mouseListener = (mouseListener_t*)malloc(sizeof(mouseListener_t));\
-	mouseListener->type = mouseType;\
-	mouseListener->types.mousePressed = listenerFunc;\
-	listener->listeners.mouseListener = mouseListener;\
-	list_push_back(button->widget.eventListeners, (void*)listener);\
-}
+
 
 guiButton_t* button_new(const char* caption)
 {
@@ -43,19 +34,16 @@ void button_init(guiButton_t* button)
 	button->buttonFlags = 0;
 	
 	// Fill listener list
-	button_addMouseListener(EV_Mouse, ME_PRESSED, button_mousePressed);
-	button_addMouseListener(EV_Mouse, ME_RELEASED, button_mouseReleased);	
-	button_addMouseListener(EV_Mouse, ME_ENTERED, button_mouseEntered);	
-	button_addMouseListener(EV_Mouse, ME_LEFT, button_mouseLeft);	
+	widget_addMouseListener(&button->widget, EV_Mouse, ME_PRESSED, button_mousePressed);
+	widget_addMouseListener(&button->widget, EV_Mouse, ME_RELEASED, button_mouseReleased);	
+	widget_addMouseListener(&button->widget, EV_Mouse, ME_ENTERED, button_mouseEntered);	
+	widget_addMouseListener(&button->widget, EV_Mouse, ME_LEFT, button_mouseLeft);	
 }
 
 void button_draw(const guiButton_t* button, guiGraphics_t* graphics)
 {
 	guiDebugPrint("drawing button");
-	graph_drawText(graphics, 
-		widget_getX((guiWidget_t*)(&button->widget)),
-		widget_getY((guiWidget_t*)(&button->widget)),
-		button_getCaption(button));
+	graph_drawText(graphics, 0,	0, button_getCaption(button));
 }
 
 void button_setCaption(guiButton_t* button, const char* caption)

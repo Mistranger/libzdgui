@@ -89,9 +89,6 @@ void list_pop_front(list_t* list)
 	if (elem->data) {
 		free(elem->data);
 	}
-	if (elem) {
-		free(elem);
-	}
 }
 
 void list_pop_back(list_t* list)
@@ -105,9 +102,6 @@ void list_pop_back(list_t* list)
 	}
 	if (elem->data) {
 		free(elem->data);
-	}
-	if (elem) {
-		free(elem);
 	}
 }
 
@@ -156,4 +150,36 @@ void list_insert(list_t* list, listNode_t* at, bool before, void* data)
 		}
 		it = it->next;
 	}
+}
+
+void list_erase(list_t* list, const listNode_t* what)
+{
+	if (!list->count) {
+		return;
+	}
+	for (listNode_t *node = list->head; node; node = node->next) {
+		if (node == what) {
+			if (node == list->head) {
+				list->head = list->head->next;
+			}
+			if (node == list->tail) {
+				list->tail = list->tail->prev;
+			} else {
+				node->prev->next = node->next;
+				node->next->prev = node->prev;
+			}
+			if (node->data) {
+				free(node->data);
+			}
+			--list->count;
+			return;
+		}
+	}
+}
+
+void list_swap(list_t* list, listNode_t* elem1, listNode_t* elem2)
+{
+	void *temp = elem1->data;
+	elem1->data = elem2->data;
+	elem2->data = temp;
 }

@@ -19,5 +19,6 @@ typedef struct guiClipRectangle_s
 } guiClipRectangle_t;
 
 bool rect_isPointInRect(const guiRectangle_t *rect, int x, int y);
+bool rect_intersect(guiRectangle_t *rect, guiRectangle_t *other);
 
 #endif // DIMENSION_H_INCLUDED

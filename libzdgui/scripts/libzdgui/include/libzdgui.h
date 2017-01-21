@@ -14,6 +14,8 @@
 
 #include "widgets/button.h"
 #include "widgets/container.h"
+#include "widgets/image.h"
+#include "widgets/window.h"
 
 #include "util/list.h"
 #include "util/queue.h"

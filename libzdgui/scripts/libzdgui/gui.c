@@ -44,10 +44,12 @@ void gui_draw(guiGUI_t* gui)
 		return;
 	}
 	
+	graph_beginDraw(gui->graphics);
 	guiDebugPrint("drawing top widget");
 	graph_pushClipArea(gui->graphics, gui->top->dim);
 	gui->top->v->w_draw(gui->top, gui->graphics);
 	graph_popClipArea(gui->graphics);
+	graph_endDraw(gui->graphics);
 }
 
 

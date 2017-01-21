@@ -33,11 +33,17 @@ void initLibZDGui(void)
 	guiContainer_t *container = container_new();
 	guiRectangle_t rect = {100, 100, 200, 200};
 	widget_setDimension((guiWidget_t*)container, rect);
-	guiDebugPrint("%d %d %d %d" _C_ widget_getX((guiWidget_t*)container) _C_ widget_getY((guiWidget_t*)container) _C_ widget_getWidth((guiWidget_t*)container) _C_ widget_getHeight((guiWidget_t*)container));
 	gui_setTop(gui, (guiWidget_t*)container);
 	guiButton_t *button = button_new("shithappens");
-	container_addAt(container, (guiWidget_t*)button, 10, 10);
-	guiDebugPrint("%d %d %d %d" _C_ widget_getX((guiWidget_t*)button) _C_ widget_getY((guiWidget_t*)button) _C_ widget_getWidth((guiWidget_t*)button) _C_ widget_getHeight((guiWidget_t*)button));
+	container_addAt(container, (guiWidget_t*)button, 0, 0);
+	guiButton_t *button2 = button_new("shithappens222");
+	container_addAt(container, (guiWidget_t*)button2, 0, 10);
+	guiButton_t *button3 = button_new("wowshithappens333");
+	container_addAt(container, (guiWidget_t*)button3, 0, 60);
+	guiImage_t *image = image_new(s"TITLEPIC", 320, 200);
+	image->imageFlags = IF_SCALETOSIZE;
+	widget_setSize((guiWidget_t*)image, 240, 150);
+	container_addAt(container, (guiWidget_t*)image, 20, 20);
 	while (1) {
 		/*int xMove = ACS_GetPlayerInput(-1, INPUT_YAW);
 		int yMove = ACS_GetPlayerInput(-1, INPUT_PITCH);

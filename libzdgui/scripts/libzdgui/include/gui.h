@@ -12,9 +12,6 @@ typedef struct guiGUI_s
 	 guiWidget_t *top;
 	 guiGraphics_t *graphics;
 	 guiInput_t *input;
-	 
-	 
-	 
 } guiGUI_t;
 
 // Constructor
@@ -42,6 +39,5 @@ static void gui_handleMousePressed(guiGUI_t* gui, event_t *event);
 static void gui_handleMouseReleased(guiGUI_t* gui, event_t *event);
 static void gui_distributeEvent(guiGUI_t* gui, guiWidget_t* source, event_t *event);
 static void gui_distributeMouseEvent(guiGUI_t* gui, guiWidget_t* widget, mouseEvent_t *event);
-
 
 #endif // GUI_H_INCLUDED
