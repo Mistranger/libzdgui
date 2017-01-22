@@ -8,6 +8,7 @@
 #include "dimension.h"
 #include "graphics.h"
 #include "event.h"
+#include "fonts.h"
 #include "util/list.h"
 
 /*----------------------------------------------------------------------------
@@ -53,6 +54,8 @@ typedef struct guiWidget_s
     // Flags
     int iflags;
     int flags;
+	// Font used for drawing
+	guiFont_t *font;
 	// Virtual functions table
 	guiWidget_vf_t *v;
 } guiWidget_t;
@@ -118,6 +121,7 @@ void widget_getAbsolutePosition(guiWidget_t* widget, int *x, int *y);
 guiWidget_t* widget_getParent(guiWidget_t *widget);
 void widget_setParent(guiWidget_t *widget, guiWidget_t* newParent);
 
+guiFont_t* widget_getFont(const guiWidget_t *widget);
 list_t* widget_getListeners(guiWidget_t *widget);
 void widget_handleEvent(guiWidget_t *widget, event_t *event);
 

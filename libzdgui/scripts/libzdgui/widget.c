@@ -27,6 +27,7 @@ void widget_init(guiWidget_t* widget)
 	widget->dim = dim;
 	widget->flags = WF_ENABLED + WF_VISIBLE;
 	widget->eventListeners = list_init();
+	widget->font = NULL;
 	
 	widget->v = &guiWidget_vtable;
 	
@@ -176,6 +177,11 @@ void widget_getAbsolutePosition(guiWidget_t* widget, int *x, int *y)
 	guiRectangle_t rect = widget->parent->v->w_getChildrenArea(widget->parent);
 	*x = parentX + widget->dim.x + rect.x;
 	*y = parentY + widget->dim.y + rect.y;
+}
+
+guiFont_t* widget_getFont(const guiWidget_t* widget)
+{
+	return widget->font;
 }
 
 list_t* widget_getListeners(guiWidget_t* widget)

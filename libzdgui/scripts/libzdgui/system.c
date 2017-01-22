@@ -1,6 +1,6 @@
 #include "system.h"
 
-int ACS_HudMessage(int flags, int id, int color, fixed x, fixed y, fixed holdTime, fixed oarg1, fixed oarg2, fixed oarg3, str format, ...)
+int ACS_HudMessage(int flags, int id, int color, fixed x, fixed y, fixed holdTime, fixed oarg1, fixed oarg2, fixed oarg3, __str format, ...)
 {
 	int ret = 0;
 	va_list arg;
@@ -48,7 +48,7 @@ int ACS_PrintLog(const char *format, ...)
 	return ret;
 }
 
-int ACS_PrintLogStr(str format, ...)
+int ACS_PrintLogStr(__str format, ...)
 {
 	int ret;
 	va_list arg;

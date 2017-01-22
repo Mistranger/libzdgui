@@ -73,13 +73,13 @@ void graph_popClipArea(guiGraphics_t *graphics)
 	ACS_SetHudClipRect(top->x, top->y, top->width, top->height);
 }
 
-void graph_setFont(guiGraphics_t *graphics, str font)
+void graph_setFont(guiGraphics_t *graphics, __str font)
 {
 	graphics->fontName = font;
 	ACS_SetFont(font); 
 }
 
-void graph_drawImage(guiGraphics_t* graphics, int x, int y, str image)
+void graph_drawImage(guiGraphics_t* graphics, int x, int y, __str image)
 {
 	#pragma fixed on
 	
@@ -93,8 +93,19 @@ void graph_drawImage(guiGraphics_t* graphics, int x, int y, str image)
 	ACS_SetFont(graphics->fontName);
 }
 
+/**
+ * @brief                  Draws image at dstX, dstY and fits it in dstWidth, dstHeight rectangle
+ * @param graphics         Graphics object
+ * @param dstX             Destination x coord
+ * @param dstY             Destination y coord
+ * @param srcWidth         Original image width
+ * @param srcHeight        Original image height
+ * @param dstWidth         Scaled image width
+ * @param dstHeight        Scaled image height
+ * @param image            Image itself
+ */
 void graph_drawImageScaled(guiGraphics_t* graphics, int dstX, int dstY, 
-	int srcWidth, int srcHeight, int dstWidth, int dstHeight, str image)
+	int srcWidth, int srcHeight, int dstWidth, int dstHeight, __str image)
 {
 	#pragma fixed on
 	int screenWidth = graph_getScreenWidth(graphics);
@@ -132,7 +143,7 @@ void graph_drawText(guiGraphics_t* graphics, int x, int y, const char* format, .
     va_start (args, format);
     __vnprintf(format, args);
     va_end (args);
-    str text = ACS_EndStrParam();
+    __str text = ACS_EndStrParam();
 	
 	// Get actual drawing coordinates
 	int dx = x, dy = y;

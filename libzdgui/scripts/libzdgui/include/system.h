@@ -23,7 +23,7 @@
 
 // Type definitions
 
-typedef __str str;
+//typedef __str __str;
 
 // ZDoom script types
 
@@ -52,10 +52,12 @@ typedef __str str;
 --  Functions
 ----------------------------------------------------------------------------*/
 
+#define new(type) ((type*)malloc(sizeof(type)));
+
 __str ACS_StrParam (const char *format, ...);
-int ACS_HudMessage(int flags, int id, int color, fixed x, fixed y, fixed holdTime, fixed oarg1, fixed oarg2, fixed oarg3, str format, ...);
+int ACS_HudMessage(int flags, int id, int color, fixed x, fixed y, fixed holdTime, fixed oarg1, fixed oarg2, fixed oarg3, __str format, ...);
 int ACS_PrintLog(const char *format, ...);
-int ACS_PrintLogStr(str format, ...);
+int ACS_PrintLogStr(__str format, ...);
 
 #define CharToStr(cstr) \
   ( \

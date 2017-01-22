@@ -7,22 +7,27 @@
 ----------------------------------------------------------------------------*/
 
 #include "widget.h"
+#include "util/string.h"
+#include "util/vector.h"
 
 /*----------------------------------------------------------------------------
 -- Defines
 ----------------------------------------------------------------------------*/
 
-// Maximum length of label's text
-#define MAX_CAPTION_LENGTH 256
-
 /*----------------------------------------------------------------------------
 -- Types
 ----------------------------------------------------------------------------*/
 
-enum LabelAlignment {
-	LEFT = 0,
-	CENTER,
-	RIGHT
+typedef enum labelAlignment {
+	ALIGN_LEFT = 0,
+	ALIGN_CENTER,
+	ALIGN_RIGHT
+} labelAlignment_t;
+
+// Label flags
+enum LabelFlags
+{
+	LF_MULTILINE = 0x00000001,
 };
 
 struct guiLabel_s;
@@ -39,9 +44,10 @@ typedef struct guiLabel_vf {
 typedef struct guiLabel_s
 {
     guiWidget_t widget;
-	char caption[MAX_CAPTION_LENGTH];
+	string_t *caption;
+	vector_t *textWrap;
 	size_t padding;
-	enum LabelAlignment alignment;
+	labelAlignment_t alignment;
 } guiLabel_t;
 
 /*----------------------------------------------------------------------------
@@ -52,26 +58,23 @@ typedef struct guiLabel_s
  * @brief              Constructor (label initialization with caption)
  * @param caption      caption text
  */
-guiLabel_t* label_new(const char *caption);
-void label_init(guiLabel_t *label, const char *caption);
+guiLabel_t* label_new(const string_t *caption);
+void label_init(guiLabel_t *label, const string_t *caption);
 
 
 // Virtual inherited from guiWidget_t
 
 void label_draw(const guiLabel_t *widget, guiGraphics_t *graphics);
 
-/**
- * @brief				Sets label's caption
- * @param label
- * @param caption
- */
-void label_setCaption(guiLabel_t *label, const char *caption);
 
-/**
- * @brief 				Gets label's caption
- * @param label
- */
-const char* label_getCaption(const guiLabel_t *label);
+void label_setCaption(guiLabel_t *label, const string_t *caption);
+const string_t* label_getCaption(const guiLabel_t* label);
+
+void label_setAlignment(guiLabel_t *label, labelAlignment_t align);
+labelAlignment_t label_getAlignment(const guiLabel_t* label);
+
+void label_adjustSize(guiLabel_t *label);
+static void label_wordWrap(guiLabel_t *label);
 
 
 #endif // DEFS_H_INCLUDED

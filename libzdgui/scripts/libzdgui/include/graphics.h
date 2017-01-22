@@ -28,7 +28,7 @@ int graph_getScreenHeight(guiGraphics_t *graphics);
 void graph_setFont(guiGraphics_t *graphics, __str font);
 void graph_drawImage(guiGraphics_t *graphics, int x, int y, __str image);
 void graph_drawImageScaled(guiGraphics_t* graphics, int dstX, int dstY, 
-	int srcWidth, int srcHeight, int dstWidth, int dstHeight, str image);
+	int srcWidth, int srcHeight, int dstWidth, int dstHeight, __str image);
 void graph_drawText(guiGraphics_t *graphics, int x, int y, const char *format, ...);
 
 

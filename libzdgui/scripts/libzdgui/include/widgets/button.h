@@ -28,7 +28,7 @@ typedef struct guiButton_s
     guiWidget_t widget;
 	int buttonFlags;
 	char caption[MAX_CAPTION_LENGTH];
-	str image;
+	__str image;
 } guiButton_t;
 
 // Virtual inherited from guiWidget_t

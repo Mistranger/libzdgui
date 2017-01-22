@@ -6,7 +6,7 @@
 #include "debug.h"
 #include "dimension.h"
 #include "event.h"
-
+#include "fonts.h"
 #include "graphics.h"
 #include "gui.h"
 #include "input.h"
@@ -20,6 +20,8 @@
 #include "util/list.h"
 #include "util/queue.h"
 #include "util/stack.h"
+#include "util/string.h"
 #include "util/util.h"
+#include "util/vector.h"
 
 #endif // LIBZDGUI_H_INCLUDED

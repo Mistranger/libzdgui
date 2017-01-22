@@ -10,7 +10,7 @@ guiImage_vf_t guiImage_vtable = {
 	widget_isWidgetExisting
 };
 
-guiImage_t* image_new(str filename, int imageWidth, int imageHeight)
+guiImage_t* image_new(__str filename, int imageWidth, int imageHeight)
 {
 	guiImage_t *image = (guiImage_t*)malloc(sizeof(guiImage_t));
 	image_init(image, filename, imageWidth, imageHeight);
@@ -18,7 +18,7 @@ guiImage_t* image_new(str filename, int imageWidth, int imageHeight)
 	return image;
 }
 
-void image_init(guiImage_t* image, str filename, int imageWidth, int imageHeight)
+void image_init(guiImage_t* image, __str filename, int imageWidth, int imageHeight)
 {
 	widget_init(&image->widget);
 	image->widget.v = (guiWidget_vf_t*)&guiImage_vtable;

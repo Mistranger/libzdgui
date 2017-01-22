@@ -35,7 +35,7 @@ typedef struct guiImage_s
     guiWidget_t widget;
 	int imageWidth, imageHeight;
 	enum ImageFlags imageFlags;
-	str filename;
+	__str filename;
 } guiImage_t;
 
 /*----------------------------------------------------------------------------
@@ -46,8 +46,8 @@ typedef struct guiImage_s
  * @brief              Constructor (image initialization with caption)
  * @param caption      title caption
  */
-guiImage_t* image_new(str filename, int imageWidth, int imageHeight);
-void image_init(guiImage_t *image, str filename, int imageWidth, int imageHeight);
+guiImage_t* image_new(__str filename, int imageWidth, int imageHeight);
+void image_init(guiImage_t *image, __str filename, int imageWidth, int imageHeight);
 
 // Virtual inherited from guiWidget_t
 void image_draw(const guiImage_t *widget, guiGraphics_t *graphics);

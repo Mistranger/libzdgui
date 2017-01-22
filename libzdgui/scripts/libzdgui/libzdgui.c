@@ -13,7 +13,7 @@ __str ACS_StrParam (const char *format, ...)
 	
 	return ACS_EndStrParam();
 }*/
-
+#if 1
 [[call("ScriptS"), script("Enter")]]
 void initLibZDGui(void)
 {
@@ -59,4 +59,5 @@ void initLibZDGui(void)
 	return;
 }
 
+#endif
 
