@@ -22,35 +22,35 @@
 	do { if (!(cond)) { \
 		abort(); }} while (0)
 #else
-	#define guiAssert(args) do {} while (0)
+	#define guiAssert(args) {}
 #endif
 
 #if DEBUGLEVEL == DEBUG_ERRORS || DEBUGLEVEL == DEBUG_ALL
 	#define guiError(args) \
 		do { PrintFunction(); ACS_PrintLogStr(s"    \CgERROR: " args); } while (0) 
 #else
-	#define guiError(args) do {} while (0)
+	#define guiError(args)
 #endif
 
 #if DEBUGLEVEL == DEBUG_WARNINGS || DEBUGLEVEL == DEBUG_ALL
 	#define guiWarning(args) \
 		do { PrintFunction(); ACS_PrintLogStr(s"    \CdWARNING\C-: " args); } while (0) 
 #else
-	#define guiWarning(args) do {} while (0)
+	#define guiWarning(args)
 #endif
 
 #if DEBUGLEVEL == DEBUG_INFO || DEBUGLEVEL == DEBUG_ALL
 	#define guiInfo(args) \
-		do { PrintFunction(); ACS_PrintLogStr(s"    \CINFO\C-: " args); } while (0) 
+		do { PrintFunction(); ACS_PrintLogStr(s"    \CtINFO\C-: " args); } while (0) 
 #else
-	#define guiInfo(args) do {} while (0)
+	#define guiInfo(args)
 #endif
 
 #if DEBUGLEVEL == DEBUG_DEBUG || DEBUGLEVEL == DEBUG_ALL
 	#define guiDebugPrint(args) \
 		do { PrintFunction(); ACS_PrintLogStr(s"    \CeDEBUG\C-: " args); } while (0) 
 #else
-	#define guiDebugPrint(args) do {} while (0)
+	#define guiDebugPrint(args)
 #endif
 
 #endif // DEBUG_H_INCLUDED

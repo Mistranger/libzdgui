@@ -5,6 +5,7 @@
 --  Includes
 ----------------------------------------------------------------------------*/
 
+#include "image.h"
 #include "widget.h"
 
 /*----------------------------------------------------------------------------
@@ -20,23 +21,22 @@ enum ImageFlags
 	IF_SCALETOSIZE = 0x00000001,
 };
 
-struct guiImage_s;
+struct guiImageWidget_s;
 
-typedef struct guiImage_vf {
+typedef struct guiImageWidget_vf {
 	struct guiRectangle_s (*w_getChildrenArea)(const struct guiWidget_s *widget);
-	struct guiWidget_s* (*w_getWidgetAt)(const struct guiWidget_s *widget, int x, int y);
-	void (*w_draw)(const struct guiImage_s *image, guiGraphics_t *graphics);
+	struct guiWidget_s* (*w_getWidgetAt)(const struct guiWidget_s *widget, vec2i_t pos);
+	void (*w_draw)(const struct guiImageWidget_s *image, guiGraphics_t *graphics);
 	void (*w_tick)(struct guiWidget_s *widget);
 	bool (*w_isWidgetExisting)(struct guiWidget_s *widget, const struct guiWidget_s *exist);
-} guiImage_vf_t;
+} guiImageWidget_vf_t;
 
-typedef struct guiImage_s
+typedef struct guiImageWidget_s
 {
     guiWidget_t widget;
-	int imageWidth, imageHeight;
+	guiImage_t image;
 	enum ImageFlags imageFlags;
-	__str filename;
-} guiImage_t;
+} guiImageWidget_t;
 
 /*----------------------------------------------------------------------------
 --  Functions
@@ -46,10 +46,10 @@ typedef struct guiImage_s
  * @brief              Constructor (image initialization with caption)
  * @param caption      title caption
  */
-guiImage_t* image_new(__str filename, int imageWidth, int imageHeight);
-void image_init(guiImage_t *image, __str filename, int imageWidth, int imageHeight);
+guiImageWidget_t* wimage_new(__str filename, int imageWidth, int imageHeight);
+void wimage_init(guiImageWidget_t *image, __str filename, int imageWidth, int imageHeight);
 
 // Virtual inherited from guiWidget_t
-void image_draw(const guiImage_t *widget, guiGraphics_t *graphics);
+void wimage_draw(const guiImageWidget_t *widget, guiGraphics_t *graphics);
 
 #endif // WIDGETS_IMAGE_H_INCLUDED

@@ -17,7 +17,7 @@ struct guiButton_s;
 typedef struct guiButton_vf {
 	
 	struct guiRectangle_s (*w_getChildrenArea)(const struct guiWidget_s *widget);
-	struct guiWidget_s* (*w_getWidgetAt)(const struct guiWidget_s *widget, int x, int y);
+	struct guiWidget_s* (*w_getWidgetAt)(const struct guiWidget_s *widget, vec2i_t pos);
 	void (*w_draw)(const struct guiButton_s *button, guiGraphics_t *graphics);
 	void (*w_tick)(struct guiWidget_s *widget);
 	bool (*w_isWidgetExisting)(struct guiWidget_s *widget, const struct guiWidget_s *exist);

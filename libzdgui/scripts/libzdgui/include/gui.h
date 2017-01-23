@@ -4,6 +4,7 @@
 #include "graphics.h"
 #include "event.h"
 #include "input.h"
+#include "mouse.h"
 #include "widget.h"
 
 typedef struct guiGUI_s
@@ -12,6 +13,7 @@ typedef struct guiGUI_s
 	 guiWidget_t *top;
 	 guiGraphics_t *graphics;
 	 guiInput_t *input;
+	 guiMouse_t *mouse;
 } guiGUI_t;
 
 // Constructor
@@ -25,8 +27,8 @@ guiInput_t* gui_getInput(const guiGUI_t *gui);
 void gui_setInput(guiGUI_t *gui, guiInput_t* newInput);
 
 // Widget access
-guiWidget_t* gui_getWidgetAt(guiGUI_t *gui, int x, int y);
-guiWidget_t* gui_getMouseEventSource(guiGUI_t *gui, int x, int y);
+guiWidget_t* gui_getWidgetAt(guiGUI_t *gui, vec2i_t pos);
+guiWidget_t* gui_getMouseEventSource(guiGUI_t *gui, vec2i_t pos);
 bool gui_isWidgetExisting(guiGUI_t *gui, const guiWidget_t* widget);
 
 // Drawing and logic
@@ -34,7 +36,7 @@ void gui_draw(guiGUI_t *gui);
 void gui_tick(guiGUI_t *gui);
 
 // Event handling functions
-static void gui_handleInput(guiGUI_t* gui);
+static void gui_handleMouseInput(guiGUI_t* gui);
 static void gui_handleMousePressed(guiGUI_t* gui, event_t *event);
 static void gui_handleMouseReleased(guiGUI_t* gui, event_t *event);
 static void gui_distributeEvent(guiGUI_t* gui, guiWidget_t* source, event_t *event);

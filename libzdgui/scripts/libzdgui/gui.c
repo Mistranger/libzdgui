@@ -14,6 +14,7 @@ void gui_init(guiGUI_t* gui)
 	gui->top = NULL;
 	gui->graphics = NULL;
 }
+
 guiWidget_t* gui_getTop(guiGUI_t* gui)
 {
 	return gui->top;
@@ -37,8 +38,10 @@ void gui_setGraphics(guiGUI_t* gui, guiGraphics_t* newGraphics)
 
 void gui_draw(guiGUI_t* gui)
 {
-	guiAssert(gui->top);
-	guiAssert(gui->graphics);
+	if (!gui->top || !gui->graphics) {
+		guiError("No top widget or graphics object!");
+		return;
+	}
 	
 	if (!(gui->top->flags & WF_VISIBLE)) {
 		return;
@@ -60,13 +63,10 @@ void gui_tick(guiGUI_t* gui)
 		// FIXME error
 		return;
 	}
-	if (gui->input) {
-		gui_handleInput(gui);
+	if (gui->mouse) {
+		gui_handleMouseInput(gui);
 	}
 	if (gui->top->v->w_tick != widget_tick) {
-		guiDebugPrint("wtick");
-		guiDebugPrint("%d %d" _C_ gui->top->v->w_tick _C_ container_tick);
-		guiDebugPrint("%d" _C_ list_size(((guiContainer_t*)(gui->top))->children));
 		gui->top->v->w_tick(gui->top);
 	}
 	guiDebugPrint("gui tick end");
@@ -82,17 +82,17 @@ guiInput_t* gui_getInput(const guiGUI_t* gui)
 	return gui->input;
 }
 
-static void gui_handleInput(guiGUI_t* gui)
+static void gui_handleMouseInput(guiGUI_t* gui)
 {
-	guiDebugPrint("handle input");
-	if (!gui->input || !gui->input->mouseEventQueue) {
+	guiDebugPrint("handle mouse input");
+	if (!gui->mouse->mouseEventQueue) {
 		return;
 		// FIXME error
 	}
 	
-	while (queue_size(gui->input->mouseEventQueue) > 0) {
-		guiDebugPrint("dequeue mouse input");
-		event_t *event = (event_t*)queue_front(gui->input->mouseEventQueue);
+	while (queue_size(gui->mouse->mouseEventQueue) > 0) {
+		guiDebugPrint("dequeue mouse mouse");
+		event_t *event = (event_t*)queue_front(gui->mouse->mouseEventQueue);
 		mouseEvent_t *mouseEvent = event->events.mouse;
 		
 		switch (mouseEvent->type) {
@@ -105,21 +105,23 @@ static void gui_handleInput(guiGUI_t* gui)
 			}
 			break;
 		}
-		queue_pop(gui->input->mouseEventQueue);
+		queue_pop(gui->mouse->mouseEventQueue);
 	}
-	guiDebugPrint("end handle input");
+	guiDebugPrint("end handle mouse");
 }
 
-guiWidget_t* gui_getWidgetAt(guiGUI_t* gui, int x, int y)
+guiWidget_t* gui_getWidgetAt(guiGUI_t* gui, vec2i_t pos)
 {
 	guiWidget_t* parent = gui->top;
 	guiWidget_t* child = gui->top;
 
 	while (child != NULL) {
 		guiWidget_t *swap = child;
-		int parentX, parentY;
-		widget_getAbsolutePosition(parent, &parentX, &parentY);
-		child = parent->v->w_getWidgetAt(parent, x - parentX, y - parentY);
+		vec2i_t parentPos;
+		widget_getAbsolutePosition(parent, &parentPos);
+		vec2i_t at;
+		vec_sub2(at, pos, parentPos);
+		child = parent->v->w_getWidgetAt(parent, at);
 		parent = swap;
 	}
 
@@ -129,7 +131,7 @@ guiWidget_t* gui_getWidgetAt(guiGUI_t* gui, int x, int y)
 static void gui_handleMousePressed(guiGUI_t* gui, event_t* event)
 {
 	mouseEvent_t *mouseEvent = event->events.mouse;
-	guiWidget_t* sourceWidget = gui_getMouseEventSource(gui, mouseEvent->x, mouseEvent->y);
+	guiWidget_t* sourceWidget = gui_getMouseEventSource(gui, mouseEvent->pos);
 	gui_distributeEvent(gui, sourceWidget, event);
 	
 }
@@ -139,9 +141,9 @@ static void gui_handleMouseReleased(guiGUI_t* gui, event_t* event)
 	
 }
 
-guiWidget_t* gui_getMouseEventSource(guiGUI_t* gui, int x, int y)
+guiWidget_t* gui_getMouseEventSource(guiGUI_t* gui, vec2i_t pos)
 {
-	guiWidget_t* widget = gui_getWidgetAt(gui, x, y);
+	guiWidget_t* widget = gui_getWidgetAt(gui, pos);
 	return widget;
 }
 
@@ -179,11 +181,10 @@ static void gui_distributeEvent(guiGUI_t* gui, guiWidget_t* source, event_t* eve
 
 static void gui_distributeMouseEvent(guiGUI_t* gui, guiWidget_t* widget, mouseEvent_t* event)
 {
-	int widgetX, widgetY;
-	widget_getAbsolutePosition(widget, &widgetX, &widgetY);
+	vec2i_t widgetPos;
+	widget_getAbsolutePosition(widget, &widgetPos);
 	
-	event->x -= widgetX;
-	event->x -= widgetY;
+	vec_sub(event->pos, widgetPos);
 	
 	list_t *listeners = widget_getListeners(widget);
 	for (listNode_t *node = listeners->head; node; node = node->next) {

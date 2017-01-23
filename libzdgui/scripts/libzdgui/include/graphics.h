@@ -1,7 +1,7 @@
 #ifndef GRAPHICS_H_INCLUDED
 #define GRAPHICS_H_INCLUDED
 
-#include "util/stack.h"
+#include "util/vecstack.h"
 #include "dimension.h"
 
 #include <ACS_ZDoom.h>
@@ -10,7 +10,7 @@
 
 typedef struct guiGraphics_s
 {
-	stack_t *clipStack;
+	vecstack_t *clipStack;
 	__str fontName;
 	
 	int screenWidth, screenHeight;

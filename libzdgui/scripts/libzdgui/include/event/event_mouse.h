@@ -1,12 +1,8 @@
 #ifndef EVENT_MOUSE_H_INCLUDED
 #define EVENT_MOUSE_H_INCLUDED
 
-enum mouseButtons {
-	EMPTY = 0x00,
-	LEFT = 0x01,
-	RIGHT = 0x02,
-	MIDDLE = 0x04
-};
+#include "dimension.h"
+#include "mouse.h"
 
 typedef enum mouseEventType {
 	ME_MOVED = 0,
@@ -18,7 +14,7 @@ typedef enum mouseEventType {
 } mouseEventType_t;
 
 typedef struct mouseEvent_s {
-	int x, y;
+	vec2i_t pos;
 	enum mouseButtons button;
 	mouseEventType_t type;
 } mouseEvent_t;

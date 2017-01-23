@@ -18,7 +18,7 @@
 -- Types
 ----------------------------------------------------------------------------*/
 
-typedef unsigned char uchar;
+typedef char uchar;
 
 typedef struct string_s {
 	uchar *s;
@@ -44,12 +44,15 @@ inline const char* string_cstr(const string_t *s);
 inline uchar string_get(const string_t *s, size_t at);
 uchar string_at(const string_t *s, size_t at);
 
+string_t* string_assign_char(string_t* s, const char* as);
+#define string_assign_string(_s, _as) string_assign_char((_s), (const char*)((_as)->s))
 string_t* string_append_char(string_t *s, const char *app);
 inline string_t* string_append_string(string_t *s, const string_t *app);
 void string_puch_back(string_t *s, const uchar c);
 string_t* string_insert_char(string_t *s, size_t at, const char *ins);
 inline string_t* string_insert_string(string_t *s, size_t at, const string_t *ins);
 string_t* string_erase(string_t *s, size_t at, size_t len);
+string_t* string_copy(string_t *s, const string_t *copy, size_t at, size_t len);
 
 char string_find_c(const string_t *s, char c, size_t start);
 size_t string_find_first_of_char(const string_t *s, const char *c, size_t start);

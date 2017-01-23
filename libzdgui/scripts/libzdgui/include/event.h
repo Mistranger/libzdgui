@@ -1,13 +1,14 @@
 #ifndef EVENT_H_INCLUDED
 #define EVENT_H_INCLUDED
 
-#include "event/dimension.h"
-#include "event/mouse.h"
+#include "event/event_dimension.h"
+#include "event/event_mouse.h"
 
 // Union holding all event types
 
 typedef enum eventTypes {
-	EV_Mouse = 0,
+	EV_Event = 0,
+	EV_Mouse,
 	EV_Dimension,
 } eventTypes_t;
 

@@ -1,45 +1,46 @@
 #include "system.h"
+
 #include "dimension.h"
 
-bool rect_isPointInRect(const guiRectangle_t *rect, int x, int y)
+bool rect_isPointInRect(const guiRectangle_t *rect, vec2i_t pos)
 {
-	return ((x >= rect->x) && (y >= rect->y)
-		&& x < (rect->x + rect->width)
-		&& y < (rect->y + rect->height));
+	return ((pos.x >= rect->pos.x) && (pos.y >= rect->pos.y)
+		&& pos.x < (rect->pos.x + rect->width)
+		&& pos.y < (rect->pos.y + rect->height));
 }
 
 bool rect_intersect(guiRectangle_t* rect, guiRectangle_t* other)
 {
-	rect->x -= other->x;
-	rect->y -= other->y;
+	rect->pos.x -= other->pos.x;
+	rect->pos.y -= other->pos.y;
 	
-	if (rect->x < 0) {
-		rect->width += rect->x;
-		rect->x = 0;
+	if (rect->pos.x < 0) {
+		rect->width += rect->pos.x;
+		rect->pos.x = 0;
 	}
 
-	if (rect->y < 0) {
-		rect->height += rect->y;
-		rect->y = 0;
+	if (rect->pos.y < 0) {
+		rect->height += rect->pos.y;
+		rect->pos.y = 0;
 	}
 	
-	if (rect->x + rect->width > other->width) {
-		rect->width = other->width - rect->x;
+	if (rect->pos.x + rect->width > other->width) {
+		rect->width = other->width - rect->pos.x;
         }
 
-	if (rect->y + rect->height > other->height) {
-		rect->height = other->height - rect->y;
+	if (rect->pos.y + rect->height > other->height) {
+		rect->height = other->height - rect->pos.y;
 	}
 	
 	if (rect->width <= 0 || rect->height <= 0) {
 		rect->height = 0;
 		rect->width = 0;
-		rect->x += other->x;
-		rect->y += other->y;
+		rect->pos.x += other->pos.x;
+		rect->pos.y += other->pos.y;
 		return false;
 	}
 
-	rect->x += other->x;
-	rect->y += other->y;
+	rect->pos.x += other->pos.x;
+	rect->pos.y += other->pos.y;
 	return true;
 }

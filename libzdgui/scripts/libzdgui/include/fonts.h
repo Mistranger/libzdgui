@@ -4,8 +4,8 @@
 #include "util/string.h"
 
 typedef struct guiFont_s {
-	__str f;
 	int charWidth, charHeight;
+	__str f;
 } guiFont_t;
 
 guiFont_t* font_new(__str font, int charWidth, int charHeight);

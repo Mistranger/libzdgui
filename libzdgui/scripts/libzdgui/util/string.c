@@ -98,6 +98,18 @@ uchar string_at(const string_t* s, size_t at)
 	return s->s[at];
 }
 
+string_t* string_assign_char(string_t* s, const char* as)
+{
+	const int l = strlen(as);
+	if (s->capacity < l) {
+		string_resize(s, l);
+	}
+	memcpy(s->s, as, l);
+	s->s[l] = '\0';
+	s->len = l;
+	return s;
+}
+
 string_t* string_append_char(string_t* s, const char* app)
 {
 	size_t l = strlen(app);
@@ -161,6 +173,23 @@ string_t* string_erase(string_t* s, size_t at, size_t len)
 	return s;
 }
 
+string_t* string_copy(string_t* s, const string_t* copy, size_t at, size_t len)
+{
+	if (s->capacity < len) {
+		string_resize(s, len);
+	}
+	
+	size_t count = 0;
+	for (size_t i = at; i < at + len && i < copy->len; ++i) {
+		s->s[count] = copy->s[i];
+		++count;
+	}
+	
+	s->s[count] = '\0';
+	s->len = count;
+	return s;
+}
+
 char string_find_c(const string_t* s, char c, size_t start)
 {
 	for (size_t i = start; i < s->len; ++i) {
@@ -186,9 +215,15 @@ size_t string_find_first_of_char(const string_t* s, const char* c, size_t start)
 
 string_t* string_substr(const string_t* s, size_t pos, size_t len)
 {
-	string_t *sub = string_new_count(len);
+	string_t *sub = string_new_count(s->len);
+	if (len == STRING_NPOS) {
+		len = s->len;
+	}
+	
 	for (size_t i = pos; i < s->len && i < pos + len; ++i) {
 		sub->s[i - pos] = s->s[i];
 	}
 	return sub;
 }
+
+

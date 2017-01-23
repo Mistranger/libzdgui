@@ -29,7 +29,7 @@ enum WidgetFlags {
 typedef struct guiWidget_vf {
 	
 	struct guiRectangle_s (*w_getChildrenArea)(const struct guiWidget_s *widget);
-	struct guiWidget_s* (*w_getWidgetAt)(const struct guiWidget_s *widget, int x, int y);
+	struct guiWidget_s* (*w_getWidgetAt)(const struct guiWidget_s *widget, vec2i_t pos);
 	void (*w_draw)(const struct guiWidget_s *widget, guiGraphics_t *graphics);
 	void (*w_tick)(struct guiWidget_s *widget);
 	bool (*w_isWidgetExisting)(struct guiWidget_s *widget, const struct guiWidget_s *exist);
@@ -64,15 +64,26 @@ typedef struct guiWidget_s
 --  Functions
 ----------------------------------------------------------------------------*/
 
-#define widget_addMouseListener(widget, eventType, mouseType, listenerFunc) \
+#define widget_addMouseListener(_widget, _eventType, _mouseType, _listenerFunc) \
 {\
-	eventListener_t *listener = (eventListener_t*)malloc(sizeof(eventListener_t));\
-	listener->type = eventType;\
-	mouseListener_t *mouseListener = (mouseListener_t*)malloc(sizeof(mouseListener_t));\
-	mouseListener->type = mouseType;\
-	mouseListener->types.mousePressed = listenerFunc;\
+	eventListener_t *listener = new(eventListener_t);\
+	listener->type = _eventType;\
+	mouseListener_t *mouseListener = new(mouseListener_t);\
+	mouseListener->type = _mouseType;\
+	mouseListener->types.mousePressed = _listenerFunc;\
 	listener->listeners.mouseListener = mouseListener;\
-	list_push_back(((guiWidget_t *)widget)->eventListeners, (void*)listener);\
+	list_push_back(((guiWidget_t *)_widget)->eventListeners, (void*)listener);\
+}
+
+#define widget_addDimensionListener(_widget, _eventType, _dimType, _listenerFunc) \
+{\
+	eventListener_t *listener = new(eventListener_t);\
+	listener->type = _eventType;\
+	dimensionListener_t *dimlistener = new(dimensionListener_t);\
+	dimlistener->type = _dimType;\
+	dimlistener->types.resized = _listenerFunc;\
+	listener->listeners.dimensionListener = dimlistener;\
+	list_push_back(((guiWidget_t *)_widget)->eventListeners, (void*)listener);\
 }
 
 /**
@@ -83,46 +94,76 @@ void widget_init(guiWidget_t *widget);
 
 // Virtual functions
 guiRectangle_t widget_getChildrenArea(const guiWidget_t *widget);
-guiWidget_t* widget_getWidgetAt(const guiWidget_t *widget, int x, int y);
+guiWidget_t* widget_getWidgetAt(const guiWidget_t *widget, vec2i_t pos);
 void widget_draw(const guiWidget_t *widget, guiGraphics_t *graphics);
 void widget_tick(guiWidget_t *widget);
 bool widget_isWidgetExisting(guiWidget_t *widget, const guiWidget_t *exist);
 
 // Dimension management
 
-/**
- * @brief              Sets widget width and creates a dimension event
- * @param widget       widget to change
- * @param width        new width
- */
-void widget_setWidth(guiWidget_t *widget, int width);
-/**
- * @brief              Sets widget height and creates a dimension event
- * @param widget       widget to change
- * @param height        new height
- */
-void widget_setHeight(guiWidget_t *widget, int height);
-
-int widget_getWidth(guiWidget_t *widget);
-int widget_getHeight(guiWidget_t *widget);
-void widget_setX(guiWidget_t *widget, int x);
-void widget_setY(guiWidget_t *widget, int y);
-int widget_getX(guiWidget_t *widget);
-int widget_getY(guiWidget_t *widget);
-void widget_setPosition(guiWidget_t *widget, int x, int y);
-void widget_setSize(guiWidget_t *widget, int width, int height);
 void widget_setDimension(guiWidget_t *widget, const guiRectangle_t newDim);
-guiRectangle_t widget_getDimensions(const guiWidget_t *widget);
-void widget_getAbsolutePosition(guiWidget_t* widget, int *x, int *y);
+void widget_getAbsolutePosition(guiWidget_t* widget, vec2i_t *x);
+
+#define widget_setWidth(_widget, _width)         \
+{ \
+	guiRectangle_t newDimension = ((guiWidget_t*)_widget)->dim; \
+	newDimension.width = _width;                \
+	widget_setDimension(((guiWidget_t*)_widget), newDimension); \
+}
+
+#define widget_setHeight(_widget, height)       \
+{ \
+	guiRectangle_t newDimension = ((guiWidget_t*)_widget)->dim; \
+	newDimension.height = height;              \
+	widget_setDimension(((guiWidget_t*)_widget), newDimension); \
+}
+
+#define widget_setX(_widget, _x)         \
+{ \
+	guiRectangle_t newDimension = ((guiWidget_t*)_widget)->dim;  \
+	newDimension.pos.x = _x;                     \
+	widget_setDimension(((guiWidget_t*)_widget), newDimension);  \
+}
+
+#define widget_setY(_widget, _y)       \
+{ \
+	guiRectangle_t newDimension = ((guiWidget_t*)_widget)->dim;  \
+	newDimension.pos.y = _y;                     \
+	widget_setDimension(((guiWidget_t*)_widget), newDimension);  \
+}
+
+#define widget_setPosition(_widget, _pos)       \
+{ \
+	guiRectangle_t newDimension = ((guiWidget_t*)_widget)->dim;  \
+	newDimension.pos = _pos;                     \
+	widget_setDimension(((guiWidget_t*)_widget), newDimension);  \
+}
+
+#define widget_setSize(_widget, _width, _height)   \
+{ \
+	guiRectangle_t newDimension = ((guiWidget_t*)_widget)->dim;  \
+	newDimension.width = _width;                 \
+	newDimension.height = _height;               \
+	widget_setDimension(((guiWidget_t*)_widget), newDimension);  \
+}
+
+#define widget_getWidth(_widget) (((guiWidget_t*)_widget)->dim.width)
+#define widget_getHeight(_widget) (((guiWidget_t*)_widget)->dim.height)
+#define widget_getX(_widget) (((guiWidget_t*)_widget)->dim.pos.x)
+#define widget_getY(_widget) (((guiWidget_t*)_widget)->dim.pos.y)
+#define widget_getDimensions(_widget) (((guiWidget_t*)_widget)->dim)
 
 // Children widgets management
 
 // Parent widget access
-guiWidget_t* widget_getParent(guiWidget_t *widget);
-void widget_setParent(guiWidget_t *widget, guiWidget_t* newParent);
+#define widget_getParent(_widget) (((guiWidget_t*)_widget)->parent)
+#define widget_setParent(_widget, _newParent) { (guiWidget_t*)_widget->parent = (guiWidget_t*)_newParent; }
 
-guiFont_t* widget_getFont(const guiWidget_t *widget);
-list_t* widget_getListeners(guiWidget_t *widget);
+// Property access
+#define widget_getFont(_widget) (((guiWidget_t*)_widget)->font)
+#define widget_setFont(_widget, _font) { ((guiWidget_t*)_widget)->font = _font; }
+#define widget_getListeners(_widget) (((guiWidget_t*)_widget)->eventListeners)
+
 void widget_handleEvent(guiWidget_t *widget, event_t *event);
 
 #endif // WIDGET_H_INCLUDED

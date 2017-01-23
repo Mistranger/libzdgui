@@ -49,7 +49,6 @@ void stack_free(stackNode_t* stack)
 		stack = temp;
 	}
 	free(stack);
-	stack = NULL;
 }
 
 unsigned int stack_size(stack_t* stack)

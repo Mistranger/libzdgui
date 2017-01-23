@@ -16,19 +16,22 @@
 ----------------------------------------------------------------------------*/
 
 typedef struct vector_s {
-	void **data;
+	void *data;
 	size_t capacity;
 	size_t size;
+	size_t elemSize;
 } vector_t;
 
 /*----------------------------------------------------------------------------
 --  Functions
 ----------------------------------------------------------------------------*/
 
-vector_t* vector_new();
+vector_t* vector_new(size_t elemSize);
 
-#define vector_get(vector, index, type) ((type*)vector_at(vector, index) == NULL ? NULL : (type)(*(type*)vector_at(vector, index)))
-inline void* vector_at(vector_t *vector, size_t index);
+#define vector_at(_vector, _index) ((void*)((unsigned char*)((_vector)->data) + (_index)*((_vector)->elemSize)))
+#define vector_get(_vector, _index, _type) ((_type)(*(_type*)vector_at(_vector, _index)))
+
+//#define vector_get(vector, index, type) ((type*)vector_at(vector, index) == NULL ? NULL : (type)(*(type*)vector_at(vector, index)))
 
 inline size_t vector_size(vector_t *vector);
 size_t vector_capacity(vector_t *vector);

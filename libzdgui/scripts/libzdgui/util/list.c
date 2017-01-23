@@ -6,7 +6,7 @@
  * @brief      Initializes the list (constructor)
  * @return     new list
  */
-list_t* list_init()
+list_t* list_new()
 {
 	list_t *new_list = (list_t*)malloc(sizeof(list_t));
 	new_list->count = 0;
@@ -36,7 +36,6 @@ void list_remove(list_t* list, bool clear)
 		it = it2;
 	}
 	free(list);
-	list = NULL;
 }
 
 unsigned int list_size(const list_t* list)
@@ -111,8 +110,6 @@ void list_insert(list_t* list, listNode_t* at, bool before, void* data)
 		return;
 	}
 	listNode_t *it = list->head;
-	listNode_t *head = list->head;
-	listNode_t *tail = list->tail;
 	++list->count;
 	while (it) {
 		if (it == at) {

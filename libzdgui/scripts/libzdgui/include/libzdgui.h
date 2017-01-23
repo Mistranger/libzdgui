@@ -14,7 +14,8 @@
 
 #include "widgets/button.h"
 #include "widgets/container.h"
-#include "widgets/image.h"
+#include "widgets/imagewidget.h"
+#include "widgets/label.h"
 #include "widgets/window.h"
 
 #include "util/list.h"
@@ -22,6 +23,7 @@
 #include "util/stack.h"
 #include "util/string.h"
 #include "util/util.h"
+#include "util/vecstack.h"
 #include "util/vector.h"
 
 #endif // LIBZDGUI_H_INCLUDED

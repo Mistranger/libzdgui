@@ -10,43 +10,74 @@ guiWindow_vf_t guiWindow_vtable = {
 	container_isWidgetExisting
 };
 
-guiWindow_t* window_new(const char* caption)
+guiWindow_t* window_new(const string_t *caption, const guiImage_t *background)
 {
-	guiWindow_t *window = (guiWindow_t*)malloc(sizeof(guiWindow_t));
-	window_init(window, caption);
+	guiWindow_t *window = new(guiWindow_t);
+	window_init(window, caption, background);
+	guiInfo("window created");
 	return window;
 }
 
-void window_init(guiWindow_t *window, const char *caption)
+void window_init(guiWindow_t *window, const string_t *caption, const guiImage_t *background)
 {
 	container_init((guiContainer_t*)window);
 	((guiWidget_t*)(&window->widget))->v = (guiWidget_vf_t*)&guiWindow_vtable;
 	
-	window->padding = 0;
+	window->caption = string_new();
 	window_setCaption(window, caption);
+	window->windowFlags = WF_CANDRAG | WF_SIZABLE;
+	window_setPadding(window, 0);
+	if (background != NULL) {
+		image_setImage(window->background, image_getImage(*background));
+		image_setWidth(window->background, image_getWidth(*background));
+		image_setHeight(window->background, image_getHeight(*background));
+	}
+	
 	widget_addMouseListener(&window->widget, EV_Mouse, ME_PRESSED, window_mousePressed);
 	widget_addMouseListener(&window->widget, EV_Mouse, ME_RELEASED, window_mouseReleased);
-	
+	widget_addDimensionListener(&window->widget, EV_Dimension, DE_RESIZED, window_resized);
 }
 
-const char* window_getCaption(const guiWindow_t* window)
+string_t* window_getCaption(const guiWindow_t* window)
 {
 	return window->caption;
 }
 
-void window_setCaption(guiWindow_t* window, const char* caption)
+void window_setCaption(guiWindow_t* window, const string_t *caption)
 {
-	strncpy(window->caption, caption, MAX_CAPTION_LENGTH);
+	string_copy(window->caption, caption, 0, string_size(caption));
 }
 
-void window_draw(const guiWindow_t* widget, guiGraphics_t* graphics)
+void window_resizeToContent(const guiWindow_t* window)
 {
-	
+	int w = 0, h = 0;
+	for (listNode_t *node = window_frontItem(window); node; node = node->next) {
+		guiWidget_t *widget = (guiWidget_t*)node->data;
+		if (widget_getX(widget) + widget_getWidth(widget) > w) {
+			w = widget_getX(widget) + widget_getWidth(widget);
+		}
+		
+		if (widget_getY(widget) + widget_getHeight(widget) > h) {
+			h = widget_getY(widget) + widget_getHeight(widget);
+		}
+	}
+	widget_setSize(window, w + 2*window_getPadding(window), h + window_getPadding(window));
 }
 
-guiRectangle_t window_getChildrenArea(const guiWindow_t* widget)
+void window_draw(const guiWindow_t* window, guiGraphics_t* graphics)
 {
-	
+	if (image_getImage(window->background) != NULL) {
+		graph_drawImageScaled(graphics, 0, 0, image_getWidth(window->background), image_getHeight(window->background),
+			widget_getWidth(window), widget_getHeight(window), image_getImage(window->background));
+	}
+	container_draw((guiContainer_t*)window, graphics);
+}
+
+guiRectangle_t window_getChildrenArea(const guiWindow_t* window)
+{
+	guiRectangle_t children = {window_getPadding(window), 0, 
+		widget_getWidth(window) - 2 * window_getPadding(window), widget_getHeight(window) - window_getPadding(window) };
+	return children;
 }
 
 void window_mousePressed(void* widget, mouseEvent_t* mouseEvent)
@@ -58,6 +89,11 @@ void window_mousePressed(void* widget, mouseEvent_t* mouseEvent)
 
 void window_mouseReleased(void* widget, mouseEvent_t* mouseEvent)
 {
+	
 }
 
+void window_resized(void* widget, dimensionEvent_t* dimEvent)
+{
+	guiInfo("window resized, new size %d, %d" _C_ dimEvent->width _C_ dimEvent->height);
+}
 

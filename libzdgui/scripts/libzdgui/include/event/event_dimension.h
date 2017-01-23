@@ -1,6 +1,7 @@
 #ifndef EVENT_DIMENSION_H_INCLUDED
 #define EVENT_DIMENSION_H_INCLUDED
 
+#include "dimension.h"
 
 typedef enum dimensionEventType {
 	DE_MOVED = 0,
@@ -8,7 +9,7 @@ typedef enum dimensionEventType {
 } dimensionEventType_t;
 
 typedef struct dimensionEvent_s {
-	int x, y;
+	vec2i_t pos;
 	int width, height;
 	dimensionEventType_t type;
 } dimensionEvent_t;
