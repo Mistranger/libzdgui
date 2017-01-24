@@ -16,6 +16,7 @@
 #include "widgets/container.h"
 #include "widgets/imagewidget.h"
 #include "widgets/label.h"
+#include "widgets/scrollarea.h"
 #include "widgets/window.h"
 
 #include "util/list.h"

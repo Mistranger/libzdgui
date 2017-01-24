@@ -25,6 +25,8 @@ guiGraphics_t* gui_getGraphics(guiGUI_t *gui);
 void gui_setGraphics(guiGUI_t *gui, guiGraphics_t* newGraphics);
 guiInput_t* gui_getInput(const guiGUI_t *gui);
 void gui_setInput(guiGUI_t *gui, guiInput_t* newInput);
+guiMouse_t* gui_getMouse(const guiGUI_t* gui);
+void gui_setMouse(guiGUI_t* gui, guiMouse_t* newMouse);
 
 // Widget access
 guiWidget_t* gui_getWidgetAt(guiGUI_t *gui, vec2i_t pos);

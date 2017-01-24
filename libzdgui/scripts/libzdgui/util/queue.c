@@ -4,7 +4,7 @@
 
 queue_t* queue_init()
 {
-	queue_t *new_queue = (queue_t*)malloc(sizeof(queue_t));
+	queue_t *new_queue = new(queue_t);
 	new_queue->count = 0;
     new_queue->head = NULL;
     new_queue->tail = NULL;
@@ -44,21 +44,21 @@ void queue_pop(queue_t* queue)
 		queueNode_t *elem = queue->head;
 		queue->head = queue->head->next;
 		--queue->count;
-		if (elem->data) {
+		if (elem->data != NULL) {
 			free(elem->data);
 		}
-		if (elem) {
+		if (elem != NULL) {
 			free(elem);
 		}
 	}
 }
 
-queueNode_t* queue_back(queue_t* queue)
+void* queue_back(queue_t* queue)
 {
-	return queue->tail;
+	return queue->tail->data;
 }
 
-queueNode_t* queue_front(queue_t* queue)
+void* queue_front(queue_t* queue)
 {
-	return queue->head;
+	return queue->head->data;
 }

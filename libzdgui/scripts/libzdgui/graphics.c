@@ -13,12 +13,15 @@ void graph_init(guiGraphics_t* graphics, int width, int height)
 void graph_beginDraw(guiGraphics_t* graphics)
 {
 	graphics->drawOrder = HUDMESSAGE_ID;
+	guiRectangle_t r = {0, 0, graph_getScreenWidth(graphics), graph_getScreenHeight(graphics)};
+	graph_pushClipArea(graphics, r);
 }
 void graph_endDraw(guiGraphics_t* graphics)
 {
+	graph_popClipArea(graphics);
 }
 
-void graph_pushClipArea(guiGraphics_t *graphics, guiRectangle_t area)
+void graph_pushClipArea(guiGraphics_t *graphics, const guiRectangle_t area)
 {
 	if (!vecstack_size(graphics->clipStack)) {
 		guiClipRectangle_t clip;
@@ -27,8 +30,12 @@ void graph_pushClipArea(guiGraphics_t *graphics, guiRectangle_t area)
 		clip.rect.height = area.height;
 		clip.offset.x = 0;
 		clip.offset.y = 0;
+		guiDebugPrint("pushing (%d,%d,%d,%d) rect to clip stack, %d in stack" _C_ clip.rect.pos.x _C_ clip.rect.pos.y _C_ clip.rect.width _C_ clip.rect.height _C_ vecstack_size(graphics->clipStack));
+		ACS_SetHudClipRect(clip.rect.pos.x, clip.rect.pos.y, clip.rect.width, clip.rect.height);
 		vecstack_push(graphics->clipStack, &clip);
+		return;
 	}
+	
 	guiClipRectangle_t clip;
 	guiClipRectangle_t top = *((guiClipRectangle_t*)vecstack_top(graphics->clipStack));
 	memcpy(&clip, &area, sizeof(guiRectangle_t));
@@ -55,7 +62,7 @@ void graph_pushClipArea(guiGraphics_t *graphics, guiRectangle_t area)
 	
 	rect_intersect((guiRectangle_t*)&clip, (guiRectangle_t*)&top);
 	vecstack_push(graphics->clipStack, &clip);
-	//guiDebugPrint("pushing (%d,%d,%d,%d) rect to clip stack, %d in stack" _C_ clip->rect.x _C_ clip->rect.y _C_ clip->rect.width _C_ clip->rect.height _C_ stack_size(graphics->clipStack));
+	guiDebugPrint("pushing (%d,%d,%d,%d) rect to clip stack, %d in stack" _C_ clip.rect.pos.x _C_ clip.rect.pos.y _C_ clip.rect.width _C_ clip.rect.height _C_ vecstack_size(graphics->clipStack));
 	ACS_SetHudClipRect(clip.rect.pos.x, clip.rect.pos.y, clip.rect.width, clip.rect.height);
 
 }
@@ -67,9 +74,13 @@ void graph_popClipArea(guiGraphics_t *graphics)
 	}
 	guiClipRectangle_t *clip = (guiClipRectangle_t*)vecstack_top(graphics->clipStack);
 	vecstack_pop(graphics->clipStack);
-	//guiDebugPrint("pop (%d,%d,%d,%d) rect from clip stack, %d in stack" _C_ clip->rect.x _C_ clip->rect.y _C_ clip->rect.width _C_ clip->rect.height _C_ stack_size(graphics->clipStack));
-	guiRectangle_t *top = (guiRectangle_t*)vecstack_top(graphics->clipStack);
-	ACS_SetHudClipRect(top->pos.x, top->pos.y, top->width, top->height);
+	guiDebugPrint("pop (%d,%d,%d,%d) rect from clip stack, %d in stack" _C_ clip->rect.pos.x _C_ clip->rect.pos.y _C_ clip->rect.width _C_ clip->rect.height _C_ vecstack_size(graphics->clipStack));
+	if (!vecstack_size(graphics->clipStack)) {
+		ACS_SetHudClipRect(0, 0, 0, 0);
+	} else {
+		guiRectangle_t *top = (guiRectangle_t*)vecstack_top(graphics->clipStack);
+		ACS_SetHudClipRect(top->pos.x, top->pos.y, top->width, top->height);
+	}
 }
 
 void graph_setFont(guiGraphics_t *graphics, __str font)

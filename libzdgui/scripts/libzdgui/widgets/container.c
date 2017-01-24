@@ -10,7 +10,8 @@ guiContainer_vf_t guiContainer_vtable = {
 	container_getWidgetAt,
 	container_draw,
 	container_tick,
-	container_isWidgetExisting
+	container_isWidgetExisting,
+	container_showWidgetPart
 };
 
 guiContainer_t* container_new()
@@ -57,7 +58,7 @@ void container_draw(const guiContainer_t *container, guiGraphics_t *graphics)
 {
 	guiDebugPrint("drawing container");
 	
-	graph_pushClipArea(graphics, container->widget.v->w_getChildrenArea((guiWidget_t*)container));
+	graph_pushClipArea(graphics, *container->widget.v->w_getChildrenArea((guiWidget_t*)container));
 	ACS_SetHudSize(640, 480, 1);
 	//graph_drawImage(graphics, 0, 0, s"HUDFONT_libzdgui_BACK");
 	ACS_SetHudSize(graph_getScreenWidth(graphics), graph_getScreenHeight(graphics), 1);
@@ -74,15 +75,14 @@ void container_draw(const guiContainer_t *container, guiGraphics_t *graphics)
 	graph_popClipArea(graphics);
 }
 
-guiRectangle_t container_getChildrenArea(const guiContainer_t* container)
+guiRectangle_t* container_getChildrenArea(const guiContainer_t* container)
 {
-	guiRectangle_t children = {0, 0, container->widget.dim.width, container->widget.dim.height};
-	return children;
+	return &(guiRectangle_t){0, 0, container->widget.dim.width, container->widget.dim.height};
 }
 
 guiWidget_t* container_getWidgetAt(const guiContainer_t *container, vec2i_t pos)
 {
-	guiRectangle_t r = container->widget.v->w_getChildrenArea(&container->widget);
+	guiRectangle_t r = *container->widget.v->w_getChildrenArea(&container->widget);
 
 	if (!rect_isPointInRect(&r, pos)) {
 		return NULL;
@@ -124,6 +124,29 @@ bool container_isWidgetExisting(guiContainer_t* widget, const guiWidget_t* exist
 		}
 	}
 	return false;
+}
+
+void container_showWidgetPart(guiContainer_t* container, guiRectangle_t area)
+{
+	guiRectangle_t widgetArea = *container_getChildrenArea(container);
+	area.pos.x += widget_getX(container);
+	area.pos.y += widget_getY(container);
+
+	if (area.pos.x + area.width > widgetArea.width) {
+		widget_setX(container, widget_getX(container) - area.pos.x - area.width + widgetArea.width);
+	}
+
+	if (area.pos.y + area.height > widgetArea.height) {
+		widget_setY(container, widget_getY(container) - area.pos.y - area.height + widgetArea.height);
+	}
+
+	if (area.pos.x < 0) {
+		widget_setX(container, widget_getX(container) - area.pos.x);
+	}
+
+	if (area.pos.y < 0) {
+		widget_setY(container, widget_getY(container) - area.pos.y);
+	}
 }
 
 void container_moveToTop(guiContainer_t* container, guiWidget_t* widget)

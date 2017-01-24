@@ -4,19 +4,11 @@
 #include "event.h"
 #include "widget.h"
 
-#define MAX_CAPTION_LENGTH 256
-
-enum ButtonFlags
-{
-	BF_PRESSED = 0x00000001,
-	BF_HASMOUSE = 0x00000002
-};
-
 struct guiButton_s;
 
 typedef struct guiButton_vf {
 	
-	struct guiRectangle_s (*w_getChildrenArea)(const struct guiWidget_s *widget);
+	struct guiRectangle_s* (*w_getChildrenArea)(const struct guiWidget_s *widget);
 	struct guiWidget_s* (*w_getWidgetAt)(const struct guiWidget_s *widget, vec2i_t pos);
 	void (*w_draw)(const struct guiButton_s *button, guiGraphics_t *graphics);
 	void (*w_tick)(struct guiWidget_s *widget);
@@ -26,9 +18,13 @@ typedef struct guiButton_vf {
 typedef struct guiButton_s
 {
     guiWidget_t widget;
-	int buttonFlags;
-	char caption[MAX_CAPTION_LENGTH];
-	__str image;
+
+	bool isPressed;
+	bool hasMouse;
+
+	string_t *caption;
+	guiImage_t *image;
+	guiImage_t *imagePressed;
 } guiButton_t;
 
 // Virtual inherited from guiWidget_t
@@ -39,12 +35,17 @@ void button_draw(const guiButton_t* button, guiGraphics_t* graphics);
 //bool button_isWidgetExisting(guiWidget_t *widget, const guiWidget_t *exist);
 
 // Constructor
-guiButton_t* button_new(const char* caption);
+guiButton_t* button_new(const string_t* caption, const guiFont_t *font);
 
-void button_init(guiButton_t *button);
-void button_setCaption(guiButton_t *button, const char *caption);
-const char* button_getCaption(const guiButton_t *button);
+void button_init(guiButton_t* button, const string_t* caption, const guiFont_t *font);
+void button_setCaption(guiButton_t *button, const string_t *caption);
+const string_t* button_getCaption(const guiButton_t *button);
 void button_adjustSize(guiButton_t *button);
+
+#define button_getImage(_widget) (((guiButton_t*)_widget)->image)
+#define button_setImage(_widget, _image) { ((guiButton_t*)_widget)->image = _image; }
+#define button_getImagePressed(_widget) (((guiButton_t*)_widget)->imagePressed)
+#define button_setImagePressed(_widget, _image) { ((guiButton_t*)_widget)->imagePressed = _image; }
 
 // Event listeners
 void button_mousePressed(void *widget, mouseEvent_t *mouseEvent);

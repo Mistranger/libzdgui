@@ -24,7 +24,7 @@ enum ImageFlags
 struct guiImageWidget_s;
 
 typedef struct guiImageWidget_vf {
-	struct guiRectangle_s (*w_getChildrenArea)(const struct guiWidget_s *widget);
+	struct guiRectangle_s* (*w_getChildrenArea)(const struct guiWidget_s *widget);
 	struct guiWidget_s* (*w_getWidgetAt)(const struct guiWidget_s *widget, vec2i_t pos);
 	void (*w_draw)(const struct guiImageWidget_s *image, guiGraphics_t *graphics);
 	void (*w_tick)(struct guiWidget_s *widget);

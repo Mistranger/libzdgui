@@ -28,11 +28,13 @@ enum WidgetFlags {
 
 typedef struct guiWidget_vf {
 	
-	struct guiRectangle_s (*w_getChildrenArea)(const struct guiWidget_s *widget);
+	struct guiRectangle_s* (*w_getChildrenArea)(const struct guiWidget_s *widget);
 	struct guiWidget_s* (*w_getWidgetAt)(const struct guiWidget_s *widget, vec2i_t pos);
 	void (*w_draw)(const struct guiWidget_s *widget, guiGraphics_t *graphics);
 	void (*w_tick)(struct guiWidget_s *widget);
 	bool (*w_isWidgetExisting)(struct guiWidget_s *widget, const struct guiWidget_s *exist);
+	
+	
 } guiWidget_vf_t;
 
 
@@ -93,7 +95,7 @@ typedef struct guiWidget_s
 void widget_init(guiWidget_t *widget);
 
 // Virtual functions
-guiRectangle_t widget_getChildrenArea(const guiWidget_t *widget);
+guiRectangle_t* widget_getChildrenArea(const guiWidget_t *widget);
 guiWidget_t* widget_getWidgetAt(const guiWidget_t *widget, vec2i_t pos);
 void widget_draw(const guiWidget_t *widget, guiGraphics_t *graphics);
 void widget_tick(guiWidget_t *widget);
@@ -135,7 +137,7 @@ void widget_getAbsolutePosition(guiWidget_t* widget, vec2i_t *x);
 #define widget_setPosition(_widget, _pos)       \
 { \
 	guiRectangle_t newDimension = ((guiWidget_t*)_widget)->dim;  \
-	newDimension.pos = _pos;                     \
+	newDimension.pos = (_pos);                     \
 	widget_setDimension(((guiWidget_t*)_widget), newDimension);  \
 }
 

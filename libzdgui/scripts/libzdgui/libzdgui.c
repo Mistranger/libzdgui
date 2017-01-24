@@ -23,36 +23,44 @@ void initLibZDGui(void)
 	guiInput_t *input = new(guiInput_t);
 	input_init(input);
 	guiDebugPrint("input init");
-	
+	guiMouse_t *mouse = new(guiMouse_t);
+	mouse_init(mouse);
 	guiGUI_t *gui = new(guiGUI_t);
 	gui_init(gui);
 	gui_setGraphics(gui, graphics);
 	gui_setInput(gui, input);
+	gui_setMouse(gui, mouse);
 	gui_setTop(gui, NULL);
 	guiDebugPrint("gui init");
+	
+	mouse_registerCursor(gui->mouse, s"DEFCURS", 32, 32, 0, 0);
+	
 	string_t *str = string_new_char("Hello world");
 	guiImage_t panel = {288, 256, s"panel_2"};
 	guiWindow_t *window = window_new(str, &panel);
-	guiRectangle_t rect = {100, 100, 200, 200};
+	guiRectangle_t rect = {100, 100, 288, 256};
 	widget_setDimension((guiWidget_t*)window, rect);
 	gui_setTop(gui, (guiWidget_t*)window);
-	guiButton_t *button = button_new("shithappens");
+	string_assign_char(str, "shithappens");
+	guiButton_t *button = button_new(str, NULL);
 	vec2i_t pos = {0, 0};
 	container_addAt((guiContainer_t*)window, (guiWidget_t*)button, pos);
-	guiButton_t *button2 = button_new("shithappens222");
+	string_assign_char(str, "shithappens222");
+	guiButton_t *button2 = button_new(str, NULL);
 	pos.x = 0;
 	pos.y = 10;
 	container_addAt((guiContainer_t*)window, (guiWidget_t*)button2, pos);
-	guiButton_t *button3 = button_new("wowshithappens333");
+	string_assign_char(str, "wowshithappens333");
+	guiButton_t *button3 = button_new(str, NULL);
 	pos.x = 0;
 	pos.y = 60;
 	container_addAt((guiContainer_t*)window, (guiWidget_t*)button3, pos);
 	guiImageWidget_t *image = wimage_new(s"TITLEPIC", 320, 200);
-	image->imageFlags = IF_SCALETOSIZE;
-	widget_setSize(image, 80, 80);
+	//image->imageFlags = IF_SCALETOSIZE;
+	widget_setSize(image, 320, 200);
 	pos.x = 20;
 	pos.y = 20;
-	container_addAt((guiContainer_t*)window, (guiWidget_t*)image, pos);
+	//container_addAt((guiContainer_t*)window, (guiWidget_t*)image, pos);
 	
 	guiFont_t *f = font_new(s"CONFONT", 8, 8);
 	string_assign_char(str, "ka Taisen Net Gimmick: Capcom & Psikyo All Stars (Japan))");
@@ -61,8 +69,41 @@ void initLibZDGui(void)
 	widget_setSize(label, 200, 100);
 	pos.x = 50;
 	pos.y = 20;
-	image->widget.flags &= ~WF_VISIBLE;
-	container_addAt((guiContainer_t*)window, (guiWidget_t*)label, pos);
+	//container_addAt((guiContainer_t*)window, (guiWidget_t*)label, pos);
+	
+	guiImage_t *slider_vert = &(guiImage_t){13, 170, s"SLIDVERT"};
+	guiImage_t *scroll_knob = &(guiImage_t){20, 20, s"SLIDKNOB"};
+	guiImage_t *scroll_down_pressed = &(guiImage_t){20, 20, s"SCDOWNPR"};
+	guiImage_t *scroll_down = &(guiImage_t){20, 20, s"SCDOWN"};
+	guiImage_t *scroll_up_pressed = &(guiImage_t){20, 20, s"SCUPPR"};
+	guiImage_t *scroll_up = &(guiImage_t){20, 20, s"SCUP"};
+	guiImage_t *scroll_left = &(guiImage_t){20, 20, s"SCLEFT"};
+	guiImage_t *scroll_left_pressed = &(guiImage_t){20, 20, s"SCLEFTPR"};
+	guiImage_t *scroll_right_pressed = &(guiImage_t){20, 20, s"SCRITEPR"};
+	guiImage_t *scroll_right = &(guiImage_t){20, 20, s"SCRITE"};
+	guiImage_t *slider_horiz = &(guiImage_t){170, 13, s"SLIDHORZ"};
+	
+	guiScrollArea_t *scroll = scroll_new((guiWidget_t*)image);
+	scroll_setDownButtonImage(scroll, scroll_down);
+	scroll_setDownPressedButtonImage(scroll, scroll_down_pressed);
+	scroll_setUpButtonImage(scroll, scroll_up);
+	scroll_setUpPressedButtonImage(scroll, scroll_up_pressed);
+	scroll_setLeftButtonImage(scroll, scroll_left);
+	scroll_setLeftPressedButtonImage(scroll, scroll_left_pressed);
+	scroll_setRightButtonImage(scroll, scroll_right);
+	scroll_setRightPressedButtonImage(scroll, scroll_right_pressed);
+	scroll_setMarkerImage(scroll, scroll_knob);
+	scroll_setHBarImage(scroll, slider_horiz);
+	scroll_setVBarImage(scroll, slider_vert);
+	widget_setSize(scroll, 150, 100);
+	pos.x = 20;
+	pos.y = 20;
+	//image->widget.flags &= ~WF_VISIBLE;
+	
+	
+	container_addAt((guiContainer_t*)window, (guiWidget_t*)scroll, pos);
+	
+	mouse_grabMouseInput(gui->mouse);
 	while (1) {
 		/*int xMove = ACS_GetPlayerInput(-1, INPUT_YAW);
 		int yMove = ACS_GetPlayerInput(-1, INPUT_PITCH);

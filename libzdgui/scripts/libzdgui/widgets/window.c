@@ -73,17 +73,16 @@ void window_draw(const guiWindow_t* window, guiGraphics_t* graphics)
 	container_draw((guiContainer_t*)window, graphics);
 }
 
-guiRectangle_t window_getChildrenArea(const guiWindow_t* window)
+guiRectangle_t* window_getChildrenArea(const guiWindow_t* window)
 {
-	guiRectangle_t children = {window_getPadding(window), 0, 
+	return &(guiRectangle_t){window_getPadding(window), 0, 
 		widget_getWidth(window) - 2 * window_getPadding(window), widget_getHeight(window) - window_getPadding(window) };
-	return children;
 }
 
 void window_mousePressed(void* widget, mouseEvent_t* mouseEvent)
 {
 	if (widget_getParent(widget) != NULL) {
-		
+		container_moveToTop((guiContainer_t*)widget_getParent(widget), (guiWidget_t*)widget);
 	}
 }
 

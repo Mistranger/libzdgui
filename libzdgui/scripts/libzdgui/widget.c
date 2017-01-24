@@ -34,10 +34,9 @@ void widget_init(guiWidget_t* widget)
 	guiDebugPrint("new widget created");
 }
 
-guiRectangle_t widget_getChildrenArea(const guiWidget_t *widget)
+guiRectangle_t* widget_getChildrenArea(const guiWidget_t *widget)
 {
-	guiRectangle_t rect = {0, 0, 0, 0};
-	return rect;
+	return &(guiRectangle_t){0, 0, 0, 0};
 }
 
 guiWidget_t* widget_getWidgetAt(const guiWidget_t* widget, vec2i_t pos)
@@ -91,7 +90,7 @@ void widget_getAbsolutePosition(guiWidget_t* widget, vec2i_t *pos)
 
 	widget_getAbsolutePosition(widget->parent, &parentPos);
 
-	guiRectangle_t rect = widget->parent->v->w_getChildrenArea(widget->parent);
+	guiRectangle_t rect = *widget->parent->v->w_getChildrenArea(widget->parent);
 	pos->x = parentPos.x + widget->dim.pos.x + rect.pos.x;
 	pos->y = parentPos.y + widget->dim.pos.y + rect.pos.y;
 }
@@ -144,6 +143,10 @@ void widget_handleEvent(guiWidget_t* widget, event_t* event)
 						}
 					}
 				}
+				case EV_Event:
+					break;
+				default:
+					break;
 			}
 		}
 	}

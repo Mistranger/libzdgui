@@ -27,16 +27,16 @@ typedef enum labelAlignment {
 } labelAlignment_t;
 
 // Label flags
-enum LabelFlags
+typedef enum LabelFlags
 {
 	LF_MULTILINE = 0x00000001,
-};
+} LabelFlags_t;
 
 struct guiLabel_s;
 
 typedef struct guiLabel_vf {
 	
-	struct guiRectangle_s (*w_getChildrenArea)(const struct guiWidget_s *widget);
+	struct guiRectangle_s* (*w_getChildrenArea)(const struct guiWidget_s *widget);
 	struct guiWidget_s* (*w_getWidgetAt)(const struct guiWidget_s *widget, vec2i_t pos);
 	void (*w_draw)(const struct guiLabel_s *container, guiGraphics_t *graphics);
 	void (*w_tick)(struct guiWidget_s *widget);
@@ -48,6 +48,7 @@ typedef struct guiLabel_s
     guiWidget_t widget;
 	string_t *caption;
 	vector_t *textWrap;
+	LabelFlags_t labelFlags;
 	labelAlignment_t horizAlign;
 	labelAlignment_t vertAlign;
 } guiLabel_t;

@@ -52,6 +52,11 @@ void gui_draw(guiGUI_t* gui)
 	graph_pushClipArea(gui->graphics, gui->top->dim);
 	gui->top->v->w_draw(gui->top, gui->graphics);
 	graph_popClipArea(gui->graphics);
+
+	if (gui->mouse) {
+		mouse_drawCursor(gui->mouse, gui->graphics);
+	}
+
 	graph_endDraw(gui->graphics);
 }
 
@@ -64,11 +69,13 @@ void gui_tick(guiGUI_t* gui)
 		return;
 	}
 	if (gui->mouse) {
+		mouse_getInput(gui->mouse, gui->graphics);
 		gui_handleMouseInput(gui);
 	}
 	if (gui->top->v->w_tick != widget_tick) {
 		gui->top->v->w_tick(gui->top);
 	}
+	
 	guiDebugPrint("gui tick end");
 }
 
@@ -82,17 +89,32 @@ guiInput_t* gui_getInput(const guiGUI_t* gui)
 	return gui->input;
 }
 
+void gui_setMouse(guiGUI_t* gui, guiMouse_t* newMouse)
+{
+	gui->mouse = newMouse;
+}
+
+guiMouse_t* gui_getMouse(const guiGUI_t* gui)
+{
+	return gui->mouse;
+}
+
 static void gui_handleMouseInput(guiGUI_t* gui)
 {
 	guiDebugPrint("handle mouse input");
 	if (!gui->mouse->mouseEventQueue) {
+		guiError("no mouse queue!");
 		return;
 		// FIXME error
 	}
 	
 	while (queue_size(gui->mouse->mouseEventQueue) > 0) {
-		guiDebugPrint("dequeue mouse mouse");
+		guiInfo("dequeue mouse mouse");
 		event_t *event = (event_t*)queue_front(gui->mouse->mouseEventQueue);
+		if (event->type != EV_Mouse) {
+			guiError("Bad event type");
+			return;
+		}
 		mouseEvent_t *mouseEvent = event->events.mouse;
 		
 		switch (mouseEvent->type) {
@@ -102,6 +124,10 @@ static void gui_handleMouseInput(guiGUI_t* gui)
 			break;
 			case ME_RELEASED: {
 				gui_handleMouseReleased(gui, event);
+			}
+			break;
+			default: {
+				guiError("Unknown mouse event");
 			}
 			break;
 		}
@@ -138,7 +164,9 @@ static void gui_handleMousePressed(guiGUI_t* gui, event_t* event)
 
 static void gui_handleMouseReleased(guiGUI_t* gui, event_t* event)
 {
-	
+	mouseEvent_t *mouseEvent = event->events.mouse;
+	guiWidget_t* sourceWidget = gui_getMouseEventSource(gui, mouseEvent->pos);
+	gui_distributeEvent(gui, sourceWidget, event);
 }
 
 guiWidget_t* gui_getMouseEventSource(guiGUI_t* gui, vec2i_t pos)
@@ -157,6 +185,7 @@ static void gui_distributeEvent(guiGUI_t* gui, guiWidget_t* source, event_t* eve
 	guiWidget_t* parent = source;
 	guiWidget_t* widget = source;
 	
+	guiInfo("distributing mouse event");
 	while (parent != NULL) {
 		if (!gui_isWidgetExisting(gui, widget)) {
 			return;

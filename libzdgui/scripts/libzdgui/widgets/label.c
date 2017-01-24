@@ -25,6 +25,9 @@ void label_init(guiLabel_t *label, const string_t *caption, const guiFont_t *fon
 	widget_init((guiWidget_t*)label);
 	label->widget.v = (guiWidget_vf_t*)&guiLabel_vtable;
 	
+	label->labelFlags = 0;
+	label->horizAlign = ALIGN_LEFT;
+	label->vertAlign = ALIGN_TOP;
 	label->textWrap = vector_new(sizeof(string_t));
 	widget_setFont(label, (guiFont_t*)font);
 	label->caption = string_new_string(caption);
@@ -41,7 +44,9 @@ const string_t* label_getCaption(const guiLabel_t* label)
 void label_setCaption(guiLabel_t* label, const string_t *caption)
 {
 	string_copy(label->caption, caption, 0, string_size(caption));
-	label_wordWrap(label);
+	if (label->labelFlags & LF_MULTILINE) {
+		label_wordWrap(label);
+	}
 }
 
 void label_adjustSize(guiLabel_t* label)

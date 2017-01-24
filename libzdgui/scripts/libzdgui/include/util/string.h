@@ -54,7 +54,7 @@ inline string_t* string_insert_string(string_t *s, size_t at, const string_t *in
 string_t* string_erase(string_t *s, size_t at, size_t len);
 string_t* string_copy(string_t *s, const string_t *copy, size_t at, size_t len);
 
-char string_find_c(const string_t *s, char c, size_t start);
+size_t string_find_c(const string_t *s, char c, size_t start);
 size_t string_find_first_of_char(const string_t *s, const char *c, size_t start);
 string_t* string_substr(const string_t *s, size_t pos, size_t len);
 

@@ -28,7 +28,7 @@ typedef enum mouseButtons {
 
 typedef struct guiCursor_s {
 	guiImage_t image;
-	int hotspotX, hotspotY;
+	vec2i_t hotspot;
 } guiCursor_t;
 
 typedef struct inputMouse_s
@@ -55,6 +55,7 @@ typedef struct guiMouse_s {
 void mouse_init(guiMouse_t* input);
 
 void mouse_drawCursor(guiMouse_t *mouse, guiGraphics_t *graphics);
+void mouse_registerCursor(guiMouse_t* mouse, __str image, int width, int height, int hotspotX, int hotspotY);
 void mouse_grabMouseInput(guiMouse_t *mouse);
 void mouse_releaseMouseInput(guiMouse_t *mouse);
 void mouse_getInput(guiMouse_t* input, guiGraphics_t *graphics);

@@ -190,7 +190,7 @@ string_t* string_copy(string_t* s, const string_t* copy, size_t at, size_t len)
 	return s;
 }
 
-char string_find_c(const string_t* s, char c, size_t start)
+size_t string_find_c(const string_t* s, char c, size_t start)
 {
 	for (size_t i = start; i < s->len; ++i) {
 		if (s->s[i] == (uchar)c) {

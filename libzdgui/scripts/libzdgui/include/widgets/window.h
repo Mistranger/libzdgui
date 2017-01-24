@@ -34,7 +34,7 @@ struct guiWindow_s;
 
 typedef struct guiWindow_vf {
 
-    struct guiRectangle_s (*w_getChildrenArea)(const struct guiWindow_s* window);
+    struct guiRectangle_s* (*w_getChildrenArea)(const struct guiWindow_s* window);
     struct guiWidget_s* (*w_getWidgetAt)(const struct guiContainer_s* widget, vec2i_t pos);
     void (*w_draw)(const struct guiWindow_s* window, guiGraphics_t* graphics);
     void (*w_tick)(struct guiContainer_s* widget);
@@ -66,7 +66,7 @@ void window_init(guiWindow_t* window, const string_t *caption, const guiImage_t 
 
 // Virtual inherited from guiWidget_t
 
-guiRectangle_t window_getChildrenArea(const guiWindow_t* window);
+guiRectangle_t* window_getChildrenArea(const guiWindow_t* window);
 void window_draw(const guiWindow_t* window, guiGraphics_t* graphics);
 
 /**

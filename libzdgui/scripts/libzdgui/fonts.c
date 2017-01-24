@@ -1,6 +1,8 @@
 #include "system.h"
 #include "fonts.h"
 
+const guiFont_t FONT_CONFONT = {8, 8, s"CONFONT"};
+
 guiFont_t* font_new(__str fontImage, int charWidth, int charHeight)
 {
 	guiFont_t *font = new(guiFont_t);
