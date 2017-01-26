@@ -3,6 +3,7 @@
 #include "widgets/imagewidget.h"
 
 guiImageWidget_vf_t guiImage_vtable = {
+	wimage_typename,
 	widget_destructor,
 	widget_getChildrenArea,
 	widget_getWidgetAt,
@@ -10,6 +11,13 @@ guiImageWidget_vf_t guiImage_vtable = {
 	widget_tick,
 	widget_isWidgetExisting
 };
+
+const char *ImageWidgetType = "ImageWidget";
+
+const char* wimage_typename(guiImageWidget_t *widget)
+{
+	return ImageWidgetType;
+}
 
 guiImageWidget_t* wimage_new(guiGUI_t *gui, __str filename, int imageWidth, int imageHeight)
 {
