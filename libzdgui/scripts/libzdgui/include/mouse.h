@@ -43,6 +43,10 @@ typedef struct guiMouse_s {
 	vec2i_t cursorPos;
 	int mouseSensitivity;
 	int doubleClickDelay;
+
+	int mClickCount;
+	int lastMousePressTime;
+	int lastMousePressButton;
 	
 	queue_t *mouseEventQueue;
 	inputMouse_t *mouseInput, *oldMouseInput;

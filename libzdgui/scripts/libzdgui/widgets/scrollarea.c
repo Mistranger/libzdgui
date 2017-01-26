@@ -10,7 +10,8 @@ guiScrollArea_vf_t guiScrollArea_vtable = {
 	scroll_draw,
 	scroll_tick,
 	widget_isWidgetExisting,
-	scroll_showWidgetPart
+	container_setFocusHandler,
+	scroll_showWidgetPart,
 };
 
 const char *ScrollAreaType = "ScrollArea";

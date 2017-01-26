@@ -10,7 +10,8 @@ guiSlider_vf_t guiSlider_vtable = {
 	widget_getWidgetAt,
 	slider_draw,
 	widget_tick,
-	widget_isWidgetExisting
+	widget_isWidgetExisting,
+	widget_setFocusManager
 };
 
 const char *SliderType = "Slider";

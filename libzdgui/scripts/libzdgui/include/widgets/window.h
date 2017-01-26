@@ -46,6 +46,7 @@ typedef struct guiWindow_vf {
     void (*w_draw)(const struct guiWindow_s* window, guiGraphics_t* graphics);
     void (*w_tick)(struct guiContainer_s* widget);
     bool (*w_isWidgetExisting)(struct guiContainer_s* widget, const struct guiWidget_s* exist);
+	void(*w_setFocusHandler)(struct guiContainer_s *widget, void *focus);
 } guiWindow_vf_t;
 
 typedef struct guiWindow_s {
@@ -55,7 +56,7 @@ typedef struct guiWindow_s {
 	WindowButtons_t windowButtons;
     size_t padding;
     size_t titleBarHeight;
-	guiImage_t background;
+	guiImage_t *background;
 } guiWindow_t;
 
 /*----------------------------------------------------------------------------
@@ -68,8 +69,8 @@ typedef struct guiWindow_s {
  * @brief              Constructor (window initialization with caption)
  * @param caption      title caption
  */
-guiWindow_t* window_new(guiGUI_t *gui, const string_t *caption, const guiImage_t *background);
-void window_init(guiWindow_t* window, const string_t *caption, const guiImage_t *background);
+guiWindow_t* window_new(guiGUI_t *gui, const string_t *caption, guiImage_t *background);
+void window_init(guiWindow_t* window, const string_t *caption, guiImage_t *background);
 void window_destructor(guiWindow_t *window);
 
 // Virtual inherited from guiWidget_t

@@ -10,7 +10,8 @@ guiCheckBox_vf_t guiCheckBox_vtable = {
 	widget_getWidgetAt,
 	checkbox_draw,
 	widget_tick,
-	widget_isWidgetExisting
+	widget_isWidgetExisting,
+	widget_setFocusManager
 };
 
 const char *CheckBoxType = "CheckBox";

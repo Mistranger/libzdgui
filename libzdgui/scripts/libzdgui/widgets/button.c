@@ -13,7 +13,8 @@ guiButton_vf_t guiButton_vtable = {
 	widget_getWidgetAt,
 	button_draw,
 	widget_tick,
-	widget_isWidgetExisting
+	widget_isWidgetExisting,
+	widget_setFocusManager
 };
 
 const char *ButtonType = "Button";

@@ -20,6 +20,7 @@ typedef struct guiButton_vf {
 	void (*w_draw)(const struct guiButton_s *button, guiGraphics_t *graphics);
 	void (*w_tick)(struct guiWidget_s *widget);
 	bool (*w_isWidgetExisting)(struct guiWidget_s *widget, const struct guiWidget_s *exist);
+	void(*w_setFocusHandler)(struct guiWidget_s *widget, void *focus);
 } guiButton_vf_t;
 
 typedef struct guiButton_s

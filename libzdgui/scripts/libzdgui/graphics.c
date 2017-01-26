@@ -16,6 +16,7 @@ void graph_beginDraw(guiGraphics_t* graphics)
 	guiRectangle_t r = {0, 0, graph_getScreenWidth(graphics), graph_getScreenHeight(graphics)};
 	graph_pushClipArea(graphics, r);
 }
+
 void graph_endDraw(guiGraphics_t* graphics)
 {
 	graph_popClipArea(graphics);
@@ -30,9 +31,9 @@ void graph_pushClipArea(guiGraphics_t *graphics, const guiRectangle_t area)
 		clip.rect.height = area.height;
 		clip.offset.x = 0;
 		clip.offset.y = 0;
-		guiDebugPrint("pushing (%d,%d,%d,%d) rect to clip stack, %d in stack" _C_ clip.rect.pos.x _C_ clip.rect.pos.y _C_ clip.rect.width _C_ clip.rect.height _C_ vecstack_size(graphics->clipStack));
 		ACS_SetHudClipRect(clip.rect.pos.x, clip.rect.pos.y, clip.rect.width, clip.rect.height);
 		vecstack_push(graphics->clipStack, &clip);
+		guiDebugPrint("pushing (%d,%d,%d,%d) rect to clip stack, %d in stack" _C_ clip.rect.pos.x _C_ clip.rect.pos.y _C_ clip.rect.width _C_ clip.rect.height _C_ vecstack_size(graphics->clipStack));
 		return;
 	}
 	
@@ -71,14 +72,15 @@ void graph_pushClipArea(guiGraphics_t *graphics, const guiRectangle_t area)
 void graph_popClipArea(guiGraphics_t *graphics)
 {
 	if (!graphics->clipStack) {
+		guiError("No clipStack");
 		return;
 	}
 	
 	vecstack_pop(graphics->clipStack);
-#if DEBUGLEVEL & DEBUG_DEBUG 
+
 	guiClipRectangle_t *clip = (guiClipRectangle_t*)vecstack_top(graphics->clipStack);
 	guiDebugPrint("pop (%d,%d,%d,%d) rect from clip stack, %d in stack" _C_ clip->rect.pos.x _C_ clip->rect.pos.y _C_ clip->rect.width _C_ clip->rect.height _C_ vecstack_size(graphics->clipStack));
-#endif
+
 	if (!vecstack_size(graphics->clipStack)) {
 		ACS_SetHudClipRect(0, 0, 0, 0);
 	} else {

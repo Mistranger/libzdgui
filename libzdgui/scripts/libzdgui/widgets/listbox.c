@@ -11,7 +11,8 @@ guiListBox_vf_t guiListBox_vtable = {
 	widget_getWidgetAt,
 	listbox_draw,
 	widget_tick,
-	widget_isWidgetExisting
+	widget_isWidgetExisting,
+	widget_setFocusManager
 };
 
 const char *ListBoxType = "ListBox";

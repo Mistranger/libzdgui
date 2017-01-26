@@ -9,6 +9,7 @@ typedef enum eventTypes {
 	EV_Dimension,
 	EV_LifeCycle,
 	EV_Widget,
+	EV_Focus,
 } eventTypes_t;
 
 typedef struct event_s {

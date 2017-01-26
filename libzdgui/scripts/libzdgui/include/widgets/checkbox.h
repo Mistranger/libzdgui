@@ -32,6 +32,7 @@ typedef struct guiCheckBox_vf {
 	void(*w_draw)(const struct guiCheckBox_s *container, guiGraphics_t *graphics);
 	void(*w_tick)(struct guiWidget_s *widget);
 	bool(*w_isWidgetExisting)(struct guiWidget_s *widget, const struct guiWidget_s *exist);
+	void(*w_setFocusHandler)(struct guiWidget_s *widget, void *focus);
 } guiCheckBox_vf_t;
 
 typedef struct guiCheckBox_s

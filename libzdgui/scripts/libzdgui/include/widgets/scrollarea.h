@@ -38,6 +38,7 @@ typedef struct guiScrollArea_vf {
 	void(*w_draw)(const struct guiScrollArea_s* scrollarea, guiGraphics_t* graphics);
 	void(*w_tick)(struct guiScrollArea_s* scrollarea);
 	bool(*w_isWidgetExisting)(struct guiWidget_s* widget, const struct guiWidget_s* exist);
+	void(*w_setFocusHandler)(struct guiContainer_s *widget, void *focus);
 	
 	void (*c_showWidgetPart)(struct guiScrollArea_s *container, guiWidget_t *widget, guiRectangle_t area);
 } guiScrollArea_vf_t;

@@ -18,5 +18,6 @@ void stack_push(stack_t* stack, void *element);
 void stack_pop(stack_t* stack);
 void stack_free(stack_t* stack);
 unsigned int  stack_size(stack_t* stack);
+#define stack_top(stack) (stack->head->data)
 
 #endif // STACK_H_INCLUDED

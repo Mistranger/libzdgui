@@ -46,6 +46,7 @@ typedef struct guiLabel_vf {
 	void (*w_draw)(const struct guiLabel_s *container, guiGraphics_t *graphics);
 	void (*w_tick)(struct guiWidget_s *widget);
 	bool (*w_isWidgetExisting)(struct guiWidget_s *widget, const struct guiWidget_s *exist);
+	void(*w_setFocusHandler)(struct guiWidget_s *widget, void *focus);
 } guiLabel_vf_t;
 
 typedef struct guiLabel_s

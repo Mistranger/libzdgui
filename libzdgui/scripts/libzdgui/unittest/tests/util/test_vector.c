@@ -36,6 +36,10 @@ void test_vector_addremove(CuTest *tc)
 	//CuAssertIntEquals(tc, (NULL), vector_get(v, vector_capacity(v) - 1, int));
 	CuAssertIntEquals(tc, 1, vector_get(v, 1, int));
 	CuAssertIntEquals(tc, (2), vector_get(v, vector_size(v) - 1, int));
+	vector_pop_back(v);
+	vector_pop_back(v);
+	vector_pop_back(v);
+	CuAssertIntEquals(tc, 0, (vector_size(v)));
 }
 
 void test_vector_resize(CuTest *tc)

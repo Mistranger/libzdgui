@@ -3,6 +3,7 @@
 #include "event/event_dimension.h"
 #include "event/event_lifecycle.h"
 #include "event/event_mouse.h"
+#include "focusmanager.h"
 #include "widget.h"
 
 const char *WidgetType = "Widget";
@@ -14,7 +15,8 @@ guiWidget_vf_t guiWidget_vtable = {
 	widget_getWidgetAt,
 	widget_draw,
 	widget_tick,
-	widget_isWidgetExisting
+	widget_isWidgetExisting,
+	widget_setFocusManager
 };
 
 const char* widget_typename(struct guiWidget_s *widget)
@@ -116,6 +118,83 @@ guiWidget_t* widget_getWidgetAt(const guiWidget_t* widget, vec2i_t pos)
 bool widget_isWidgetExisting(guiWidget_t *widget, const guiWidget_t *exist)
 {
 	return widget == exist ? true : false;
+}
+
+void widget_setFocusManager(guiWidget_t *widget, void *focus)
+{
+	if (widget->focusManager) {
+		// FIXME releaseModalFocus();
+		focus_removeFromManager(widget->focusManager, widget);
+	}
+
+	if (focus) {
+		focus_addToManager((guiFocusManager_t*)focus, widget);
+	}
+
+	widget->focusManager = focus;
+}
+
+void _widget_setFocusable(guiWidget_t *widget, bool state)
+{
+	if (!state && ((guiWidget_t*)widget)->isFocusable) {
+		focus_focusNone(((guiWidget_t*)widget)->focusManager);
+	}
+	((guiWidget_t*)widget)->isFocusable = state;
+}
+
+void widget_requestFocus(guiWidget_t *widget)
+{
+	if (!widget->focusManager) {
+		guiError("No focushandler set (did you add the widget to the gui?).");
+		return;
+	}
+
+	if (widget_isFocusable(widget))	{
+		focus_requestFocus(widget->focusManager, widget);
+	}
+}
+
+void widget_requestModalFocus(guiWidget_t *widget)
+{
+	if (!widget->focusManager) {
+		guiError("No focushandler set (did you add the widget to the gui?).");
+		return;
+	}
+	focus_requestModalFocus(widget->focusManager, widget);
+}
+
+void widget_requestModalMouseInputFocus(guiWidget_t *widget)
+{
+	if (!widget->focusManager) {
+		guiError("No focushandler set (did you add the widget to the gui?).");
+		return;
+	}
+	focus_requestModalMouseInputFocus(widget->focusManager, widget);
+}
+
+bool widget_hasModalFocus(const guiWidget_t *widget)
+{
+	if (!widget->focusManager) {
+		guiError("No focushandler set (did you add the widget to the gui?).");
+		return false;
+	}
+	if (widget_getParent(widget)) {
+		return (focus_getModalFocused(widget->focusManager) == widget) || widget_hasModalFocus(widget_getParent(widget));
+	}
+	return focus_getModalFocused(widget->focusManager) == widget;
+}
+
+bool widget_hasModalMouseInputFocus(const guiWidget_t *widget)
+{
+	if (!widget->focusManager) {
+		guiError("No focushandler set (did you add the widget to the gui?).");
+		return false;
+	}
+	if (widget_getParent(widget)) {
+		return (focus_getModalMouseInputFocused(widget->focusManager) == widget) 
+			|| widget_hasModalMouseInputFocus(widget_getParent(widget));
+	}
+	return focus_getModalFocused(widget->focusManager) == widget;
 }
 
 void widget_setDimension(guiWidget_t* widget, const guiRectangle_t newDim)

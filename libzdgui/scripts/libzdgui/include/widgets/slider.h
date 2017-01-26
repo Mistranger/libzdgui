@@ -31,6 +31,7 @@ typedef struct guiSlider_vf {
 	void(*w_draw)(const struct guiSlider_s *slider, guiGraphics_t *graphics);
 	void(*w_tick)(struct guiWidget_s *widget);
 	bool(*w_isWidgetExisting)(struct guiWidget_s *widget, const struct guiWidget_s *exist);
+	void(*w_setFocusHandler)(struct guiWidget_s *widget, void *focus);
 } guiSlider_vf_t;
 
 typedef enum guiSliderOrientation {

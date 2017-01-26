@@ -15,6 +15,7 @@ vector_t* vector_new(size_t elemSize)
 inline size_t vector_size(vector_t* vector)
 {
 	if (!vector) {
+		guiError("null vector");
 		return 0;
 	}
 	return vector->size;
@@ -56,6 +57,10 @@ void vector_push_back(vector_t* vector, void* data)
 
 void vector_pop_back(vector_t* vector)
 {
+	if (!vector->size) {
+		guiError("vector out of range");
+		return;
+	}
 	//memset(vector_at(vector, vector->size - 1), 0, vector->elemSize);
 	--vector->size;
 }

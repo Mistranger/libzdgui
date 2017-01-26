@@ -4,6 +4,7 @@
 #include "graphics.h"
 #include "event.h"
 #include "event/event_mouse.h"
+#include "focusmanager.h"
 #include "input.h"
 #include "mouse.h"
 #include "widget.h"
@@ -15,13 +16,16 @@ typedef struct guiGUI_s
 	 guiGraphics_t *graphics;
 	 guiInput_t *input;
 	 guiMouse_t *mouse;
+	 guiFocusManager_t *focusManager;
 
 	 list_t *allWidgets;
 	 list_t *widgetsUnderMouse;
+	 int lastMouseDragButton;
 } guiGUI_t;
 
 // Constructor
 void gui_init(guiGUI_t *gui);
+void gui_destroy(guiGUI_t *gui);
 
 guiWidget_t* gui_getTop(guiGUI_t *gui);
 void gui_setTop(guiGUI_t *gui, guiWidget_t* newTop);
@@ -39,6 +43,9 @@ void gui_addWidget(guiGUI_t *gui, void* widget);
 bool gui_widgetExists(guiGUI_t *gui, guiWidget_t* widget);
 void gui_deleteWidget(guiGUI_t *gui, guiWidget_t* widget);
 
+// Focus
+void gui_handleModalFocusGained(guiGUI_t* gui);
+void gui_handleModalFocusReleased(guiGUI_t* gui);
 
 // Drawing and logic
 void gui_draw(guiGUI_t *gui);

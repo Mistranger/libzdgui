@@ -18,10 +18,6 @@
 -- Types
 ----------------------------------------------------------------------------*/
 
-/*
- * * Widget flags (may be used by user)
-*/
-
 typedef struct guiWidget_vf {
 	const char* (*w_typename)(struct guiWidget_s *widget);
 	void (*w_destructor)(struct guiWidget_s *widget);
@@ -30,8 +26,7 @@ typedef struct guiWidget_vf {
 	void (*w_draw)(const struct guiWidget_s *widget, guiGraphics_t *graphics);
 	void (*w_tick)(struct guiWidget_s *widget);
 	bool (*w_isWidgetExisting)(struct guiWidget_s *widget, const struct guiWidget_s *exist);
-	
-	
+	void (*w_setFocusManager)(struct guiWidget_s *widget, void *focus);
 } guiWidget_vf_t;
 
 
@@ -49,6 +44,7 @@ typedef struct guiWidget_s
     guiRectangle_t dim;
 	// Parent widget (e.g. container)
 	struct guiWidget_s *parent;
+	void *focusManager;
 
     // Flags
    bool isVisible;
@@ -90,16 +86,25 @@ guiWidget_t* widget_getWidgetAt(const guiWidget_t *widget, vec2i_t pos);
 void widget_draw(const guiWidget_t *widget, guiGraphics_t *graphics);
 void widget_tick(guiWidget_t *widget);
 bool widget_isWidgetExisting(guiWidget_t *widget, const guiWidget_t *exist);
+void widget_setFocusManager(guiWidget_t *widget, void *focus);
 
+void widget_requestFocus(guiWidget_t *widget);
+void widget_requestModalFocus(guiWidget_t *widget);
+void widget_requestModalMouseInputFocus(guiWidget_t *widget);
+bool widget_hasModalFocus(const guiWidget_t *widget);
+bool widget_hasModalMouseInputFocus(const guiWidget_t *widget);
 // Flags
 
 #define widget_isEnabled(_widget) (((guiWidget_t*)_widget)->isEnabled)
 #define widget_isVisible(_widget) (((guiWidget_t*)_widget)->isVisible)
-#define widget_isFocusable(_widget) (((guiWidget_t*)_widget)->isFocusable)
+#define widget_isFocusable(_widget) \
+(((guiWidget_t*)_widget)->isFocusable && ((guiWidget_t*)_widget)->isEnabled \
+&& ((guiWidget_t*)_widget)->isVisible)
 #define widget_isContainer(_widget) (((guiWidget_t*)_widget)->isContainer)
 #define widget_setVisible(_widget, _state) { ((guiWidget_t*)_widget)->isVisible = _state; }
 #define widget_setEnabled(_widget, _state) { ((guiWidget_t*)_widget)->isEnabled = _state; }
-#define widget_setFocusable(_widget, _state) { ((guiWidget_t*)_widget)->isFocusable = _state; }
+void _widget_setFocusable(guiWidget_t *widget, bool state);
+#define widget_setFocusable(_widget, _state) _widget_setFocusable((guiWidget_t*)_widget, _state)
 
 // Dimension management
 

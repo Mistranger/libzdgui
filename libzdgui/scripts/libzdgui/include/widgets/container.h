@@ -19,6 +19,7 @@ typedef struct guiContainer_vf {
 	void (*w_draw)(const struct guiContainer_s *container, guiGraphics_t *graphics);
 	void (*w_tick)(struct guiContainer_s *widget);
 	bool (*w_isWidgetExisting)(struct guiContainer_s *widget, const struct guiWidget_s *exist);
+	void(*w_setFocusHandler)(struct guiContainer_s *widget, void *focus);
 	
 	void (*c_showWidgetPart)(struct guiContainer_s *container, guiWidget_t *widget, guiRectangle_t area);
 } guiContainer_vf_t;
@@ -40,6 +41,7 @@ guiRectangle_t* container_getChildrenArea(const guiContainer_t *widget);
 guiWidget_t* container_getWidgetAt(const guiContainer_t *widget, vec2i_t pos);
 void container_tick(guiContainer_t *widget);
 bool container_isWidgetExisting(guiContainer_t *widget, const guiWidget_t *exist);
+void container_setFocusHandler(guiContainer_t *widget, void *focus);
 
 void container_showWidgetPart(guiContainer_t *container, guiWidget_t *widget, guiRectangle_t area);
 

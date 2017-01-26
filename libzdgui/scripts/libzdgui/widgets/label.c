@@ -12,7 +12,8 @@ guiLabel_vf_t guiLabel_vtable = {
 	widget_getWidgetAt,
 	label_draw,
 	widget_tick,
-	widget_isWidgetExisting
+	widget_isWidgetExisting,
+	widget_setFocusManager
 };
 
 const char *LabelType = "Label";

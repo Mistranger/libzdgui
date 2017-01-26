@@ -15,6 +15,10 @@ void mouse_init(guiMouse_t* mouse)
 	mouse->mouseEventQueue = queue_init();
 	mouse->currentCursor = NULL;
 	mouse->cursors = list_new();
+
+	mouse->lastMousePressButton = MB_EMPTY;
+	mouse->lastMousePressTime = 0;
+	mouse->mClickCount = 0;
 }
 
 void mouse_drawCursor(guiMouse_t* mouse, guiGraphics_t* graphics)

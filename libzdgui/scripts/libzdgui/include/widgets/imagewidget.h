@@ -34,6 +34,7 @@ typedef struct guiImageWidget_vf {
 	void (*w_draw)(const struct guiImageWidget_s *image, guiGraphics_t *graphics);
 	void (*w_tick)(struct guiWidget_s *widget);
 	bool (*w_isWidgetExisting)(struct guiWidget_s *widget, const struct guiWidget_s *exist);
+	void(*w_setFocusHandler)(struct guiWidget_s *widget, void *focus);
 } guiImageWidget_vf_t;
 
 typedef struct guiImageWidget_s

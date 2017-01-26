@@ -9,7 +9,8 @@ guiWindow_vf_t guiWindow_vtable = {
 	container_getWidgetAt,
 	window_draw,
 	container_tick,
-	container_isWidgetExisting
+	container_isWidgetExisting,
+	container_setFocusHandler
 };
 
 const char *WindowType = "Window";
@@ -19,7 +20,7 @@ const char* window_typename(guiWindow_t *widget)
 	return WindowType;
 }
 
-guiWindow_t* window_new(guiGUI_t *gui, const string_t *caption, const guiImage_t *background)
+guiWindow_t* window_new(guiGUI_t *gui, const string_t *caption, guiImage_t *background)
 {
 	guiWindow_t *window = new(guiWindow_t);
 	window_init(window, caption, background);
@@ -33,7 +34,7 @@ void window_destructor(guiWindow_t *window)
 	widget_destructor((guiWidget_t*)window);
 }
 
-void window_init(guiWindow_t *window, const string_t *caption, const guiImage_t *background)
+void window_init(guiWindow_t *window, const string_t *caption, guiImage_t *background)
 {
 	container_init((guiContainer_t*)window);
 	((guiWidget_t*)(&window->widget))->v = (guiWidget_vf_t*)&guiWindow_vtable;
@@ -42,11 +43,7 @@ void window_init(guiWindow_t *window, const string_t *caption, const guiImage_t 
 	window_setCaption(window, caption);
 	window->windowFlags = WF_CANDRAG | WF_SIZABLE;
 	window_setPadding(window, 0);
-	if (background != NULL) {
-		image_setImage(window->background, image_getImage(*background));
-		image_setWidth(window->background, image_getWidth(*background));
-		image_setHeight(window->background, image_getHeight(*background));
-	}
+	window->background = background;
 	
 	widget_addMouseListener(&window->widget, ME_PRESSED, window_mousePressed);
 	widget_addMouseListener(&window->widget, ME_RELEASED, window_mouseReleased);
@@ -82,9 +79,9 @@ void window_resizeToContent(const guiWindow_t* window)
 
 void window_draw(const guiWindow_t* window, guiGraphics_t* graphics)
 {
-	if (image_getImage(window->background) != NULL) {
-		graph_drawImageScaled(graphics, 0, 0, image_getWidth(window->background), image_getHeight(window->background),
-			widget_getWidth(window), widget_getHeight(window), image_getImage(window->background));
+	if (window->background) {
+		graph_drawImageScaled(graphics, 0, 0, image_getWidth(*window->background), image_getHeight(*window->background),
+			widget_getWidth(window), widget_getHeight(window), image_getImage(*window->background));
 	}
 	container_draw((guiContainer_t*)window, graphics);
 }

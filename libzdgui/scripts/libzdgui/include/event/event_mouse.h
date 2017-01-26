@@ -11,7 +11,8 @@ typedef enum mouseEventType {
 	ME_RELEASED,
 	ME_ENTERED,
 	ME_LEFT,
-	ME_CLICKED
+	ME_CLICKED,
+	ME_DRAGGED,
 } mouseEventType_t;
 
 typedef struct mouseEvent_s {

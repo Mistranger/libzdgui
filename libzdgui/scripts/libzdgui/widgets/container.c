@@ -13,6 +13,7 @@ guiContainer_vf_t guiContainer_vtable = {
 	container_draw,
 	container_tick,
 	container_isWidgetExisting,
+	container_setFocusHandler,
 	container_showWidgetPart
 };
 
@@ -106,13 +107,18 @@ void container_draw(const guiContainer_t *container, guiGraphics_t *graphics)
 {
 	guiDebugPrint("drawing container");
 	
-	graph_pushClipArea(graphics, *container->widget.v->w_getChildrenArea((guiWidget_t*)container));
+	guiRectangle_t rect = *container->widget.v->w_getChildrenArea((guiWidget_t*)container);
+	//graph_pushClipArea(graphics, rect);
+	//graph_popClipArea(graphics);
 	ACS_SetHudSize(640, 480, 1);
+	guiDebugPrint("1");
 	//graph_drawImage(graphics, 0, 0, s"HUDFONT_libzdgui_BACK");
 	ACS_SetHudSize(graph_getScreenWidth(graphics), graph_getScreenHeight(graphics), 1);
+	guiDebugPrint("2");
 	
 	guiWidget_t *it ;
 	for (listNode_t *node = container->children->head; node; node = node->next) {
+		guiDebugPrint("4");
 		it = (guiWidget_t*)node->data;
 		if (widget_isVisible(it)) {
 			graph_pushClipArea(graphics, widget_getDimensions(it));
@@ -120,7 +126,7 @@ void container_draw(const guiContainer_t *container, guiGraphics_t *graphics)
 			graph_popClipArea(graphics);
 		}
 	}
-	
+	guiDebugPrint("3");
 	graph_popClipArea(graphics);
 }
 
@@ -177,6 +183,18 @@ bool container_isWidgetExisting(guiContainer_t* widget, const guiWidget_t* exist
 		}
 	}
 	return false;
+}
+
+void container_setFocusHandler(guiContainer_t *widget, void *focus)
+{
+	guiContainer_t *container = (guiContainer_t *)widget;
+	widget_setFocusManager((guiWidget_t*)widget, focus);
+
+	guiWidget_t *it;
+	for (listNode_t *node = container->children->head; node; node = node->next) {
+		it = (guiWidget_t*)node->data;
+		it->v->w_setFocusManager(it, focus);
+	}
 }
 
 void container_showWidgetPart(guiContainer_t* container, guiWidget_t *widget, guiRectangle_t area)
