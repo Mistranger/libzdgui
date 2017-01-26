@@ -1,26 +1,21 @@
 #ifndef EVENT_H_INCLUDED
 #define EVENT_H_INCLUDED
 
-#include "event/event_dimension.h"
-#include "event/event_mouse.h"
-
 // Union holding all event types
 
 typedef enum eventTypes {
 	EV_Event = 0,
 	EV_Mouse,
 	EV_Dimension,
+	EV_LifeCycle,
 } eventTypes_t;
 
-typedef struct event_s
-{
-	union {
-		mouseEvent_t *mouse;
-		dimensionEvent_t *dimension;
-	} events;
-	eventTypes_t type;
+typedef struct event_s {
+	eventTypes_t eventType;
+	void *sourceWidget;
 } event_t;
 
+#define event_getSource(_event) ((guiWidget_t*)(((event_t*)_event)->sourceWidget))
 
 // Listeners
 
@@ -28,12 +23,9 @@ typedef struct event_s
 // One listener could handle one event type
 // Widgets could have multiple listeners for various event types
 typedef struct eventListener_s {
-	union {
-		// EV_Mouse
-		mouseListener_t *mouseListener;
-		dimensionListener_t *dimensionListener;
-	} listeners;
-	eventTypes_t type;
+	eventTypes_t listenerType;
+	void *handlerWidget;
+	void (*handleEvent)(struct eventListener_s *listener, event_t *event);
 } eventListener_t;
 
 

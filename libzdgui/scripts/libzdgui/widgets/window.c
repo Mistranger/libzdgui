@@ -3,6 +3,7 @@
 #include "widgets/window.h"
 
 guiWindow_vf_t guiWindow_vtable = {
+	window_destructor,
 	window_getChildrenArea,
 	container_getWidgetAt,
 	window_draw,
@@ -10,12 +11,18 @@ guiWindow_vf_t guiWindow_vtable = {
 	container_isWidgetExisting
 };
 
-guiWindow_t* window_new(const string_t *caption, const guiImage_t *background)
+guiWindow_t* window_new(guiGUI_t *gui, const string_t *caption, const guiImage_t *background)
 {
 	guiWindow_t *window = new(guiWindow_t);
 	window_init(window, caption, background);
-	guiInfo("window created");
+	gui_addWidget(gui, window);
 	return window;
+}
+
+void window_destructor(guiWindow_t *window)
+{
+	string_delete(window->caption);
+	widget_destructor((guiWidget_t*)window);
 }
 
 void window_init(guiWindow_t *window, const string_t *caption, const guiImage_t *background)
@@ -33,9 +40,9 @@ void window_init(guiWindow_t *window, const string_t *caption, const guiImage_t 
 		image_setHeight(window->background, image_getHeight(*background));
 	}
 	
-	widget_addMouseListener(&window->widget, EV_Mouse, ME_PRESSED, window_mousePressed);
-	widget_addMouseListener(&window->widget, EV_Mouse, ME_RELEASED, window_mouseReleased);
-	widget_addDimensionListener(&window->widget, EV_Dimension, DE_RESIZED, window_resized);
+	widget_addMouseListener(&window->widget, ME_PRESSED, window_mousePressed);
+	widget_addMouseListener(&window->widget, ME_RELEASED, window_mouseReleased);
+	widget_addDimensionListener(&window->widget, DE_RESIZED, window_resized);
 }
 
 string_t* window_getCaption(const guiWindow_t* window)
@@ -51,8 +58,9 @@ void window_setCaption(guiWindow_t* window, const string_t *caption)
 void window_resizeToContent(const guiWindow_t* window)
 {
 	int w = 0, h = 0;
+	guiWidget_t *widget;
 	for (listNode_t *node = window_frontItem(window); node; node = node->next) {
-		guiWidget_t *widget = (guiWidget_t*)node->data;
+		widget = (guiWidget_t*)node->data;
 		if (widget_getX(widget) + widget_getWidth(widget) > w) {
 			w = widget_getX(widget) + widget_getWidth(widget);
 		}

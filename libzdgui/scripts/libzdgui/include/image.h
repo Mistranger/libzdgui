@@ -22,12 +22,12 @@ typedef struct guiImage_s {
 --  Functions
 ----------------------------------------------------------------------------*/
 
-#define image_getWidth(image) ((image).imageWidth)
-#define image_getHeight(image) ((image).imageHeight)
-#define image_setWidth(image, width) { (image).imageWidth = width; }
-#define image_setHeight(image, height) { (image).imageHeight = height; }
-#define image_getImage(image) ((image).filename)
-#define image_setImage(image, file) { (image).filename = file; }
+#define image_getWidth(_image) ((_image).imageWidth)
+#define image_getHeight(_image) ((_image).imageHeight)
+#define image_setWidth(_image, _width) { (_image).imageWidth = _width; }
+#define image_setHeight(_image, _height) { (_image).imageHeight = _height; }
+#define image_getImage(_image) ((_image).filename)
+#define image_setImage(_image, _file) { (_image).filename = _file; }
 
 
 #endif // IMAGE_H_INCLUDED

@@ -2,12 +2,16 @@
 #define BUTTON_H_INCLUDED
 
 #include "event.h"
+#include "event/event_mouse.h"
+#include "gui.h"
+#include "image.h"
+#include "util/string.h"
 #include "widget.h"
 
 struct guiButton_s;
 
 typedef struct guiButton_vf {
-	
+	void (*w_destructor)(struct guiButton_s *widget);
 	struct guiRectangle_s* (*w_getChildrenArea)(const struct guiWidget_s *widget);
 	struct guiWidget_s* (*w_getWidgetAt)(const struct guiWidget_s *widget, vec2i_t pos);
 	void (*w_draw)(const struct guiButton_s *button, guiGraphics_t *graphics);
@@ -35,9 +39,10 @@ void button_draw(const guiButton_t* button, guiGraphics_t* graphics);
 //bool button_isWidgetExisting(guiWidget_t *widget, const guiWidget_t *exist);
 
 // Constructor
-guiButton_t* button_new(const string_t* caption, const guiFont_t *font);
+guiButton_t* button_new(guiGUI_t *gui, const string_t* caption);
+void button_destructor(guiButton_t *button);
 
-void button_init(guiButton_t* button, const string_t* caption, const guiFont_t *font);
+void button_init(guiButton_t* button, const string_t* caption);
 void button_setCaption(guiButton_t *button, const string_t *caption);
 const string_t* button_getCaption(const guiButton_t *button);
 void button_adjustSize(guiButton_t *button);

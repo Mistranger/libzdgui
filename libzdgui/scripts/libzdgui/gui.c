@@ -4,6 +4,7 @@
 
 #include "debug.h"
 #include "event.h"
+
 #include "graphics.h"
 #include "widget.h"
 #include "util/util.h"
@@ -13,6 +14,8 @@ void gui_init(guiGUI_t* gui)
 {
 	gui->top = NULL;
 	gui->graphics = NULL;
+	gui->allWidgets = list_new();
+	gui->widgetsUnderMouse = list_new();
 }
 
 guiWidget_t* gui_getTop(guiGUI_t* gui)
@@ -36,6 +39,95 @@ void gui_setGraphics(guiGUI_t* gui, guiGraphics_t* newGraphics)
 	gui->graphics = newGraphics;
 }
 
+void gui_handleMouseMove(guiGUI_t* gui, mouseEvent_t* event)
+{
+	listNode_t *it;
+	listNode_t *remove;
+	bool done = list_size(gui->widgetsUnderMouse) == 0;
+	size_t i;
+	guiWidget_t *w;
+	vec2i_t pos;
+	
+	while (!done) {
+		i = 0;
+		for (it = gui->widgetsUnderMouse->head; it; it = it->next) {
+			w = (guiWidget_t*)it->data;
+			if (!w || !gui_widgetExists(gui, w)) {
+				list_erase(gui->widgetsUnderMouse, it);
+				
+				break;
+			} else {
+				widget_getAbsolutePosition(w, &pos);
+				if (pos.x > event->pos.x
+					|| pos.y > event->pos.y
+					|| pos.x + widget_getWidth(w) <= event->pos.x
+					|| pos.y + widget_getHeight(w) <= event->pos.y
+					|| !widget_isVisible(w)) {
+						
+						mouseEvent_t *left = new(mouseEvent_t);
+						*left = *event;
+						left->type = ME_LEFT;
+						gui_distributeMouseEvent(gui, w, left);
+						list_erase(gui->widgetsUnderMouse, it);
+						
+						break;
+				}
+			}
+			++i;
+		}
+		done = (i == list_size(gui->widgetsUnderMouse));
+	}
+	guiWidget_t* source = gui_getMouseEventSource(gui, &event->pos);
+	guiWidget_t* parent = source;
+	guiWidget_t* widget = parent;
+	guiWidget_t *swap;
+	bool found;
+
+	if (parent != NULL) {
+		do {
+			parent = widget_getParent(widget);
+
+			found = false;
+			for (it = gui->widgetsUnderMouse->head; it; it = it->next) {
+				if (it->data == widget) {
+					found = true;
+					break;
+				}
+			}
+			if (!found && gui_widgetExists(gui, widget)) {
+				guiInfo("Mouse entered widget");
+				
+				mouseEvent_t *entered = new(mouseEvent_t);
+				*entered = *event;
+				entered->type = ME_ENTERED;
+				gui_distributeMouseEvent(gui, widget, entered);
+				list_push_front(gui->widgetsUnderMouse, widget);
+			} 
+			swap = widget;
+			widget = parent;
+			parent = widget_getParent(swap);
+		} while (parent != NULL);
+		
+		widget = source;
+		mouseEvent_t *moved = new(mouseEvent_t);
+		*moved = *event;
+		moved->type = ME_MOVED;
+		gui_distributeMouseEvent(gui, widget, moved);
+	}
+}
+
+void gui_handleMouse(guiGUI_t* gui, mouseEvent_t* event)
+{
+	if (event->type == ME_MOVED) {
+		gui_handleMouseMove(gui, event);
+	} else {
+		guiWidget_t* sourceWidget = gui_getMouseEventSource(gui, &event->pos);
+		if (sourceWidget) {
+			gui_distributeEvent(gui, sourceWidget, (event_t*)event);
+		}
+	}	
+}
+
 void gui_draw(guiGUI_t* gui)
 {
 	if (!gui->top || !gui->graphics) {
@@ -43,7 +135,7 @@ void gui_draw(guiGUI_t* gui)
 		return;
 	}
 	
-	if (!(gui->top->flags & WF_VISIBLE)) {
+	if (!(widget_isVisible(gui->top))) {
 		return;
 	}
 	
@@ -99,116 +191,104 @@ guiMouse_t* gui_getMouse(const guiGUI_t* gui)
 	return gui->mouse;
 }
 
-static void gui_handleMouseInput(guiGUI_t* gui)
+void gui_handleMouseInput(guiGUI_t* gui)
 {
-	guiDebugPrint("handle mouse input");
 	if (!gui->mouse->mouseEventQueue) {
 		guiError("no mouse queue!");
 		return;
-		// FIXME error
 	}
 	
+	event_t *event;
 	while (queue_size(gui->mouse->mouseEventQueue) > 0) {
-		guiInfo("dequeue mouse mouse");
-		event_t *event = (event_t*)queue_front(gui->mouse->mouseEventQueue);
-		if (event->type != EV_Mouse) {
+		event = (event_t*)queue_front(gui->mouse->mouseEventQueue);
+		if (event->eventType != EV_Mouse) {
 			guiError("Bad event type");
 			return;
 		}
-		mouseEvent_t *mouseEvent = event->events.mouse;
+
+		gui_handleMouse(gui,  (mouseEvent_t*)event);
 		
-		switch (mouseEvent->type) {
-			case ME_PRESSED: {
-				gui_handleMousePressed(gui, event);
-			}
-			break;
-			case ME_RELEASED: {
-				gui_handleMouseReleased(gui, event);
-			}
-			break;
-			default: {
-				guiError("Unknown mouse event");
-			}
-			break;
-		}
 		queue_pop(gui->mouse->mouseEventQueue);
 	}
-	guiDebugPrint("end handle mouse");
 }
 
-guiWidget_t* gui_getWidgetAt(guiGUI_t* gui, vec2i_t pos)
+guiWidget_t* gui_getWidgetAt(guiGUI_t* gui, vec2i_t *pos)
 {
+	if (!rect_isPointInRect(&widget_getDimensions(gui->top), *pos)) {
+		return NULL;
+	}
+	
 	guiWidget_t* parent = gui->top;
 	guiWidget_t* child = gui->top;
+	vec2i_t parentPos;
+	guiWidget_t *swap;
+	vec2i_t at;
 
 	while (child != NULL) {
-		guiWidget_t *swap = child;
-		vec2i_t parentPos;
+		swap = child;
 		widget_getAbsolutePosition(parent, &parentPos);
-		vec2i_t at;
-		vec_sub2(at, pos, parentPos);
+		vec_sub2(at, *pos, parentPos);
 		child = parent->v->w_getWidgetAt(parent, at);
 		parent = swap;
 	}
-
+	
 	return parent;
 }
 
-static void gui_handleMousePressed(guiGUI_t* gui, event_t* event)
+guiWidget_t* gui_getMouseEventSource(guiGUI_t* gui, vec2i_t *pos)
 {
-	mouseEvent_t *mouseEvent = event->events.mouse;
-	guiWidget_t* sourceWidget = gui_getMouseEventSource(gui, mouseEvent->pos);
-	gui_distributeEvent(gui, sourceWidget, event);
-	
+	return gui_getWidgetAt(gui, pos);
 }
 
-static void gui_handleMouseReleased(guiGUI_t* gui, event_t* event)
+void gui_addWidget(guiGUI_t *gui, void* widget)
 {
-	mouseEvent_t *mouseEvent = event->events.mouse;
-	guiWidget_t* sourceWidget = gui_getMouseEventSource(gui, mouseEvent->pos);
-	gui_distributeEvent(gui, sourceWidget, event);
+	list_push_back(gui->allWidgets, widget);
 }
 
-guiWidget_t* gui_getMouseEventSource(guiGUI_t* gui, vec2i_t pos)
+bool gui_widgetExists(guiGUI_t *gui, guiWidget_t* widget)
 {
-	guiWidget_t* widget = gui_getWidgetAt(gui, pos);
-	return widget;
+	for (listNode_t *it = gui->allWidgets->head; it; it = it->next) {
+		if (it->data == widget) {
+			return true;
+		}
+	}
+	return false;
 }
 
-bool gui_isWidgetExisting(guiGUI_t* gui, const guiWidget_t* widget)
+void gui_deleteWidget(guiGUI_t *gui, guiWidget_t* widget)
 {
-	return gui->top->v->w_isWidgetExisting(gui->top, widget);
+	list_remove(gui->allWidgets, widget);
 }
 
-static void gui_distributeEvent(guiGUI_t* gui, guiWidget_t* source, event_t* event)
+void gui_distributeEvent(guiGUI_t* gui, guiWidget_t* source, event_t* event)
 {
 	guiWidget_t* parent = source;
 	guiWidget_t* widget = source;
-	
-	guiInfo("distributing mouse event");
+	guiWidget_t* swap;
+
 	while (parent != NULL) {
-		if (!gui_isWidgetExisting(gui, widget)) {
+		if (!gui_widgetExists(gui, widget)) {
 			return;
 		}
 		
 		parent = widget_getParent(widget);
-		if (widget->flags & WF_ENABLED) {
-			switch (event->type) {
+		if (widget_isEnabled(widget)) {
+			switch (event->eventType) {
 				case EV_Mouse:
-					gui_distributeMouseEvent(gui, widget, event->events.mouse);
+					gui_distributeMouseEvent(gui, widget, (mouseEvent_t*)event);
 					break;
 				
 			}
 		}
 		
-		guiWidget_t* swap = widget;
+		swap = widget;
 		widget = parent;
 		parent = widget_getParent(swap);
 		
 	}
 }
 
-static void gui_distributeMouseEvent(guiGUI_t* gui, guiWidget_t* widget, mouseEvent_t* event)
+void gui_distributeMouseEvent(guiGUI_t* gui, guiWidget_t* widget, mouseEvent_t* event)
 {
 	vec2i_t widgetPos;
 	widget_getAbsolutePosition(widget, &widgetPos);
@@ -216,21 +296,36 @@ static void gui_distributeMouseEvent(guiGUI_t* gui, guiWidget_t* widget, mouseEv
 	vec_sub(event->pos, widgetPos);
 	
 	list_t *listeners = widget_getListeners(widget);
+	eventListener_t *it;
+	
 	for (listNode_t *node = listeners->head; node; node = node->next) {
-		eventListener_t *it = (eventListener_t*)node->data;
-		if (it->type == EV_Mouse) {
-			mouseListener_t *mouse = it->listeners.mouseListener;
+		it = (eventListener_t*)node->data;
+		if (it->listenerType == EV_Mouse) {
+			mouseListener_t *mouse = (mouseListener_t*)it;
 			if (mouse->type == event->type) {
 				switch (mouse->type) {
 					case ME_MOVED:
-						mouse->types.mouseMoved(widget, event);
+						mouse->types.mouseMoved(mouse->listener.handlerWidget, event);
 						break;
 					case ME_PRESSED:
-						mouse->types.mousePressed(widget, event);
+						mouse->types.mousePressed(mouse->listener.handlerWidget, event);
 						break;
 					case ME_RELEASED:
-						mouse->types.mouseReleased(widget, event);
+						mouse->types.mouseReleased(mouse->listener.handlerWidget, event);
 						break;
+					case ME_ENTERED:
+						mouse->types.mouseEntered(mouse->listener.handlerWidget, event);
+						break;
+					case ME_LEFT:
+						mouse->types.mouseLeft(mouse->listener.handlerWidget, event);
+						break;
+					case ME_CLICKED:
+						mouse->types.mouseClicked(mouse->listener.handlerWidget, event);
+						break;
+					default:
+						guiError("Unknown mouse event type");
+						break;
+
 				}
 			}
 		}

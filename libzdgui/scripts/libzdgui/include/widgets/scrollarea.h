@@ -6,8 +6,12 @@
 ----------------------------------------------------------------------------*/
 
 #include "util/string.h"
+#include "event/event_mouse.h"
+#include "event/event_dimension.h"
 #include "widgets/container.h"
 #include "dimension.h"
+#include "gui.h"
+#include "image.h"
 #include "widget.h"
 
 /*----------------------------------------------------------------------------
@@ -25,6 +29,7 @@ typedef enum ScrollAreaPolicy {
 } ScrollAreaPolicy_t;
 
 typedef struct guiScrollArea_vf {
+	void (*w_destructor)(struct guiScrollArea_s *widget);
 	struct guiRectangle_s* (*w_getChildrenArea)(const struct guiScrollArea_s* scrollarea);
 	struct guiWidget_s* (*w_getWidgetAt)(const struct guiScrollArea_s* widget, vec2i_t pos);
 	void(*w_draw)(const struct guiScrollArea_s* scrollarea, guiGraphics_t* graphics);
@@ -35,7 +40,7 @@ typedef struct guiScrollArea_vf {
 } guiScrollArea_vf_t;
 
 typedef struct guiScrollArea_s {
-	guiWidget_t widget;
+	guiContainer_t widget;
 	guiWidget_t *content;
 
 	bool hBarVisible, vBarVisible;
@@ -73,8 +78,9 @@ typedef struct guiScrollArea_s {
 --  Functions
 ----------------------------------------------------------------------------*/
 
-guiScrollArea_t* scroll_new(guiWidget_t *content);
+guiScrollArea_t* scroll_new(guiGUI_t *gui, guiWidget_t *content);
 void scroll_init(guiScrollArea_t* scrollarea, guiWidget_t *content);
+static void scroll_destructor(guiScrollArea_t *scrollarea);
 
 // Virtual inherited from guiWidget_t
 

@@ -13,7 +13,7 @@ inline char* strdup(const char *s)
 
 string_t* string_new()
 {
-	string_t *string = (string_t*)malloc(sizeof(string_t));
+	string_t *string = new(string_t);
 	string->capacity = STRING_LENGTH;
 	string->len = 0;
 	string->s = (uchar*)malloc(string->capacity + 1);
@@ -22,7 +22,7 @@ string_t* string_new()
 
 string_t* string_new_count(size_t count)
 {
-	string_t *string = (string_t*)malloc(sizeof(string_t));
+	string_t *string = new(string_t);
 	string->capacity = count;
 	string->len = 0;
 	string->s = (uchar*)malloc(string->capacity + 1);
@@ -31,7 +31,7 @@ string_t* string_new_count(size_t count)
 
 string_t* string_new_string(const string_t* s)
 {
-	string_t *string = (string_t*)malloc(sizeof(string_t));
+	string_t *string = new(string_t);
 	string->capacity = s->capacity;
 	string->len = s->len;
 	string->s = (uchar*)strdup((const char*)s->s);
@@ -41,7 +41,7 @@ string_t* string_new_string(const string_t* s)
 
 string_t* string_new_char(const char* s)
 {
-	string_t *string = (string_t*)malloc(sizeof(string_t));
+	string_t *string = new(string_t);
 	string->capacity = strlen(s);
 	string->len = string->capacity;
 	string->s = (uchar*)strdup(s);

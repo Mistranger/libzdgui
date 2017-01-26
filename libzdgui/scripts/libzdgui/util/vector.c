@@ -4,7 +4,7 @@
 
 vector_t* vector_new(size_t elemSize)
 {
-	vector_t *vector = (vector_t*)malloc(sizeof(vector_t)); 
+	vector_t *vector = new(vector_t);
 	vector->capacity = VECTOR_CAPACITY;
 	vector->size = 0;
 	vector->elemSize = elemSize;

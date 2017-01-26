@@ -37,25 +37,25 @@ void initLibZDGui(void)
 	
 	string_t *str = string_new_char("Hello world");
 	guiImage_t panel = {288, 256, s"panel_2"};
-	guiWindow_t *window = window_new(str, &panel);
+	guiWindow_t *window = window_new(gui, str, &panel);
 	guiRectangle_t rect = {100, 100, 288, 256};
 	widget_setDimension((guiWidget_t*)window, rect);
 	gui_setTop(gui, (guiWidget_t*)window);
 	string_assign_char(str, "shithappens");
-	guiButton_t *button = button_new(str, NULL);
+	guiButton_t *button = button_new(gui, str);
 	vec2i_t pos = {0, 0};
 	container_addAt((guiContainer_t*)window, (guiWidget_t*)button, pos);
 	string_assign_char(str, "shithappens222");
-	guiButton_t *button2 = button_new(str, NULL);
+	guiButton_t *button2 = button_new(gui, str);
 	pos.x = 0;
 	pos.y = 10;
 	container_addAt((guiContainer_t*)window, (guiWidget_t*)button2, pos);
 	string_assign_char(str, "wowshithappens333");
-	guiButton_t *button3 = button_new(str, NULL);
+	guiButton_t *button3 = button_new(gui, str);
 	pos.x = 0;
 	pos.y = 60;
 	container_addAt((guiContainer_t*)window, (guiWidget_t*)button3, pos);
-	guiImageWidget_t *image = wimage_new(s"TITLEPIC", 320, 200);
+	guiImageWidget_t *image = wimage_new(gui, s"TITLEPIC", 320, 200);
 	//image->imageFlags = IF_SCALETOSIZE;
 	widget_setSize(image, 320, 200);
 	pos.x = 20;
@@ -64,9 +64,9 @@ void initLibZDGui(void)
 	
 	guiFont_t *f = font_new(s"CONFONT", 8, 8);
 	string_assign_char(str, "ka Taisen Net Gimmick: Capcom & Psikyo All Stars (Japan))");
-	guiLabel_t *label = label_new(str, f);
+	//guiLabel_t *label = label_new(gui, str, f);
 
-	widget_setSize(label, 200, 100);
+	//widget_setSize(label, 200, 100);
 	pos.x = 50;
 	pos.y = 20;
 	//container_addAt((guiContainer_t*)window, (guiWidget_t*)label, pos);
@@ -83,7 +83,7 @@ void initLibZDGui(void)
 	guiImage_t *scroll_right = &(guiImage_t){20, 20, s"SCRITE"};
 	guiImage_t *slider_horiz = &(guiImage_t){170, 13, s"SLIDHORZ"};
 	
-	guiScrollArea_t *scroll = scroll_new((guiWidget_t*)image);
+	guiScrollArea_t *scroll = scroll_new(gui, (guiWidget_t*)image);
 	scroll_setDownButtonImage(scroll, scroll_down);
 	scroll_setDownPressedButtonImage(scroll, scroll_down_pressed);
 	scroll_setUpButtonImage(scroll, scroll_up);
@@ -105,12 +105,7 @@ void initLibZDGui(void)
 	
 	mouse_grabMouseInput(gui->mouse);
 	while (1) {
-		/*int xMove = ACS_GetPlayerInput(-1, INPUT_YAW);
-		int yMove = ACS_GetPlayerInput(-1, INPUT_PITCH);
 		
-		graph_drawText(graphics, 0, 0, "%d", xMove);
-		graph_drawText(graphics, 0, 50, "%d", yMove);
-		 * */
 		
 		gui_tick(gui);
 		gui_draw(gui);

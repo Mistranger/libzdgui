@@ -3,9 +3,11 @@
 #include "widgets/button.h"
 
 #include "event.h"
+#include "fonts.h"
 #include "graphics.h"
 
 guiButton_vf_t guiButton_vtable = {
+	button_destructor,
 	widget_getChildrenArea,
 	widget_getWidgetAt,
 	button_draw,
@@ -13,23 +15,27 @@ guiButton_vf_t guiButton_vtable = {
 	widget_isWidgetExisting
 };
 
-
-
-guiButton_t* button_new(const string_t* caption, guiFont_t *font)
+guiButton_t* button_new(guiGUI_t *gui, const string_t* caption)
 {
 	guiButton_t *button = new(guiButton_t);
-	button_init(button, caption, font ? font : &FONT_CONFONT);
-
+	button_init(button, caption);
+	gui_addWidget(gui, button);
 	return button;
 }
 
-void button_init(guiButton_t* button, const string_t* caption, guiFont_t *font)
+void button_destructor(guiButton_t *button)
+{
+	string_delete(button->caption);
+	widget_destructor((guiWidget_t*)button);
+}
+
+void button_init(guiButton_t* button, const string_t* caption)
 {
 	widget_init(&button->widget);
 	
 	button->widget.v = (guiWidget_vf_t*)&guiButton_vtable;
 
-	widget_setFont(button, font);
+	widget_setFont(button, (guiFont_t*)&FONT_CONFONT);
 	button->widget.flags |= WF_FOCUSABLE;
 	button->isPressed = false;
 	button->hasMouse = false;
@@ -40,10 +46,10 @@ void button_init(guiButton_t* button, const string_t* caption, guiFont_t *font)
 	button_adjustSize(button);
 	
 	// Fill listener list
-	widget_addMouseListener(&button->widget, EV_Mouse, ME_PRESSED, button_mousePressed);
-	widget_addMouseListener(&button->widget, EV_Mouse, ME_RELEASED, button_mouseReleased);	
-	widget_addMouseListener(&button->widget, EV_Mouse, ME_ENTERED, button_mouseEntered);	
-	widget_addMouseListener(&button->widget, EV_Mouse, ME_LEFT, button_mouseLeft);
+	widget_addMouseListener(&button->widget, ME_PRESSED, button_mousePressed);
+	widget_addMouseListener(&button->widget, ME_RELEASED, button_mouseReleased);	
+	widget_addMouseListener(&button->widget, ME_ENTERED, button_mouseEntered);	
+	widget_addMouseListener(&button->widget, ME_LEFT, button_mouseLeft);
 }
 
 void button_draw(const guiButton_t* button, guiGraphics_t* graphics)
@@ -88,12 +94,9 @@ void button_mouseReleased(void *widget, mouseEvent_t* mouseEvent)
 	if (mouseEvent->button == LEFT) {
 		if (button->isPressed && button->hasMouse) {
 			button->isPressed = false;
-			event_t *event = (event_t*)malloc(sizeof(event_t));
-			event->type = EV_Mouse;
-			mouseEvent_t *clicked = (mouseEvent_t*)malloc(sizeof(mouseEvent_t));
-			*clicked = *mouseEvent;
-			event->events.mouse = clicked;
-			widget_handleEvent((guiWidget_t*)widget, event);
+			mouseEvent_t *event = new(mouseEvent_t);
+			*event = *mouseEvent;
+			widget_handleEvent((guiWidget_t*)widget, (event_t*)event);
 		} else {
 			button->isPressed = false;
 		}

@@ -6,7 +6,9 @@
 --  Includes
 ----------------------------------------------------------------------------*/
 
+#include "gui.h"
 #include "widget.h"
+#include "event/event_dimension.h"
 #include "util/string.h"
 #include "util/vector.h"
 
@@ -35,7 +37,7 @@ typedef enum LabelFlags
 struct guiLabel_s;
 
 typedef struct guiLabel_vf {
-	
+	void (*w_destructor)(struct guiWidget_s *widget);
 	struct guiRectangle_s* (*w_getChildrenArea)(const struct guiWidget_s *widget);
 	struct guiWidget_s* (*w_getWidgetAt)(const struct guiWidget_s *widget, vec2i_t pos);
 	void (*w_draw)(const struct guiLabel_s *container, guiGraphics_t *graphics);
@@ -61,7 +63,7 @@ typedef struct guiLabel_s
  * @brief              Constructor (label initialization with caption)
  * @param caption      caption text
  */
-guiLabel_t* label_new(const string_t *caption, const guiFont_t *font);
+guiLabel_t* label_new(guiGUI_t *gui, const string_t *caption, const guiFont_t *font);
 void label_init(guiLabel_t *label, const string_t *caption, const guiFont_t *font);
 
 

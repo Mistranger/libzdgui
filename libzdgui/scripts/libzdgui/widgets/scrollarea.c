@@ -3,6 +3,7 @@
 #include "widgets/scrollarea.h"
 
 guiScrollArea_vf_t guiScrollArea_vtable = {
+	scroll_destructor,
 	scroll_getChildrenArea,
 	scroll_getWidgetAt,
 	scroll_draw,
@@ -11,18 +12,18 @@ guiScrollArea_vf_t guiScrollArea_vtable = {
 	scroll_showWidgetPart
 };
 
-guiScrollArea_t* scroll_new(guiWidget_t *content)
+guiScrollArea_t* scroll_new(guiGUI_t *gui, guiWidget_t *content)
 {
 	guiScrollArea_t *scrollarea = new(guiScrollArea_t);
 	scroll_init(scrollarea, content);
-	guiInfo("window created");
+	gui_addWidget(gui, scrollarea);
 	return scrollarea;
 }
 
 void scroll_init(guiScrollArea_t* scrollarea, guiWidget_t *content)
 {
-	widget_init(&scrollarea->widget);
-	scrollarea->widget.v = (guiWidget_vf_t*)&guiScrollArea_vtable;
+	container_init(&scrollarea->widget);
+	scrollarea->widget.widget.v = (guiWidget_vf_t*)&guiScrollArea_vtable;
 
 	scrollarea->upButtonImage = NULL;
 	scrollarea->upPressedButtonImage = NULL;
@@ -54,9 +55,15 @@ void scroll_init(guiScrollArea_t* scrollarea, guiWidget_t *content)
 
 	scroll_setContent(scrollarea, content);
 
-	widget_addMouseListener(&scrollarea->widget, EV_Mouse, ME_PRESSED, scroll_mousePressed);
-	widget_addMouseListener(&scrollarea->widget, EV_Mouse, ME_RELEASED, scroll_mouseReleased);
-	widget_addDimensionListener(&scrollarea->widget, EV_Dimension, DE_RESIZED, scroll_resized);
+	widget_addMouseListener(&scrollarea->widget, ME_PRESSED, scroll_mousePressed);
+	widget_addMouseListener(&scrollarea->widget, ME_RELEASED, scroll_mouseReleased);
+	widget_addDimensionListener(&scrollarea->widget, DE_RESIZED, scroll_resized);
+}
+
+static void scroll_destructor(guiScrollArea_t *scrollarea)
+{
+	scroll_setContent(scrollarea, NULL);
+	container_destructor((guiContainer_t*)scrollarea);
 }
 
 void scroll_checkPolicies(guiScrollArea_t* scrollarea)
@@ -542,7 +549,7 @@ void scroll_draw(const guiScrollArea_t* scrollarea, guiGraphics_t* graphics)
 			dim.width, dim.height,
 			image_getImage(*scrollarea->markerImage));
 	}
-	if (scrollarea->content && (scrollarea->content->flags & WF_VISIBLE)) {
+	if (scrollarea->content && (widget_isVisible(scrollarea->content))) {
 		guiRectangle_t contdim = widget_getDimensions(scrollarea->content);
 		graph_pushClipArea(graphics, *scroll_getContentDimension(scrollarea));
 		graph_pushClipArea(graphics, contdim);

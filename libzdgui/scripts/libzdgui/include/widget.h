@@ -8,6 +8,9 @@
 #include "dimension.h"
 #include "graphics.h"
 #include "event.h"
+#include "event/event_dimension.h"
+#include "event/event_lifecycle.h"
+#include "event/event_mouse.h"
 #include "fonts.h"
 #include "util/list.h"
 
@@ -27,7 +30,7 @@ enum WidgetFlags {
 
 
 typedef struct guiWidget_vf {
-	
+	void (*w_destructor)(struct guiWidget_s *widget);
 	struct guiRectangle_s* (*w_getChildrenArea)(const struct guiWidget_s *widget);
 	struct guiWidget_s* (*w_getWidgetAt)(const struct guiWidget_s *widget, vec2i_t pos);
 	void (*w_draw)(const struct guiWidget_s *widget, guiGraphics_t *graphics);
@@ -66,33 +69,23 @@ typedef struct guiWidget_s
 --  Functions
 ----------------------------------------------------------------------------*/
 
-#define widget_addMouseListener(_widget, _eventType, _mouseType, _listenerFunc) \
-{\
-	eventListener_t *listener = new(eventListener_t);\
-	listener->type = _eventType;\
-	mouseListener_t *mouseListener = new(mouseListener_t);\
-	mouseListener->type = _mouseType;\
-	mouseListener->types.mousePressed = _listenerFunc;\
-	listener->listeners.mouseListener = mouseListener;\
-	list_push_back(((guiWidget_t *)_widget)->eventListeners, (void*)listener);\
-}
 
-#define widget_addDimensionListener(_widget, _eventType, _dimType, _listenerFunc) \
-{\
-	eventListener_t *listener = new(eventListener_t);\
-	listener->type = _eventType;\
-	dimensionListener_t *dimlistener = new(dimensionListener_t);\
-	dimlistener->type = _dimType;\
-	dimlistener->types.resized = _listenerFunc;\
-	listener->listeners.dimensionListener = dimlistener;\
-	list_push_back(((guiWidget_t *)_widget)->eventListeners, (void*)listener);\
-}
 
 /**
  * @brief              Constructor (widget initialization)
  * @param widget       widget to be init
  */
 void widget_init(guiWidget_t *widget);
+void widget_destructor(guiWidget_t *widget);
+
+void widget_addListener(void *widget, eventListener_t *listener);
+mouseListener_t* widget_addMouseListener(void *widget,
+	mouseEventType_t mouseType, void(*listenerFunc)(void *widget, mouseEvent_t *event));
+dimensionListener_t* widget_addDimensionListener(void *widget,
+	dimensionEventType_t dimType, void(*listenerFunc)(void *widget, dimensionEvent_t *event));
+lifecycleListener_t* widget_addLifeCycleListener(void *widget, 
+	lifecycleEventType_t dimType, void(*listenerFunc)(void *widget, lifecycleEvent_t *event));
+void widget_removeListener(void *widget, eventListener_t *listener);
 
 // Virtual functions
 guiRectangle_t* widget_getChildrenArea(const guiWidget_t *widget);
@@ -100,6 +93,11 @@ guiWidget_t* widget_getWidgetAt(const guiWidget_t *widget, vec2i_t pos);
 void widget_draw(const guiWidget_t *widget, guiGraphics_t *graphics);
 void widget_tick(guiWidget_t *widget);
 bool widget_isWidgetExisting(guiWidget_t *widget, const guiWidget_t *exist);
+
+// Flags
+
+#define widget_isEnabled(_widget) (((guiWidget_t*)_widget)->flags & WF_ENABLED)
+#define widget_isVisible(_widget) (((guiWidget_t*)_widget)->flags & WF_VISIBLE)
 
 // Dimension management
 

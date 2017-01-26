@@ -6,8 +6,12 @@
 ----------------------------------------------------------------------------*/
 
 #include "util/string.h"
+#include "event/event_mouse.h"
+#include "event/event_dimension.h"
 #include "widgets/container.h"
 #include "dimension.h"
+#include "gui.h"
+#include "image.h"
 #include "widget.h"
 
 /*----------------------------------------------------------------------------
@@ -33,7 +37,7 @@ typedef enum WindowButtons {
 struct guiWindow_s;
 
 typedef struct guiWindow_vf {
-
+	void (*w_destructor)(struct guiWindow_s *widget);
     struct guiRectangle_s* (*w_getChildrenArea)(const struct guiWindow_s* window);
     struct guiWidget_s* (*w_getWidgetAt)(const struct guiContainer_s* widget, vec2i_t pos);
     void (*w_draw)(const struct guiWindow_s* window, guiGraphics_t* graphics);
@@ -61,8 +65,9 @@ typedef struct guiWindow_s {
  * @brief              Constructor (window initialization with caption)
  * @param caption      title caption
  */
-guiWindow_t* window_new(const string_t *caption, const guiImage_t *background);
+guiWindow_t* window_new(guiGUI_t *gui, const string_t *caption, const guiImage_t *background);
 void window_init(guiWindow_t* window, const string_t *caption, const guiImage_t *background);
+void window_destructor(guiWindow_t *window);
 
 // Virtual inherited from guiWidget_t
 

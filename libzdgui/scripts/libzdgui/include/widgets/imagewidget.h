@@ -5,6 +5,7 @@
 --  Includes
 ----------------------------------------------------------------------------*/
 
+#include "gui.h"
 #include "image.h"
 #include "widget.h"
 
@@ -24,6 +25,7 @@ enum ImageFlags
 struct guiImageWidget_s;
 
 typedef struct guiImageWidget_vf {
+	void (*w_destructor)(struct guiWidget_s *widget);
 	struct guiRectangle_s* (*w_getChildrenArea)(const struct guiWidget_s *widget);
 	struct guiWidget_s* (*w_getWidgetAt)(const struct guiWidget_s *widget, vec2i_t pos);
 	void (*w_draw)(const struct guiImageWidget_s *image, guiGraphics_t *graphics);
@@ -46,7 +48,7 @@ typedef struct guiImageWidget_s
  * @brief              Constructor (image initialization with caption)
  * @param caption      title caption
  */
-guiImageWidget_t* wimage_new(__str filename, int imageWidth, int imageHeight);
+guiImageWidget_t* wimage_new(guiGUI_t *gui, __str filename, int imageWidth, int imageHeight);
 void wimage_init(guiImageWidget_t *image, __str filename, int imageWidth, int imageHeight);
 
 // Virtual inherited from guiWidget_t

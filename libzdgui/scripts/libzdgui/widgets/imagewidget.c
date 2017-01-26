@@ -3,6 +3,7 @@
 #include "widgets/imagewidget.h"
 
 guiImageWidget_vf_t guiImage_vtable = {
+	widget_destructor,
 	widget_getChildrenArea,
 	widget_getWidgetAt,
 	wimage_draw,
@@ -10,10 +11,11 @@ guiImageWidget_vf_t guiImage_vtable = {
 	widget_isWidgetExisting
 };
 
-guiImageWidget_t* wimage_new(__str filename, int imageWidth, int imageHeight)
+guiImageWidget_t* wimage_new(guiGUI_t *gui, __str filename, int imageWidth, int imageHeight)
 {
-	guiImageWidget_t *wimage = (guiImageWidget_t*)malloc(sizeof(guiImageWidget_t));
+	guiImageWidget_t *wimage = new(guiImageWidget_t);
 	wimage_init(wimage, filename, imageWidth, imageHeight);
+	gui_addWidget(gui, wimage);
 	guiInfo("new image created");
 	return wimage;
 }

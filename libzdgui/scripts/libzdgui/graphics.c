@@ -37,30 +37,31 @@ void graph_pushClipArea(guiGraphics_t *graphics, const guiRectangle_t area)
 	}
 	
 	guiClipRectangle_t clip;
-	guiClipRectangle_t top = *((guiClipRectangle_t*)vecstack_top(graphics->clipStack));
+	guiClipRectangle_t *top = ((guiClipRectangle_t*) (vecstack_top(graphics->clipStack)));
 	memcpy(&clip, &area, sizeof(guiRectangle_t));
-	clip.offset.x = top.offset.x + clip.rect.pos.x;
-	clip.offset.y = top.offset.y + clip.rect.pos.y;
-	clip.rect.pos.x += top.offset.x;
-	clip.rect.pos.y += top.offset.y;
+	clip.offset.x = top->offset.x + clip.rect.pos.x;
+	clip.offset.y = top->offset.y + clip.rect.pos.y;
+	clip.rect.pos.x += top->offset.x;
+	clip.rect.pos.y += top->offset.y;
 	
-	if (clip.rect.pos.x < top.rect.pos.x) {
-		clip.rect.pos.x = top.rect.pos.x; 
+	if (clip.rect.pos.x < top->rect.pos.x) {
+		clip.rect.pos.x = top->rect.pos.x; 
 	}
         
-	if (clip.rect.pos.y < top.rect.pos.y) {
-		clip.rect.pos.y = top.rect.pos.y;            
-	}
-			
-	if (clip.rect.width > top.rect.width) {
-		clip.rect.width = top.rect.width;                
+	if (clip.rect.pos.y < top->rect.pos.y) {
+		clip.rect.pos.y = top->rect.pos.y;            
 	}
 	
-	if (clip.rect.height > top.rect.height) {
-		clip.rect.height = top.rect.height;             
+	
+	if (clip.rect.width > top->rect.width) {
+		clip.rect.width = top->rect.width;                
 	}
 	
-	rect_intersect((guiRectangle_t*)&clip, (guiRectangle_t*)&top);
+	if (clip.rect.height > top->rect.height) {
+		clip.rect.height = top->rect.height;             
+	}
+	
+	rect_intersect((guiRectangle_t*)&clip, (guiRectangle_t*)top);
 	vecstack_push(graphics->clipStack, &clip);
 	guiDebugPrint("pushing (%d,%d,%d,%d) rect to clip stack, %d in stack" _C_ clip.rect.pos.x _C_ clip.rect.pos.y _C_ clip.rect.width _C_ clip.rect.height _C_ vecstack_size(graphics->clipStack));
 	ACS_SetHudClipRect(clip.rect.pos.x, clip.rect.pos.y, clip.rect.width, clip.rect.height);
@@ -117,22 +118,14 @@ void graph_drawImage(guiGraphics_t* graphics, int x, int y, __str image)
 void graph_drawImageScaled(guiGraphics_t* graphics, int dstX, int dstY, 
 	int srcWidth, int srcHeight, int dstWidth, int dstHeight, __str image)
 {
-	#pragma fixed on
-	int screenWidth = graph_getScreenWidth(graphics);
-	int screenHeight = graph_getScreenHeight(graphics);
 	guiClipRectangle_t *top = (guiClipRectangle_t*)vecstack_top(graphics->clipStack);
-	int x = dstX;
-	int y = dstY;
-	x += top->offset.x;
-	y += top->offset.y;
+	int x = dstX + top->offset.x;
+	int y = dstY + top->offset.y;
 	
 	fixed scaleX = (fixed)srcWidth / (fixed)dstWidth;
 	fixed scaleY = (fixed)srcHeight / (fixed)dstHeight;
-	int w = graph_getScreenWidth(graphics) * scaleX;
-	int h = graph_getScreenHeight(graphics) * scaleY;
 	
-	ACS_SetHudSize(w, h, 1);
-	guiDebugPrint("scale (%k %k) hud %d, %d" _C_ scaleX _C_ scaleY _C_ w _C_ h);
+	ACS_SetHudSize(graph_getScreenWidth(graphics) * scaleX, graph_getScreenHeight(graphics) * scaleY, 1);
 	x *= scaleX;
 	y *= scaleY;
 	guiDebugPrint("drawing at (%d %d)" _C_ x _C_ y );
@@ -141,7 +134,7 @@ void graph_drawImageScaled(guiGraphics_t* graphics, int dstX, int dstY,
 	ACS_SetFont(image);
 	ACS_HudMessage(HUDMSG_PLAIN, --graphics->drawOrder, CR_DARKBROWN, (fixed)x + 0.1, (fixed)y + 0.1, 0.03k, 0.0, 0.0, 1.0, s"A");
 	ACS_SetFont(graphics->fontName);
-	ACS_SetHudSize(screenWidth, screenHeight, 1);
+	ACS_SetHudSize(graph_getScreenWidth(graphics), graph_getScreenHeight(graphics), 1);
 	ACS_SetHudClipRect(top->rect.pos.x, top->rect.pos.y, top->rect.width, top->rect.width);
 }
 
@@ -155,13 +148,9 @@ void graph_drawText(guiGraphics_t* graphics, int x, int y, const char* format, .
     va_end (args);
     __str text = ACS_EndStrParam();
 	
-	// Get actual drawing coordinates
-	int dx = x, dy = y;
 	guiClipRectangle_t *top = (guiClipRectangle_t*)vecstack_top(graphics->clipStack);
-	dx += top->offset.x;
-	dy += top->offset.y;
-	guiDebugPrint("drawing text at (%d %d) %d, %d" _C_ x _C_ y _C_ dx _C_ dy);
-	ACS_HudMessage(HUDMSG_PLAIN, --graphics->drawOrder, CR_BLACK, (fixed)dx + 0.1, (fixed)dy + 0.1, 0.03k, 0.0, 0.0, 1.0, text); 
+	ACS_HudMessage(HUDMSG_PLAIN, --graphics->drawOrder, CR_BLACK, (fixed)(x + top->offset.x) + 0.1,
+		(fixed)(y + top->offset.y) + 0.1, 0.03k, 0.0, 0.0, 1.0, text); 
 }
 
 int graph_getScreenWidth(guiGraphics_t *graphics)

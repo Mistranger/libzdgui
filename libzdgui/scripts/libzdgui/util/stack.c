@@ -4,7 +4,7 @@
 
 stack_t* stack_init()
 {
-	stack_t *new_stack = (stack_t*)malloc(sizeof(stack_t));
+	stack_t *new_stack = new(stack_t);
 	new_stack->count = 0;
     new_stack->head = NULL;
 	return new_stack;
@@ -15,7 +15,7 @@ void stack_push(stack_t* stack, void* element)
 	if (!stack) {
 		return;
 	}
-	stackNode_t *temp = (stackNode_t*)malloc(sizeof(stackNode_t));
+	stackNode_t *temp = new(stackNode_t);
 	temp->data = element;
 	if (!stack->head) {
 		temp->next = NULL;

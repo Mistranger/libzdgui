@@ -26,7 +26,7 @@ unsigned int queue_size(const queue_t* queue)
 
 void queue_push(queue_t* queue, void* data)
 {
-	queueNode_t *elem = (queueNode_t*)malloc(sizeof(queueNode_t));
+	queueNode_t *elem = new(queueNode_t);
 	elem->data = data;
 	elem->next = NULL;
 	++queue->count;

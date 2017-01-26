@@ -6,6 +6,7 @@
 #include "fonts.h"
 
 guiLabel_vf_t guiLabel_vtable = {
+	widget_destructor, //FIXME
 	widget_getChildrenArea,
 	widget_getWidgetAt,
 	label_draw,
@@ -13,10 +14,11 @@ guiLabel_vf_t guiLabel_vtable = {
 	widget_isWidgetExisting
 };
 
-guiLabel_t* label_new(const string_t *caption, const guiFont_t *font)
+guiLabel_t* label_new(guiGUI_t *gui, const string_t *caption, const guiFont_t *font)
 {
 	guiLabel_t *label = new(guiLabel_t);
 	label_init(label, caption, font);
+	gui_addWidget(gui, label);
 	return label;
 }
 
@@ -32,7 +34,7 @@ void label_init(guiLabel_t *label, const string_t *caption, const guiFont_t *fon
 	widget_setFont(label, (guiFont_t*)font);
 	label->caption = string_new_string(caption);
 	label_setCaption(label, caption);
-	widget_addDimensionListener(&label->widget, EV_Dimension, DE_RESIZED, label_resized);
+	widget_addDimensionListener(&label->widget, DE_RESIZED, label_resized);
 	
 }
 
