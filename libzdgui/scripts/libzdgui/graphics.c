@@ -73,9 +73,12 @@ void graph_popClipArea(guiGraphics_t *graphics)
 	if (!graphics->clipStack) {
 		return;
 	}
-	guiClipRectangle_t *clip = (guiClipRectangle_t*)vecstack_top(graphics->clipStack);
+	
 	vecstack_pop(graphics->clipStack);
+#if DEBUGLEVEL & DEBUG_DEBUG 
+	guiClipRectangle_t *clip = (guiClipRectangle_t*)vecstack_top(graphics->clipStack);
 	guiDebugPrint("pop (%d,%d,%d,%d) rect from clip stack, %d in stack" _C_ clip->rect.pos.x _C_ clip->rect.pos.y _C_ clip->rect.width _C_ clip->rect.height _C_ vecstack_size(graphics->clipStack));
+#endif
 	if (!vecstack_size(graphics->clipStack)) {
 		ACS_SetHudClipRect(0, 0, 0, 0);
 	} else {
@@ -100,7 +103,7 @@ void graph_drawImage(guiGraphics_t* graphics, int x, int y, __str image)
 	dy += top->offset.y;
 
 	ACS_SetFont(image);
-	ACS_HudMessage(HUDMSG_PLAIN, --graphics->drawOrder, CR_DARKBROWN, (fixed)dx + 0.1, (fixed)dy + 0.1, 0.03k, 0.0, 0.0, 1.0, s"A");
+	ACS_HudMessage(HUDMSG_PLAIN, --graphics->drawOrder, CR_DARKBROWN, (fixed)dx + 0.1, (fixed)dy + 0.1, 0.03k, s"A");
 	ACS_SetFont(graphics->fontName);
 }
 
@@ -132,7 +135,7 @@ void graph_drawImageScaled(guiGraphics_t* graphics, int dstX, int dstY,
 	
 	ACS_SetHudClipRect(top->rect.pos.x * scaleX, top->rect.pos.y * scaleY, top->rect.width * scaleX, top->rect.height * scaleY);
 	ACS_SetFont(image);
-	ACS_HudMessage(HUDMSG_PLAIN, --graphics->drawOrder, CR_DARKBROWN, (fixed)x + 0.1, (fixed)y + 0.1, 0.03k, 0.0, 0.0, 1.0, s"A");
+	ACS_HudMessage(HUDMSG_PLAIN, --graphics->drawOrder, CR_DARKBROWN, (fixed)x + 0.1, (fixed)y + 0.1, 0.03k, s"A");
 	ACS_SetFont(graphics->fontName);
 	ACS_SetHudSize(graph_getScreenWidth(graphics), graph_getScreenHeight(graphics), 1);
 	ACS_SetHudClipRect(top->rect.pos.x, top->rect.pos.y, top->rect.width, top->rect.width);
@@ -150,7 +153,7 @@ void graph_drawText(guiGraphics_t* graphics, int x, int y, const char* format, .
 	
 	guiClipRectangle_t *top = (guiClipRectangle_t*)vecstack_top(graphics->clipStack);
 	ACS_HudMessage(HUDMSG_PLAIN, --graphics->drawOrder, CR_BLACK, (fixed)(x + top->offset.x) + 0.1,
-		(fixed)(y + top->offset.y) + 0.1, 0.03k, 0.0, 0.0, 1.0, text); 
+		(fixed)(y + top->offset.y) + 0.1, 0.03k, text); 
 }
 
 int graph_getScreenWidth(guiGraphics_t *graphics)

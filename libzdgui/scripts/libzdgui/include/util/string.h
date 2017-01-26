@@ -48,7 +48,7 @@ string_t* string_assign_char(string_t* s, const char* as);
 #define string_assign_string(_s, _as) string_assign_char((_s), (const char*)((_as)->s))
 string_t* string_append_char(string_t *s, const char *app);
 inline string_t* string_append_string(string_t *s, const string_t *app);
-void string_puch_back(string_t *s, const uchar c);
+void string_push_back(string_t *s, const uchar c);
 string_t* string_insert_char(string_t *s, size_t at, const char *ins);
 inline string_t* string_insert_string(string_t *s, size_t at, const string_t *ins);
 string_t* string_erase(string_t *s, size_t at, size_t len);

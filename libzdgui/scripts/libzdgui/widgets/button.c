@@ -7,6 +7,7 @@
 #include "graphics.h"
 
 guiButton_vf_t guiButton_vtable = {
+	button_typename,
 	button_destructor,
 	widget_getChildrenArea,
 	widget_getWidgetAt,
@@ -14,6 +15,13 @@ guiButton_vf_t guiButton_vtable = {
 	widget_tick,
 	widget_isWidgetExisting
 };
+
+const char *ButtonType = "Button";
+
+const char* button_typename(guiButton_t *widget)
+{
+	return ButtonType;
+}
 
 guiButton_t* button_new(guiGUI_t *gui, const string_t* caption)
 {
@@ -36,11 +44,13 @@ void button_init(guiButton_t* button, const string_t* caption)
 	button->widget.v = (guiWidget_vf_t*)&guiButton_vtable;
 
 	widget_setFont(button, (guiFont_t*)&FONT_CONFONT);
-	button->widget.flags |= WF_FOCUSABLE;
+	widget_setFocusable(button, true);
 	button->isPressed = false;
 	button->hasMouse = false;
 	button->image = NULL;
+	button->imageDisabled = NULL;
 	button->imagePressed = NULL;
+	button->imageHover = NULL;
 	
 	button->caption = string_new_string(caption);
 	button_adjustSize(button);
@@ -55,6 +65,17 @@ void button_init(guiButton_t* button, const string_t* caption)
 void button_draw(const guiButton_t* button, guiGraphics_t* graphics)
 {
 	guiDebugPrint("drawing button");
+	guiImage_t *img;
+	if (!widget_isEnabled(button)) {
+		img = button->imageDisabled ? button->imageDisabled : button->image;
+	} else if (button_isPressed(button)) {
+		img = button->imagePressed ? button->imagePressed : button->image;
+	} else if (button_hasMouse(button)) {
+		img = button->imageHover ? button->imageHover : button->image;
+	}
+	if (img) {
+		graph_drawImage(graphics, 0, 0, image_getImage(*img));
+	}
 	graph_drawText(graphics, 0,	0, button_getCaption(button)->s);
 }
 
@@ -74,7 +95,7 @@ void button_adjustSize(guiButton_t* button)
 		widget_setSize((guiWidget_t*)button, image_getWidth(*button->image), image_getHeight(*button->image));
 	} else {
 		widget_setSize((guiWidget_t*)button,
-			font_getWidthString(widget_getFont(button), button_getCaption(button)) + 8, font_getCharHeight(widget_getFont(button)) + 8);
+			font_getWidthString(widget_getFont(button), button_getCaption(button)) + 8, font_getCharHeight(*widget_getFont(button)) + 8);
 	}
 }
 
@@ -82,7 +103,7 @@ void button_mousePressed(void *widget, mouseEvent_t* mouseEvent)
 {
 	guiDebugPrint("button pressed");
 	guiButton_t *button = (guiButton_t *)widget;
-	if (mouseEvent->button == LEFT) {
+	if (mouseEvent->button == MB_LEFT) {
 		button->isPressed = true;
 	}
 }
@@ -91,9 +112,10 @@ void button_mouseReleased(void *widget, mouseEvent_t* mouseEvent)
 {
 	guiDebugPrint("button released");
 	guiButton_t *button = (guiButton_t *)widget;
-	if (mouseEvent->button == LEFT) {
+	if (mouseEvent->button == MB_LEFT) {
 		if (button->isPressed && button->hasMouse) {
 			button->isPressed = false;
+			// FIXME
 			mouseEvent_t *event = new(mouseEvent_t);
 			*event = *mouseEvent;
 			widget_handleEvent((guiWidget_t*)widget, (event_t*)event);

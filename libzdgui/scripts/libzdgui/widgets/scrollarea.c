@@ -3,6 +3,7 @@
 #include "widgets/scrollarea.h"
 
 guiScrollArea_vf_t guiScrollArea_vtable = {
+	scroll_typename,
 	scroll_destructor,
 	scroll_getChildrenArea,
 	scroll_getWidgetAt,
@@ -11,6 +12,13 @@ guiScrollArea_vf_t guiScrollArea_vtable = {
 	widget_isWidgetExisting,
 	scroll_showWidgetPart
 };
+
+const char *ScrollAreaType = "ScrollArea";
+
+const char* scroll_typename(guiScrollArea_t *widget)
+{
+	return ScrollAreaType;
+}
 
 guiScrollArea_t* scroll_new(guiGUI_t *gui, guiWidget_t *content)
 {
@@ -68,7 +76,7 @@ static void scroll_destructor(guiScrollArea_t *scrollarea)
 
 void scroll_checkPolicies(guiScrollArea_t* scrollarea)
 {
-	if (!scrollarea->content) {
+	if (!scroll_getContent(scrollarea)) {
 		scrollarea->hBarVisible = (scrollarea->hPolicy == SAP_ALWAYS);
 		scrollarea->vBarVisible = (scrollarea->vPolicy == SAP_ALWAYS);
 		return;
@@ -139,15 +147,19 @@ void scroll_checkPolicies(guiScrollArea_t* scrollarea)
 
 void scroll_setContent(guiScrollArea_t* scrollarea, guiWidget_t *content)
 {
-	widget_setPosition(scrollarea, ((vec2i_t){0, 0}));
-	scrollarea->content = content;
+	if (content) {
+		container_add((guiContainer_t*)scrollarea, content);
+		widget_setPosition(scrollarea, ((vec2i_t){0, 0}));
+	} else {
+		container_clear((guiContainer_t*)scrollarea);
+	}
+	
 	scroll_checkPolicies(scrollarea);
-
 }
 
 int scroll_getHorizontalMaxScroll(const guiScrollArea_t* scrollarea)
 {
-	if (!scrollarea->content) {
+	if (!scroll_getContent(scrollarea)) {
 		return 0;
 	}
 	//scroll_checkPolicies(scrollarea);
@@ -160,7 +172,7 @@ int scroll_getHorizontalMaxScroll(const guiScrollArea_t* scrollarea)
 
 int scroll_getVerticalMaxScroll(const guiScrollArea_t* scrollarea)
 {
-	if (!scrollarea->content) {
+	if (!scroll_getContent(scrollarea)) {
 		return 0;
 	}
 	//scroll_checkPolicies(scrollarea);
@@ -180,13 +192,13 @@ guiWidget_t* scroll_getWidgetAt(const guiScrollArea_t* scrollarea, vec2i_t pos)
 	return NULL;
 }
 
-void scroll_showWidgetPart(guiScrollArea_t* scrollarea, guiRectangle_t area)
+void scroll_showWidgetPart(guiScrollArea_t* scrollarea, guiWidget_t *widget, guiRectangle_t area)
 {
-	if (!scroll_getContent(scrollarea)) {
+	if (scroll_getContent(scrollarea) != widget) {
 		guiWarning("Widget not content widget");
 	}
 
-	container_showWidgetPart((guiContainer_t*)scrollarea, area);
+	container_showWidgetPart((guiContainer_t*)scrollarea, widget, area);
 
 	scroll_setHorizontalScrollAmount(scrollarea, -widget_getX(scroll_getContent(scrollarea)));
 	scroll_setVerticalScrollAmount(scrollarea, -widget_getY(scroll_getContent(scrollarea)));
@@ -194,7 +206,6 @@ void scroll_showWidgetPart(guiScrollArea_t* scrollarea, guiRectangle_t area)
 
 guiRectangle_t* scroll_getChildrenArea(const guiScrollArea_t* scrollarea)
 {
-	int w, h;
 	if (scrollarea->vBarVisible && scrollarea->hBarVisible) {
 		return &(guiRectangle_t){0, 0, widget_getWidth(scrollarea) - scrollarea->scrollBarWidth,
 			widget_getHeight(scrollarea) - scrollarea->scrollBarWidth};
@@ -467,7 +478,6 @@ void scroll_draw(const guiScrollArea_t* scrollarea, guiGraphics_t* graphics)
 			return;
 	}
 	guiDebugPrint("drawing scrollarea");
-	guiRectangle_t rect = *scroll_getContentDimension(scrollarea);
 	guiRectangle_t dim;
 
 	if (scrollarea->vBarVisible) {
@@ -549,11 +559,12 @@ void scroll_draw(const guiScrollArea_t* scrollarea, guiGraphics_t* graphics)
 			dim.width, dim.height,
 			image_getImage(*scrollarea->markerImage));
 	}
-	if (scrollarea->content && (widget_isVisible(scrollarea->content))) {
-		guiRectangle_t contdim = widget_getDimensions(scrollarea->content);
+	guiWidget_t *content = scroll_getContent(scrollarea);
+	if (content && (widget_isVisible(content))) {
+		guiRectangle_t contdim = widget_getDimensions(content);
 		graph_pushClipArea(graphics, *scroll_getContentDimension(scrollarea));
 		graph_pushClipArea(graphics, contdim);
-		scrollarea->content->v->w_draw(scrollarea->content, graphics);
+		content->v->w_draw(content, graphics);
 		graph_popClipArea(graphics);
 		graph_popClipArea(graphics);
 	}

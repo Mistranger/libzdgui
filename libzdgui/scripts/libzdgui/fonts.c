@@ -26,13 +26,3 @@ inline int font_getWidthString(const guiFont_t* font, const string_t* text)
 {
 	return font_getWidthChar(font, string_cstr(text));
 }
-
-inline int font_getCharWidth(const guiFont_t* font)
-{
-	return font->charWidth;
-}
-
-inline int font_getCharHeight(const guiFont_t* font)
-{
-	return font->charHeight;
-}

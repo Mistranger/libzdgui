@@ -3,6 +3,7 @@
 #include "widgets/window.h"
 
 guiWindow_vf_t guiWindow_vtable = {
+	window_typename,
 	window_destructor,
 	window_getChildrenArea,
 	container_getWidgetAt,
@@ -10,6 +11,13 @@ guiWindow_vf_t guiWindow_vtable = {
 	container_tick,
 	container_isWidgetExisting
 };
+
+const char *WindowType = "Window";
+
+const char* window_typename(guiWindow_t *widget)
+{
+	return WindowType;
+}
 
 guiWindow_t* window_new(guiGUI_t *gui, const string_t *caption, const guiImage_t *background)
 {

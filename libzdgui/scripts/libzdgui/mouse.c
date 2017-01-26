@@ -70,38 +70,35 @@ void mouse_getInput(guiMouse_t* mouse, guiGraphics_t *graphics)
 	
 	mouse->mouseInput->button = 0;
 	if (buttons & BT_ATTACK) {
-		mouse->mouseInput->button |= LEFT;
+		mouse->mouseInput->button |= MB_LEFT;
 	}
 	
 	if (buttons & BT_ALTATTACK) {
-		mouse->mouseInput->button |= RIGHT;
+		mouse->mouseInput->button |= MB_RIGHT;
 	}
 	
 	if (mouse->mouseInput->pos.x != mouse->oldMouseInput->pos.x
 		|| mouse->mouseInput->pos.y != mouse->oldMouseInput->pos.y) {
-			mouseEvent_t *event = new(mouseEvent_t);
-			((event_t*)event)->eventType = EV_Mouse;
-			event->pos = mouse->mouseInput->pos;
-			event->type = ME_MOVED;
+			mouseEvent_t *event = mouseEvent_new(NULL, &mouse->mouseInput->pos, MB_EMPTY, ME_MOVED);
 			queue_push(mouse->mouseEventQueue, event);
 	}
 	
 	if (mouse->mouseInput->button != mouse->oldMouseInput->button) {
-		mouseEvent_t *event = new(mouseEvent_t);
-		((event_t*)event)->eventType = EV_Mouse;
-		event->pos = mouse->mouseInput->pos;
-		if ((mouse->mouseInput->button & LEFT) && !(mouse->oldMouseInput->button & LEFT)) {
+		mouseEvent_t *event = mouseEvent_new(NULL, &mouse->mouseInput->pos, MB_EMPTY, ME_MOVED);
+		if ((mouse->mouseInput->button & MB_LEFT) && !(mouse->oldMouseInput->button & MB_LEFT)) {
 			event->type = ME_PRESSED;
-			event->button = LEFT;
-		} else if (!(mouse->mouseInput->button & LEFT) && (mouse->oldMouseInput->button & LEFT)) {
+			event->button = MB_LEFT;
+		} else if (!(mouse->mouseInput->button & MB_LEFT) && (mouse->oldMouseInput->button & MB_LEFT)) {
 			event->type = ME_RELEASED;
-			event->button = LEFT;
-		} else if ((mouse->mouseInput->button & RIGHT) && !(mouse->oldMouseInput->button & RIGHT)) {
+			event->button = MB_LEFT;
+		} else if ((mouse->mouseInput->button & MB_RIGHT) && !(mouse->oldMouseInput->button & MB_RIGHT)) {
 			event->type = ME_PRESSED;
-			event->button = RIGHT;
-		} if (!(mouse->mouseInput->button & RIGHT) && (mouse->oldMouseInput->button & RIGHT)) {
+			event->button = MB_RIGHT;
+		} else if (!(mouse->mouseInput->button & MB_RIGHT) && (mouse->oldMouseInput->button & MB_RIGHT)) {
 			event->type = ME_RELEASED;
-			event->button = RIGHT;
+			event->button = MB_RIGHT;
+		} else {
+			guiError("Wrong mouse buttons!");
 		}
 		queue_push(mouse->mouseEventQueue, event);
 	}	

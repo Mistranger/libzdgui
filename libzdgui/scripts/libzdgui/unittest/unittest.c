@@ -5,6 +5,7 @@ CuSuite* test_util_queue_getSuite();
 CuSuite* test_util_string_getSuite();
 CuSuite* test_util_vector_getSuite();
 CuSuite* test_util_mix_getSuite();
+CuSuite* test_util_list_getSuite();
 
 void RunAllTests()
 {
@@ -14,6 +15,7 @@ void RunAllTests()
 	CuSuiteAddSuite(suite, test_util_string_getSuite());
 	CuSuiteAddSuite(suite, test_util_vector_getSuite());
 	CuSuiteAddSuite(suite, test_util_mix_getSuite());
+	CuSuiteAddSuite(suite, test_util_list_getSuite());
 	CuSuiteRun(suite);
 	CuSuiteSummary(suite, output);
 	CuSuiteDetails(suite, output);

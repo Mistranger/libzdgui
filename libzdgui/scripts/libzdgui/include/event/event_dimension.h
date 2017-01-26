@@ -26,6 +26,8 @@ typedef struct dimensionListener_s {
 	dimensionEventType_t type;
 } dimensionListener_t;
 
+dimensionEvent_t* dimensionEvent_new(void *source, const vec2i_t *pos, int width, int height, int eventType);
+
 dimensionListener_t* dimensionListener_new(void *handler);
 void dimension_handleEvent(eventListener_t *listener, event_t *event);
 

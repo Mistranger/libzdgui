@@ -20,10 +20,10 @@
 ----------------------------------------------------------------------------*/
 
 typedef enum mouseButtons {
-	EMPTY = 0x00,
-	LEFT = 0x01,
-	RIGHT = 0x02,
-	MIDDLE = 0x04
+	MB_EMPTY = 0x00,
+	MB_LEFT = 0x01,
+	MB_RIGHT = 0x02,
+	MB_MIDDLE = 0x04
 } mouseButtons_t;
 
 typedef struct guiCursor_s {

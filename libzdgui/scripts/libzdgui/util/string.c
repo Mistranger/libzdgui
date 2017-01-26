@@ -127,7 +127,7 @@ string_t* string_append_string(string_t* s, const string_t* app)
 	return string_append_char(s, (const char*)app->s);
 }
 
-void string_puch_back(string_t* s, const uchar c)
+void string_push_back(string_t* s, const uchar c)
 {
 	if (s->len == s->capacity) {
 		string_resize(s, s->capacity * 2);

@@ -8,6 +8,7 @@ typedef enum eventTypes {
 	EV_Mouse,
 	EV_Dimension,
 	EV_LifeCycle,
+	EV_Widget,
 } eventTypes_t;
 
 typedef struct event_s {
@@ -16,6 +17,9 @@ typedef struct event_s {
 } event_t;
 
 #define event_getSource(_event) ((guiWidget_t*)(((event_t*)_event)->sourceWidget))
+#define event_setSource(_event, _widget) { ((event_t*)_event)->sourceWidget = (void*)_widget; }
+
+event_t* event_new(void *widget);
 
 // Listeners
 

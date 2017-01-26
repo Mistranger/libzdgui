@@ -6,6 +6,7 @@
 #include "util/list.h"
 
 guiContainer_vf_t guiContainer_vtable = {
+	container_typename,
 	container_destructor,
 	container_getChildrenArea,
 	container_getWidgetAt,
@@ -14,6 +15,13 @@ guiContainer_vf_t guiContainer_vtable = {
 	container_isWidgetExisting,
 	container_showWidgetPart
 };
+
+const char *ContainerType = "Container";
+
+const char* container_typename(guiContainer_t *widget)
+{
+	return ContainerType;
+}
 
 guiContainer_t* container_new(guiGUI_t *gui)
 {
@@ -25,13 +33,19 @@ guiContainer_t* container_new(guiGUI_t *gui)
 	return container;
 }
 
-void container_destructor(guiContainer_t *container)
+void container_clear(guiContainer_t * container)
 {
 	for (listNode_t *node = container->children->head; node; node = node->next) {
 		guiWidget_t *w = node->data;
 		widget_setParent(w, NULL);
 		widget_removeListener(w, (eventListener_t*)container->listener);
 	}
+	list_clear(container->children);
+}
+
+void container_destructor(guiContainer_t *container)
+{
+	container_clear(container);
 	
 	// Destruction
 	list_delete(container->children);
@@ -43,6 +57,8 @@ void container_init(guiContainer_t* container)
 {
 	widget_init(&container->widget);
 	container->widget.v = (guiWidget_vf_t*)&guiContainer_vtable;
+
+	((guiWidget_t*)container)->isContainer = true;
 	container->children = list_new();
 	lifecycleListener_t *listener = lifecycleListener_new(container);
 	((eventListener_t*)listener)->listenerType = EV_LifeCycle;
@@ -163,26 +179,26 @@ bool container_isWidgetExisting(guiContainer_t* widget, const guiWidget_t* exist
 	return false;
 }
 
-void container_showWidgetPart(guiContainer_t* container, guiRectangle_t area)
+void container_showWidgetPart(guiContainer_t* container, guiWidget_t *widget, guiRectangle_t area)
 {
 	guiRectangle_t widgetArea = *container_getChildrenArea(container);
-	area.pos.x += widget_getX(container);
-	area.pos.y += widget_getY(container);
+	area.pos.x += widget_getX(widget);
+	area.pos.y += widget_getY(widget);
 
 	if (area.pos.x + area.width > widgetArea.width) {
-		widget_setX(container, widget_getX(container) - area.pos.x - area.width + widgetArea.width);
+		widget_setX(widget, widget_getX(widget) - area.pos.x - area.width + widgetArea.width);
 	}
 
 	if (area.pos.y + area.height > widgetArea.height) {
-		widget_setY(container, widget_getY(container) - area.pos.y - area.height + widgetArea.height);
+		widget_setY(widget, widget_getY(widget) - area.pos.y - area.height + widgetArea.height);
 	}
 
 	if (area.pos.x < 0) {
-		widget_setX(container, widget_getX(container) - area.pos.x);
+		widget_setX(widget, widget_getX(widget) - area.pos.x);
 	}
 
 	if (area.pos.y < 0) {
-		widget_setY(container, widget_getY(container) - area.pos.y);
+		widget_setY(widget, widget_getY(widget) - area.pos.y);
 	}
 }
 

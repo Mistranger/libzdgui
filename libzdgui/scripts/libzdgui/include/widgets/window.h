@@ -22,6 +22,8 @@
 -- Types
 ----------------------------------------------------------------------------*/
 
+extern const char *WindowType;
+
 // Window flags
 typedef enum WindowFlags {
     WF_CANDRAG = 0x00000001,
@@ -37,6 +39,7 @@ typedef enum WindowButtons {
 struct guiWindow_s;
 
 typedef struct guiWindow_vf {
+	const char* (*w_typename)(struct guiWindow_s *widget);
 	void (*w_destructor)(struct guiWindow_s *widget);
     struct guiRectangle_s* (*w_getChildrenArea)(const struct guiWindow_s* window);
     struct guiWidget_s* (*w_getWidgetAt)(const struct guiContainer_s* widget, vec2i_t pos);
@@ -71,6 +74,7 @@ void window_destructor(guiWindow_t *window);
 
 // Virtual inherited from guiWidget_t
 
+const char* window_typename(guiWindow_t *widget);
 guiRectangle_t* window_getChildrenArea(const guiWindow_t* window);
 void window_draw(const guiWindow_t* window, guiGraphics_t* graphics);
 

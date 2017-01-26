@@ -18,8 +18,9 @@
 	{ ACS_PrintLogStr(s"\Chfunction \Cn%s \Chat line \Cn%d \Chin file \Cn%s:", __func__, __LINE__, __FILE__); }
 
 #if DEBUGLEVEL > DEBUG_NONE
-#define guiAssert(cond) \
-	do { if (!(cond)) { \
+#define guiAssert(cond)   \
+	do { if (!(cond)) {   \
+		PrintFunction();  \
 		abort(); }} while (0)
 #else
 	#define guiAssert(args) {}

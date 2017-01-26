@@ -6,6 +6,7 @@
 #include "fonts.h"
 
 guiLabel_vf_t guiLabel_vtable = {
+	label_typename,
 	widget_destructor, //FIXME
 	widget_getChildrenArea,
 	widget_getWidgetAt,
@@ -13,6 +14,13 @@ guiLabel_vf_t guiLabel_vtable = {
 	widget_tick,
 	widget_isWidgetExisting
 };
+
+const char *LabelType = "Label";
+
+const char* label_typename(guiLabel_t *widget)
+{
+	return LabelType;
+}
 
 guiLabel_t* label_new(guiGUI_t *gui, const string_t *caption, const guiFont_t *font)
 {
@@ -60,7 +68,7 @@ void label_adjustSize(guiLabel_t* label)
 			width = MIN(w, widget_getWidth((guiWidget_t*)label));
 		}
 	}
-	widget_setSize((guiWidget_t*)label, width, font_getCharHeight(widget_getFont((guiWidget_t*)label)) * vector_size(label->textWrap));
+	widget_setSize((guiWidget_t*)label, width, font_getCharHeight(*widget_getFont((guiWidget_t*)label)) * vector_size(label->textWrap));
 }
 
 
@@ -91,10 +99,10 @@ void label_draw(const guiLabel_t* label, guiGraphics_t* graphics)
 			textY = 0;
 			break;
 		case ALIGN_CENTER:
-			textY = (widget_getHeight(label) - vector_size(label->textWrap) * font_getCharHeight(widget_getFont(label))) / 2;
+			textY = (widget_getHeight(label) - vector_size(label->textWrap) * font_getCharHeight(*widget_getFont(label))) / 2;
 			break;
 		case ALIGN_BOTTOM:
-			textY = widget_getHeight(label) - vector_size(label->textWrap) * font_getCharHeight(widget_getFont(label));
+			textY = widget_getHeight(label) - vector_size(label->textWrap) * font_getCharHeight(*widget_getFont(label));
 			break;
 		default:
 			textY = 0;
@@ -104,7 +112,7 @@ void label_draw(const guiLabel_t* label, guiGraphics_t* graphics)
 	guiDebugPrint("drawing label.");
 	for (size_t i = 0; i < vector_size(label->textWrap); ++i) {
 		string_t s = vector_get(label->textWrap, i, string_t);
-		graph_drawText(graphics, textX, textY + i * font_getCharHeight(widget_getFont(label)), s.s);
+		graph_drawText(graphics, textX, textY + i * font_getCharHeight(*widget_getFont(label)), s.s);
 	}
 	
 }

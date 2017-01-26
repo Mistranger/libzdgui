@@ -1,6 +1,15 @@
 #include "system.h"
 #include "event/event_lifecycle.h"
 
+lifecycleEvent_t* lifecycleEvent_new(void* source, lifecycleEventType_t eventType)
+{
+	lifecycleEvent_t *event = new(lifecycleEvent_t);
+	((event_t*)event)->eventType = EV_LifeCycle;
+	((event_t*)event)->sourceWidget = source;
+	event->type = eventType;
+	return event;
+}
+
 lifecycleListener_t* lifecycleListener_new(void *handler)
 {
 	lifecycleListener_t *listener = new(lifecycleListener_t);

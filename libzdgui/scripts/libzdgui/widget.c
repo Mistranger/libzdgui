@@ -5,7 +5,10 @@
 #include "event/event_mouse.h"
 #include "widget.h"
 
+const char *WidgetType = "Widget";
+
 guiWidget_vf_t guiWidget_vtable = {
+	widget_typename,
 	widget_destructor,
 	widget_getChildrenArea,
 	widget_getWidgetAt,
@@ -14,10 +17,14 @@ guiWidget_vf_t guiWidget_vtable = {
 	widget_isWidgetExisting
 };
 
+const char* widget_typename(struct guiWidget_s *widget)
+{
+	return WidgetType;
+}
+
 void widget_destructor(guiWidget_t *widget)
 {
-	lifecycleEvent_t *destroyed = new(lifecycleEvent_t);
-	((event_t*)destroyed)->eventType = EV_LifeCycle;
+	lifecycleEvent_t *destroyed = lifecycleEvent_new(widget, LE_DESTROYED);
 	widget_handleEvent(widget, (event_t*)destroyed);
 
 	// Destruction
@@ -84,7 +91,10 @@ void widget_init(guiWidget_t* widget)
 	guiDebugPrint("trying to create widget");
 	guiRectangle_t dim = {0, 0, 0, 0};
 	widget->dim = dim;
-	widget->flags = WF_ENABLED + WF_VISIBLE;
+	widget->isVisible = true;
+	widget->isEnabled = true;
+	widget->isFocusable = false;
+	widget->isContainer = false;
 	widget->eventListeners = list_new();
 	widget->font = NULL;
 	widget->parent = NULL;
@@ -113,21 +123,11 @@ void widget_setDimension(guiWidget_t* widget, const guiRectangle_t newDim)
 	guiRectangle_t oldDim = widget->dim;
 	widget->dim = newDim;
 	if (widget->dim.width != oldDim.width || widget->dim.height != oldDim.height) {
-		dimensionEvent_t *event = new(dimensionEvent_t);
-		((event_t*)event)->eventType = EV_Dimension;
-		event->pos = newDim.pos;
-		event->width = newDim.width;
-		event->height = newDim.height;
-		event->type = DE_RESIZED;
+		dimensionEvent_t *event = dimensionEvent_new((void*)widget, &newDim.pos, newDim.width, newDim.height, DE_RESIZED);
 		widget_handleEvent((guiWidget_t*)widget, (event_t*)event);
 	}
 	if (widget->dim.pos.x != oldDim.pos.x || widget->dim.pos.y != oldDim.pos.y) {
-		dimensionEvent_t *event = new(dimensionEvent_t);
-		((event_t*)event)->eventType = EV_Dimension;
-		event->pos = newDim.pos;
-		event->width = newDim.width;
-		event->height = newDim.height;
-		event->type = DE_MOVED;
+		dimensionEvent_t *event = dimensionEvent_new(widget, &newDim.pos, newDim.width, newDim.height, DE_MOVED);
 		widget_handleEvent((guiWidget_t*)widget, (event_t*)event);
 	}
 	guiDebugPrint("dimension set");

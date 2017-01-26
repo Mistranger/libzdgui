@@ -42,7 +42,6 @@ void gui_setGraphics(guiGUI_t* gui, guiGraphics_t* newGraphics)
 void gui_handleMouseMove(guiGUI_t* gui, mouseEvent_t* event)
 {
 	listNode_t *it;
-	listNode_t *remove;
 	bool done = list_size(gui->widgetsUnderMouse) == 0;
 	size_t i;
 	guiWidget_t *w;
@@ -64,9 +63,7 @@ void gui_handleMouseMove(guiGUI_t* gui, mouseEvent_t* event)
 					|| pos.y + widget_getHeight(w) <= event->pos.y
 					|| !widget_isVisible(w)) {
 						
-						mouseEvent_t *left = new(mouseEvent_t);
-						*left = *event;
-						left->type = ME_LEFT;
+						mouseEvent_t *left = mouseEvent_new(w, &event->pos, event->button, ME_LEFT);
 						gui_distributeMouseEvent(gui, w, left);
 						list_erase(gui->widgetsUnderMouse, it);
 						
@@ -97,9 +94,7 @@ void gui_handleMouseMove(guiGUI_t* gui, mouseEvent_t* event)
 			if (!found && gui_widgetExists(gui, widget)) {
 				guiInfo("Mouse entered widget");
 				
-				mouseEvent_t *entered = new(mouseEvent_t);
-				*entered = *event;
-				entered->type = ME_ENTERED;
+				mouseEvent_t *entered = mouseEvent_new(widget, &event->pos, event->button, ME_ENTERED);
 				gui_distributeMouseEvent(gui, widget, entered);
 				list_push_front(gui->widgetsUnderMouse, widget);
 			} 
@@ -109,9 +104,7 @@ void gui_handleMouseMove(guiGUI_t* gui, mouseEvent_t* event)
 		} while (parent != NULL);
 		
 		widget = source;
-		mouseEvent_t *moved = new(mouseEvent_t);
-		*moved = *event;
-		moved->type = ME_MOVED;
+		mouseEvent_t *moved = mouseEvent_new(widget, &event->pos, event->button, ME_MOVED);
 		gui_distributeMouseEvent(gui, widget, moved);
 	}
 }
@@ -284,7 +277,6 @@ void gui_distributeEvent(guiGUI_t* gui, guiWidget_t* source, event_t* event)
 		swap = widget;
 		widget = parent;
 		parent = widget_getParent(swap);
-		
 	}
 }
 

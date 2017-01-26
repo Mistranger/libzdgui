@@ -24,7 +24,10 @@ enum ImageFlags
 
 struct guiImageWidget_s;
 
+extern const char *ImageWidgetType;
+
 typedef struct guiImageWidget_vf {
+	const char* (*w_typename)(struct guiImageWidget_s *widget);
 	void (*w_destructor)(struct guiWidget_s *widget);
 	struct guiRectangle_s* (*w_getChildrenArea)(const struct guiWidget_s *widget);
 	struct guiWidget_s* (*w_getWidgetAt)(const struct guiWidget_s *widget, vec2i_t pos);
@@ -52,6 +55,7 @@ guiImageWidget_t* wimage_new(guiGUI_t *gui, __str filename, int imageWidth, int 
 void wimage_init(guiImageWidget_t *image, __str filename, int imageWidth, int imageHeight);
 
 // Virtual inherited from guiWidget_t
+const char* wimage_typename(guiImageWidget_t *widget);
 void wimage_draw(const guiImageWidget_t *widget, guiGraphics_t *graphics);
 
 #endif // WIDGETS_IMAGE_H_INCLUDED

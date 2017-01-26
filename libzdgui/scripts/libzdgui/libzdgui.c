@@ -100,13 +100,13 @@ void initLibZDGui(void)
 	pos.y = 20;
 	//image->widget.flags &= ~WF_VISIBLE;
 	
-	
 	container_addAt((guiContainer_t*)window, (guiWidget_t*)scroll, pos);
 	
 	mouse_grabMouseInput(gui->mouse);
 	while (1) {
-		
-		
+		int *m = new(int);
+		guiDebugPrint("High mem pointer: %p" _C_ m);
+		free(m);
 		gui_tick(gui);
 		gui_draw(gui);
 		ACS_Delay(1);

@@ -1,6 +1,24 @@
 #include "system.h"
 
-int ACS_HudMessage(int flags, int id, int color, fixed x, fixed y, fixed holdTime, fixed oarg1, fixed oarg2, fixed oarg3, __str format, ...)
+int ACS_HudMessage(int flags, int id, int color, fixed x, fixed y, fixed holdTime, __str format, ...)
+{
+	int ret = 0;
+	va_list arg;
+	
+	ACS_BeginHudMessage();
+		
+	va_start(arg, format);
+	ret = __vnprintf_str(format, arg);
+	va_end(arg);
+	
+	ACS_MoreHudMessage();
+	ACS_OptHudMessage(flags, id, color, x, y, holdTime);
+	ACS_EndHudMessage();
+	
+	return ret;
+}
+
+int ACS_HudMessage2(int flags, int id, int color, fixed x, fixed y, fixed holdTime, fixed oarg1, fixed oarg2, fixed oarg3, __str format, ...)
 {
 	int ret = 0;
 	va_list arg;

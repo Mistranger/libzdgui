@@ -21,15 +21,9 @@
 /*
  * * Widget flags (may be used by user)
 */
-         
-enum WidgetFlags {
-	WF_VISIBLE = 0x00000001,
-	WF_ENABLED = 0x00000002,
-	WF_FOCUSABLE = 0x00000004
-};
-
 
 typedef struct guiWidget_vf {
+	const char* (*w_typename)(struct guiWidget_s *widget);
 	void (*w_destructor)(struct guiWidget_s *widget);
 	struct guiRectangle_s* (*w_getChildrenArea)(const struct guiWidget_s *widget);
 	struct guiWidget_s* (*w_getWidgetAt)(const struct guiWidget_s *widget, vec2i_t pos);
@@ -57,8 +51,10 @@ typedef struct guiWidget_s
 	struct guiWidget_s *parent;
 
     // Flags
-    int iflags;
-    int flags;
+   bool isVisible;
+   bool isEnabled;
+   bool isFocusable;
+   bool isContainer;
 	// Font used for drawing
 	guiFont_t *font;
 	// Virtual functions table
@@ -77,6 +73,7 @@ typedef struct guiWidget_s
  */
 void widget_init(guiWidget_t *widget);
 void widget_destructor(guiWidget_t *widget);
+const char* widget_typename(guiWidget_t *widget);
 
 void widget_addListener(void *widget, eventListener_t *listener);
 mouseListener_t* widget_addMouseListener(void *widget,
@@ -96,8 +93,13 @@ bool widget_isWidgetExisting(guiWidget_t *widget, const guiWidget_t *exist);
 
 // Flags
 
-#define widget_isEnabled(_widget) (((guiWidget_t*)_widget)->flags & WF_ENABLED)
-#define widget_isVisible(_widget) (((guiWidget_t*)_widget)->flags & WF_VISIBLE)
+#define widget_isEnabled(_widget) (((guiWidget_t*)_widget)->isEnabled)
+#define widget_isVisible(_widget) (((guiWidget_t*)_widget)->isVisible)
+#define widget_isFocusable(_widget) (((guiWidget_t*)_widget)->isFocusable)
+#define widget_isContainer(_widget) (((guiWidget_t*)_widget)->isContainer)
+#define widget_setVisible(_widget, _state) { ((guiWidget_t*)_widget)->isVisible = _state; }
+#define widget_setEnabled(_widget, _state) { ((guiWidget_t*)_widget)->isEnabled = _state; }
+#define widget_setFocusable(_widget, _state) { ((guiWidget_t*)_widget)->isFocusable = _state; }
 
 // Dimension management
 
@@ -107,14 +109,14 @@ void widget_getAbsolutePosition(guiWidget_t* widget, vec2i_t *x);
 #define widget_setWidth(_widget, _width)         \
 { \
 	guiRectangle_t newDimension = ((guiWidget_t*)_widget)->dim; \
-	newDimension.width = _width;                \
+	newDimension.width = (_width);                \
 	widget_setDimension(((guiWidget_t*)_widget), newDimension); \
 }
 
-#define widget_setHeight(_widget, height)       \
+#define widget_setHeight(_widget, _height)       \
 { \
 	guiRectangle_t newDimension = ((guiWidget_t*)_widget)->dim; \
-	newDimension.height = height;              \
+	newDimension.height = (_height);              \
 	widget_setDimension(((guiWidget_t*)_widget), newDimension); \
 }
 

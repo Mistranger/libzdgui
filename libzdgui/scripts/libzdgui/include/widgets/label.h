@@ -34,9 +34,12 @@ typedef enum LabelFlags
 	LF_MULTILINE = 0x00000001,
 } LabelFlags_t;
 
+extern const char *LabelType;
+
 struct guiLabel_s;
 
 typedef struct guiLabel_vf {
+	const char* (*w_typename)(struct guiLabel_s *widget);
 	void (*w_destructor)(struct guiWidget_s *widget);
 	struct guiRectangle_s* (*w_getChildrenArea)(const struct guiWidget_s *widget);
 	struct guiWidget_s* (*w_getWidgetAt)(const struct guiWidget_s *widget, vec2i_t pos);
@@ -59,6 +62,7 @@ typedef struct guiLabel_s
 --  Functions
 ----------------------------------------------------------------------------*/
 
+
 /**
  * @brief              Constructor (label initialization with caption)
  * @param caption      caption text
@@ -68,7 +72,7 @@ void label_init(guiLabel_t *label, const string_t *caption, const guiFont_t *fon
 
 
 // Virtual inherited from guiWidget_t
-
+const char* label_typename(guiLabel_t *widget);
 void label_draw(const guiLabel_t *widget, guiGraphics_t *graphics);
 
 

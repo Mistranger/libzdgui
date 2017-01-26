@@ -28,7 +28,10 @@ typedef enum ScrollAreaPolicy {
 	SAP_NEVER
 } ScrollAreaPolicy_t;
 
+extern const char *ScrollAreaType;
+
 typedef struct guiScrollArea_vf {
+	const char* (*w_typename)(struct guiScrollArea_s *widget);
 	void (*w_destructor)(struct guiScrollArea_s *widget);
 	struct guiRectangle_s* (*w_getChildrenArea)(const struct guiScrollArea_s* scrollarea);
 	struct guiWidget_s* (*w_getWidgetAt)(const struct guiScrollArea_s* widget, vec2i_t pos);
@@ -36,12 +39,11 @@ typedef struct guiScrollArea_vf {
 	void(*w_tick)(struct guiScrollArea_s* scrollarea);
 	bool(*w_isWidgetExisting)(struct guiWidget_s* widget, const struct guiWidget_s* exist);
 	
-	void (*c_showWidgetPart)(struct guiScrollArea_s *container, guiRectangle_t area);
+	void (*c_showWidgetPart)(struct guiScrollArea_s *container, guiWidget_t *widget, guiRectangle_t area);
 } guiScrollArea_vf_t;
 
 typedef struct guiScrollArea_s {
 	guiContainer_t widget;
-	guiWidget_t *content;
 
 	bool hBarVisible, vBarVisible;
 	int scrollBarWidth;
@@ -83,16 +85,17 @@ void scroll_init(guiScrollArea_t* scrollarea, guiWidget_t *content);
 static void scroll_destructor(guiScrollArea_t *scrollarea);
 
 // Virtual inherited from guiWidget_t
-
+const char* scroll_typename(guiScrollArea_t *widget);
 guiRectangle_t* scroll_getChildrenArea(const guiScrollArea_t* scrollarea);
 guiWidget_t* scroll_getWidgetAt(const guiScrollArea_t *scrollarea, vec2i_t pos);
 void scroll_draw(const guiScrollArea_t* scrollarea, guiGraphics_t* graphics);
 void scroll_tick(guiScrollArea_t *scrollarea);
 
-#define scroll_getContent(_widget) (((guiScrollArea_t*)_widget)->content)
+#define scroll_getContent(_widget) \
+	(list_size(((guiContainer_t*)_widget)->children) > 0 ? ((guiWidget_t*)list_front(((guiContainer_t*)_widget)->children)->data) : NULL)
 void scroll_setContent(guiScrollArea_t* scrollarea, guiWidget_t *content);
 guiRectangle_t* scroll_getContentDimension(const guiScrollArea_t* scrollarea);
-void scroll_showWidgetPart(guiScrollArea_t* scrollarea, guiRectangle_t area);
+void scroll_showWidgetPart(guiScrollArea_t* scrollarea, guiWidget_t *widget, guiRectangle_t area);
 
 // Scroll bars
 void scroll_checkPolicies(guiScrollArea_t* scrollarea);
