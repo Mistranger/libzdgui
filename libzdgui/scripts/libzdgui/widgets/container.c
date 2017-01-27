@@ -13,7 +13,7 @@ guiContainer_vf_t guiContainer_vtable = {
 	container_draw,
 	container_tick,
 	container_isWidgetExisting,
-	container_setFocusHandler,
+	container_setFocusManager,
 	container_showWidgetPart
 };
 
@@ -38,6 +38,7 @@ void container_clear(guiContainer_t * container)
 {
 	for (listNode_t *node = container->children->head; node; node = node->next) {
 		guiWidget_t *w = node->data;
+		w->v->w_setFocusManager(w, NULL);
 		widget_setParent(w, NULL);
 		widget_removeListener(w, (eventListener_t*)container->listener);
 	}
@@ -61,10 +62,7 @@ void container_init(guiContainer_t* container)
 
 	((guiWidget_t*)container)->isContainer = true;
 	container->children = list_new();
-	lifecycleListener_t *listener = lifecycleListener_new(container);
-	((eventListener_t*)listener)->listenerType = EV_LifeCycle;
-	listener->type = LE_DESTROYED;
-	listener->types.listen = container_death;
+	lifecycleListener_t *listener = lifecycleListener_new(container, LE_DESTROYED, container_death);
 	container->listener = listener;
 }
 
@@ -82,7 +80,8 @@ void container_add(guiContainer_t* container, guiWidget_t* widget)
 {
 	list_push_back(container->children, (void*)widget);
 	widget_setParent(widget, &container->widget);
-
+	widget->v->w_setFocusManager(widget, widget_getFocusManager((guiWidget_t*)container));
+	widget_addListener(widget, (eventListener_t*)container->listener);
 }
 
 void container_addAt(guiContainer_t* container, guiWidget_t* widget, vec2i_t pos)
@@ -97,7 +96,9 @@ void container_remove(guiContainer_t* container, guiWidget_t* widget)
 	for (listNode_t *node = container->children->head; node; node = node->next) {
 		if ((guiWidget_t*)node->data == widget) {
 			list_erase(container->children, node);
+			widget->v->w_setFocusManager(widget, NULL);
 			widget_setParent(widget, NULL);
+			widget_removeListener(widget, (eventListener_t*)container->listener);
 			return;
 		}
 	}
@@ -108,17 +109,12 @@ void container_draw(const guiContainer_t *container, guiGraphics_t *graphics)
 	guiDebugPrint("drawing container");
 	
 	guiRectangle_t rect = *container->widget.v->w_getChildrenArea((guiWidget_t*)container);
-	//graph_pushClipArea(graphics, rect);
-	//graph_popClipArea(graphics);
+	graph_pushClipArea(graphics, rect);
 	ACS_SetHudSize(640, 480, 1);
-	guiDebugPrint("1");
-	//graph_drawImage(graphics, 0, 0, s"HUDFONT_libzdgui_BACK");
 	ACS_SetHudSize(graph_getScreenWidth(graphics), graph_getScreenHeight(graphics), 1);
-	guiDebugPrint("2");
 	
 	guiWidget_t *it ;
 	for (listNode_t *node = container->children->head; node; node = node->next) {
-		guiDebugPrint("4");
 		it = (guiWidget_t*)node->data;
 		if (widget_isVisible(it)) {
 			graph_pushClipArea(graphics, widget_getDimensions(it));
@@ -126,7 +122,6 @@ void container_draw(const guiContainer_t *container, guiGraphics_t *graphics)
 			graph_popClipArea(graphics);
 		}
 	}
-	guiDebugPrint("3");
 	graph_popClipArea(graphics);
 }
 
@@ -185,7 +180,7 @@ bool container_isWidgetExisting(guiContainer_t* widget, const guiWidget_t* exist
 	return false;
 }
 
-void container_setFocusHandler(guiContainer_t *widget, void *focus)
+void container_setFocusManager(guiContainer_t *widget, void *focus)
 {
 	guiContainer_t *container = (guiContainer_t *)widget;
 	widget_setFocusManager((guiWidget_t*)widget, focus);

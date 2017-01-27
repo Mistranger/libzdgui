@@ -12,11 +12,14 @@ mouseEvent_t* mouseEvent_new(void* source, const vec2i_t* pos, mouseButtons_t bu
 	return event;
 }
 
-mouseListener_t* mouseListener_new(void *handler)
+mouseListener_t* mouseListener_new(void *handler, mouseEventType_t eventType, void (*func)(void *widget, mouseEvent_t *mouseEvent))
 {
 	mouseListener_t *listener = new(mouseListener_t);
+	listener->listener.listenerType = EV_Mouse;
 	listener->listener.handlerWidget = handler;
 	listener->listener.handleEvent = mouse_handleEvent;
+	listener->type = eventType;
+	listener->types.listen = func;
 	return listener;
 }
 
@@ -44,6 +47,13 @@ void mouse_handleEvent(eventListener_t *listener, event_t *event)
 			case ME_CLICKED:
 				mouseL->types.mouseClicked((void*)mouseL->listener.handlerWidget, mouseE);
 				break;
+			case ME_DRAGGED:
+				mouseL->types.mouseDragged((void*)mouseL->listener.handlerWidget, mouseE);
+				break;
+			default:
+				guiError("Unknown mouse event!");
+				break;
+			
 		}
 	}
 }

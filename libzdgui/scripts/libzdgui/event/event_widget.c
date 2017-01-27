@@ -10,11 +10,14 @@ widgetEvent_t* widgetEvent_new(void *source, widgetEventType_t eventType)
 	return event;
 }
 
-widgetListener_t* widgetListener_new(void *handler)
+widgetListener_t* widgetListener_new(void *handler, widgetEventType_t eventType, void (*func)(void *widget, widgetEvent_t *mouseEvent))
 {
 	widgetListener_t *listener = new(widgetListener_t);
+	listener->listener.listenerType = EV_Widget;
 	listener->listener.handlerWidget = handler;
 	listener->listener.handleEvent = widgetListener_handleEvent;
+	listener->type = eventType;
+	listener->types.listen = func;
 	return listener;
 }
 
@@ -28,6 +31,7 @@ void widgetListener_handleEvent(eventListener_t *listener, event_t *event)
 			widgetL->types.valueChanged(listener->handlerWidget, widgetE);
 			break;
 		default:
+			guiError("Unknown event!");
 			break;
 		}
 	}

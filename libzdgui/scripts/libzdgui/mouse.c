@@ -17,6 +17,8 @@ void mouse_init(guiMouse_t* mouse)
 	mouse->cursors = list_new();
 
 	mouse->lastMousePressButton = MB_EMPTY;
+	mouse->lastMouseDragButton = MB_EMPTY;
+	mouse->lastMousePos = (vec2i_t){0, 0};
 	mouse->lastMousePressTime = 0;
 	mouse->mClickCount = 0;
 }

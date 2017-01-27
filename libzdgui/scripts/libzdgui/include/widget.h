@@ -86,11 +86,14 @@ guiWidget_t* widget_getWidgetAt(const guiWidget_t *widget, vec2i_t pos);
 void widget_draw(const guiWidget_t *widget, guiGraphics_t *graphics);
 void widget_tick(guiWidget_t *widget);
 bool widget_isWidgetExisting(guiWidget_t *widget, const guiWidget_t *exist);
+#define widget_getFocusManager(_widget) (((guiWidget_t*)_widget)->focusManager)
 void widget_setFocusManager(guiWidget_t *widget, void *focus);
 
 void widget_requestFocus(guiWidget_t *widget);
 void widget_requestModalFocus(guiWidget_t *widget);
 void widget_requestModalMouseInputFocus(guiWidget_t *widget);
+void widget_releaseModalFocus(guiWidget_t *widget);
+void widget_releaseModalMouseInputFocus(guiWidget_t *widget);
 bool widget_hasModalFocus(const guiWidget_t *widget);
 bool widget_hasModalMouseInputFocus(const guiWidget_t *widget);
 // Flags

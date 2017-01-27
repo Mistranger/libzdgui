@@ -41,7 +41,7 @@ guiRectangle_t* container_getChildrenArea(const guiContainer_t *widget);
 guiWidget_t* container_getWidgetAt(const guiContainer_t *widget, vec2i_t pos);
 void container_tick(guiContainer_t *widget);
 bool container_isWidgetExisting(guiContainer_t *widget, const guiWidget_t *exist);
-void container_setFocusHandler(guiContainer_t *widget, void *focus);
+void container_setFocusManager(guiContainer_t *widget, void *focus);
 
 void container_showWidgetPart(guiContainer_t *container, guiWidget_t *widget, guiRectangle_t area);
 
@@ -53,6 +53,7 @@ void container_init(guiContainer_t *container);
 void container_death(void *widget, lifecycleEvent_t *event);
 void container_add(guiContainer_t *container, guiWidget_t *widget);
 void container_addAt(guiContainer_t *container, guiWidget_t *widget, vec2i_t pos);
+#define container_addAtXY(_container, _widget, _x, _y) container_addAt(_container, _widget, (vec2i_t){_x, _y})
 void container_remove(guiContainer_t *container, guiWidget_t *widget);
 void container_moveToTop(guiContainer_t *container, guiWidget_t *widget);
 void container_moveToBottom(guiContainer_t *container, guiWidget_t *widget);

@@ -42,10 +42,7 @@ void widget_addListener(void *widget, eventListener_t *listener)
 mouseListener_t* widget_addMouseListener(void *widget,
 	mouseEventType_t mouseType, void(*listenerFunc)(void *widget, mouseEvent_t *event))
 {
-	mouseListener_t *listener = mouseListener_new(widget);
-	((eventListener_t*)listener)->listenerType = EV_Mouse;
-	listener->type = mouseType;
-	listener->types.listen = listenerFunc;
+	mouseListener_t *listener = mouseListener_new(widget, mouseType, listenerFunc);
 	
 	list_push_back(((guiWidget_t *)widget)->eventListeners, (void*)listener);
 	return listener;
@@ -54,10 +51,7 @@ mouseListener_t* widget_addMouseListener(void *widget,
 dimensionListener_t* widget_addDimensionListener(void *widget,
 	dimensionEventType_t dimType, void(*listenerFunc)(void *widget, dimensionEvent_t *event))
 {
-	dimensionListener_t *listener = dimensionListener_new(widget);
-	((eventListener_t*)listener)->listenerType = EV_Dimension;
-	listener->type = dimType;
-	listener->types.listen = listenerFunc;
+	dimensionListener_t *listener = dimensionListener_new(widget, dimType, listenerFunc);
 	list_push_back(((guiWidget_t *)widget)->eventListeners, (void*)listener);
 	return listener;
 }
@@ -65,10 +59,7 @@ dimensionListener_t* widget_addDimensionListener(void *widget,
 lifecycleListener_t* widget_addLifeCycleListener(void *widget,
 	lifecycleEventType_t lifeType, void(*listenerFunc)(void *widget, lifecycleEvent_t *event))
 {
-	lifecycleListener_t *listener = new(lifecycleListener_t);
-	((eventListener_t*)listener)->listenerType = EV_LifeCycle;
-	listener->type = lifeType;
-	listener->types.listen = listenerFunc;
+	lifecycleListener_t *listener = lifecycleListener_new(widget, lifeType, listenerFunc);
 	list_push_back(((guiWidget_t *)widget)->eventListeners, (void*)listener);
 	return listener;
 }
@@ -95,7 +86,7 @@ void widget_init(guiWidget_t* widget)
 	widget->dim = dim;
 	widget->isVisible = true;
 	widget->isEnabled = true;
-	widget->isFocusable = false;
+	widget->isFocusable = true;
 	widget->isContainer = false;
 	widget->eventListeners = list_new();
 	widget->font = NULL;
@@ -123,7 +114,7 @@ bool widget_isWidgetExisting(guiWidget_t *widget, const guiWidget_t *exist)
 void widget_setFocusManager(guiWidget_t *widget, void *focus)
 {
 	if (widget->focusManager) {
-		// FIXME releaseModalFocus();
+		widget_releaseModalFocus(widget);
 		focus_removeFromManager(widget->focusManager, widget);
 	}
 
@@ -170,6 +161,22 @@ void widget_requestModalMouseInputFocus(guiWidget_t *widget)
 		return;
 	}
 	focus_requestModalMouseInputFocus(widget->focusManager, widget);
+}
+
+void widget_releaseModalFocus(guiWidget_t *widget)
+{
+	if (!widget->focusManager) {
+		return;
+	}
+	focus_releaseModalFocus(widget->focusManager, widget);
+}
+
+void widget_releaseModalMouseInputFocus(guiWidget_t *widget)
+{
+	if (!widget->focusManager) {
+		return;
+	}
+	focus_releaseModalMouseInputFocus(widget->focusManager, widget);
 }
 
 bool widget_hasModalFocus(const guiWidget_t *widget)
@@ -231,7 +238,12 @@ void widget_getAbsolutePosition(guiWidget_t* widget, vec2i_t *pos)
 
 void widget_handleEvent(guiWidget_t* widget, event_t* event)
 {
+	if (!widget) {
+		guiError("No widget handler!");
+		return;
+	}
 	eventListener_t *listener;
+	
 	for (listNode_t *node = widget->eventListeners->head; node; node = node->next) {
 		listener = (eventListener_t*)node->data;
 		if (listener->listenerType == event->eventType) {

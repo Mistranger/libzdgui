@@ -74,13 +74,11 @@ void graph_popClipArea(guiGraphics_t *graphics)
 	if (!graphics->clipStack) {
 		guiError("No clipStack");
 		return;
-	}
-	
-	vecstack_pop(graphics->clipStack);
+	}	
 
 	guiClipRectangle_t *clip = (guiClipRectangle_t*)vecstack_top(graphics->clipStack);
 	guiDebugPrint("pop (%d,%d,%d,%d) rect from clip stack, %d in stack" _C_ clip->rect.pos.x _C_ clip->rect.pos.y _C_ clip->rect.width _C_ clip->rect.height _C_ vecstack_size(graphics->clipStack));
-
+	vecstack_pop(graphics->clipStack);
 	if (!vecstack_size(graphics->clipStack)) {
 		ACS_SetHudClipRect(0, 0, 0, 0);
 	} else {

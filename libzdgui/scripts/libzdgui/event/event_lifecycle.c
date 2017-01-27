@@ -10,11 +10,14 @@ lifecycleEvent_t* lifecycleEvent_new(void* source, lifecycleEventType_t eventTyp
 	return event;
 }
 
-lifecycleListener_t* lifecycleListener_new(void *handler)
+lifecycleListener_t* lifecycleListener_new(void *handler, lifecycleEventType_t eventType, void (*func)(void *widget, lifecycleEvent_t *lifecycleEvent))
 {
 	lifecycleListener_t *listener = new(lifecycleListener_t);
+	listener->listener.listenerType = EV_LifeCycle;
 	listener->listener.handlerWidget = handler;
 	listener->listener.handleEvent = lifecycle_handleEvent;
+	listener->type = eventType;
+	listener->types.listen = func;
 	return listener;
 }
 

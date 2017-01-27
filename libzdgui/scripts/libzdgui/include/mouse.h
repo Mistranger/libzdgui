@@ -47,6 +47,8 @@ typedef struct guiMouse_s {
 	int mClickCount;
 	int lastMousePressTime;
 	int lastMousePressButton;
+	int lastMouseDragButton;
+	vec2i_t lastMousePos;
 	
 	queue_t *mouseEventQueue;
 	inputMouse_t *mouseInput, *oldMouseInput;
@@ -63,5 +65,9 @@ void mouse_registerCursor(guiMouse_t* mouse, __str image, int width, int height,
 void mouse_grabMouseInput(guiMouse_t *mouse);
 void mouse_releaseMouseInput(guiMouse_t *mouse);
 void mouse_getInput(guiMouse_t* input, guiGraphics_t *graphics);
+#define mouse_getLastPressButton(_mouse) (((guiMouse_t*)_mouse)->lastMousePressButton)
+#define mouse_setLastPressButton(_mouse, _button) { ((guiMouse_t*)_mouse)->lastMousePressButton = _button; }
+#define mouse_getLastDragButton(_mouse) (((guiMouse_t*)_mouse)->lastMouseDragButton)
+#define mouse_setLastDragButton(_mouse, _button) { ((guiMouse_t*)_mouse)->lastMouseDragButton = _button; }
 
 #endif // MOUSE_H_INCLUDED

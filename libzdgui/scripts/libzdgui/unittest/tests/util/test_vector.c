@@ -77,6 +77,44 @@ void test_vector_inserterase(CuTest *tc)
 	CuAssertIntEquals(tc, 8, (vector_size(v)));
 }
 
+void test_vector_insertwidgets(CuTest *tc)
+{
+	guiGraphics_t *graphics = new(guiGraphics_t);
+	graph_init(graphics, 640, 480);
+	guiInput_t *input = new(guiInput_t);
+	input_init(input);
+	guiMouse_t *mouse = new(guiMouse_t);
+	mouse_init(mouse);
+	guiGUI_t *gui = new(guiGUI_t);
+	gui_init(gui);
+	gui_setGraphics(gui, graphics);
+	gui_setInput(gui, input);
+	gui_setMouse(gui, mouse);
+	gui_setTop(gui, NULL);
+	
+	string_t *str = string_new_char("Hello world");
+	vector_t *v = vector_new(sizeof(guiWidget_t*));
+	CuAssertIntEquals(tc, sizeof(guiWidget_t*), v->elemSize);
+	string_assign_char(str, "shithappens");
+	guiButton_t *button = button_new(gui, str);
+	string_assign_char(str, "shithappens2");
+	guiButton_t *button2 = button_new(gui, str);
+	string_assign_char(str, "shithappens");
+	guiButton_t *button3 = button_new(gui, str);
+	
+	vector_push_back(v, &button);
+	vector_push_back(v, &button2);
+	vector_push_back(v, &button3);
+	guiButton_t *w = vector_get(v, 0, guiButton_t*);
+	guiButton_t *w2 = vector_get(v, 1, guiButton_t*);
+	guiButton_t *w3 = vector_get(v, 2, guiButton_t*);
+	CuAssertPtrEquals(tc, button, w);
+	CuAssertPtrEquals(tc, button2, w2);
+	CuAssertPtrEquals(tc, button3, w3);
+	CuAssertStrEquals(tc, "shithappens", button_getCaption(button)->s);
+	
+}
+
 CuSuite* test_util_vector_getSuite() {
 	CuSuite* suite = CuSuiteNew();
 	SUITE_ADD_TEST(suite, test_vector_create);
@@ -84,5 +122,6 @@ CuSuite* test_util_vector_getSuite() {
 	SUITE_ADD_TEST(suite, test_vector_addremove);
 	SUITE_ADD_TEST(suite, test_vector_resize);
 	SUITE_ADD_TEST(suite, test_vector_inserterase);
+	SUITE_ADD_TEST(suite, test_vector_insertwidgets);
 	return suite;
 }

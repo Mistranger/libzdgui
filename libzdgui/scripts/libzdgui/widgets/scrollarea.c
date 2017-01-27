@@ -9,8 +9,8 @@ guiScrollArea_vf_t guiScrollArea_vtable = {
 	scroll_getWidgetAt,
 	scroll_draw,
 	scroll_tick,
-	widget_isWidgetExisting,
-	container_setFocusHandler,
+	container_isWidgetExisting,
+	container_setFocusManager,
 	scroll_showWidgetPart,
 };
 
@@ -65,6 +65,7 @@ void scroll_init(guiScrollArea_t* scrollarea, guiWidget_t *content)
 	scroll_setContent(scrollarea, content);
 
 	widget_addMouseListener(&scrollarea->widget, ME_PRESSED, scroll_mousePressed);
+	widget_addMouseListener(&scrollarea->widget, ME_DRAGGED, scroll_mouseDragged);
 	widget_addMouseListener(&scrollarea->widget, ME_RELEASED, scroll_mouseReleased);
 	widget_addDimensionListener(&scrollarea->widget, DE_RESIZED, scroll_resized);
 }
@@ -630,6 +631,36 @@ void scroll_mousePressed(void *widget, mouseEvent_t *mouseEvent)
 		else {
 			scroll_setHorizontalScrollAmount(scrollarea, scroll_getHorizontalScrollAmount(scrollarea)
 				+ (int)(scroll_getChildrenArea(scrollarea)->width * 0.95));
+		}
+	}
+}
+
+void scroll_mouseDragged(void *widget, mouseEvent_t *mouseEvent)
+{
+	guiScrollArea_t* scrollarea = (guiScrollArea_t*)widget;
+	if (scrollarea->isVerticalMarkerDragged) {
+		int pos = mouseEvent->pos.y - scroll_getVerticalBarDimension(scrollarea)->pos.y - scrollarea->verticalMarkerDragOffset;
+		int length = scroll_getVerticalMarkerDimension(scrollarea)->height;
+		
+		guiRectangle_t barDim = *scroll_getVerticalBarDimension(scrollarea);
+		
+		 if ((barDim.height - length) > 0) {
+			scroll_setVerticalScrollAmount(scrollarea, (scroll_getVerticalMaxScroll(scrollarea) * pos) / (barDim.height - length));
+		} else {
+			scroll_setVerticalScrollAmount(scrollarea, 0);
+		}
+	}
+	
+	if (scrollarea->isHorizontalMarkerDragged) {
+		int pos = mouseEvent->pos.x - scroll_getHorizontalBarDimension(scrollarea)->pos.x - scrollarea->horizontalMarkerDragOffset;
+		int length = scroll_getHorizontalMarkerDimension(scrollarea)->width;
+		
+		guiRectangle_t barDim = *scroll_getHorizontalBarDimension(scrollarea);
+		
+		if ((barDim.width - length) > 0) {
+			scroll_setHorizontalScrollAmount(scrollarea, (scroll_getHorizontalMaxScroll(scrollarea) * pos) / (barDim.width - length));
+		} else {
+			scroll_setHorizontalScrollAmount(scrollarea, 0);
 		}
 	}
 }

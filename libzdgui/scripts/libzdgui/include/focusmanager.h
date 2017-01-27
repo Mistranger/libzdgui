@@ -38,6 +38,8 @@ void focusManager_delete(guiFocusManager_t *focusManager);
 void focus_requestFocus(guiFocusManager_t *focusManager, guiWidget_t *widget);
 void focus_requestModalFocus(guiFocusManager_t *focusManager, guiWidget_t *widget);
 void focus_requestModalMouseInputFocus(guiFocusManager_t *focusManager, guiWidget_t *widget);
+void focus_releaseModalFocus(guiFocusManager_t *focusManager, guiWidget_t *widget);
+void focus_releaseModalMouseInputFocus(guiFocusManager_t *focusManager, guiWidget_t *widget);
 void focus_addToManager(guiFocusManager_t *focusManager, guiWidget_t *widget);
 void focus_removeFromManager(guiFocusManager_t *focusManager, guiWidget_t *widget);
 void focus_focusNone(guiFocusManager_t *focusManager);

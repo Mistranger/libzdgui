@@ -20,7 +20,6 @@ typedef struct guiGUI_s
 
 	 list_t *allWidgets;
 	 list_t *widgetsUnderMouse;
-	 int lastMouseDragButton;
 } guiGUI_t;
 
 // Constructor

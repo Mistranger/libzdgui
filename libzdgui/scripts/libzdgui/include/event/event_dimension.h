@@ -19,7 +19,7 @@ typedef struct dimensionEvent_s {
 typedef struct dimensionListener_s {
 	eventListener_t listener;
 	union {
-		void (*listen)(void *widget, dimensionEvent_t *mouseEvent);
+		void (*listen)(void *widget, dimensionEvent_t *dimEvent);
 		void (*resized)(void *widget, dimensionEvent_t *dimEvent);
 		void (*moved)(void *widget, dimensionEvent_t *dimEvent);
 	} types;
@@ -28,7 +28,7 @@ typedef struct dimensionListener_s {
 
 dimensionEvent_t* dimensionEvent_new(void *source, const vec2i_t *pos, int width, int height, int eventType);
 
-dimensionListener_t* dimensionListener_new(void *handler);
+dimensionListener_t* dimensionListener_new(void *handler, dimensionEventType_t eventType, void (*func)(void *widget, dimensionEvent_t *dimEvent));
 void dimension_handleEvent(eventListener_t *listener, event_t *event);
 
 #endif // EVENT_DIMENSION_H_INCLUDED

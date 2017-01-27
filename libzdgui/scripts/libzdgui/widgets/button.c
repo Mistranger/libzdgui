@@ -102,7 +102,7 @@ void button_adjustSize(guiButton_t* button)
 
 void button_mousePressed(void *widget, mouseEvent_t* mouseEvent)
 {
-	guiDebugPrint("button pressed");
+	guiInfo("button pressed");
 	guiButton_t *button = (guiButton_t *)widget;
 	if (mouseEvent->button == MB_LEFT) {
 		button->isPressed = true;
@@ -111,7 +111,7 @@ void button_mousePressed(void *widget, mouseEvent_t* mouseEvent)
 
 void button_mouseReleased(void *widget, mouseEvent_t* mouseEvent)
 {
-	guiDebugPrint("button released");
+	guiInfo("button released");
 	guiButton_t *button = (guiButton_t *)widget;
 	if (mouseEvent->button == MB_LEFT) {
 		if (button->isPressed && button->hasMouse) {

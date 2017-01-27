@@ -36,13 +36,13 @@ guiWidget_t* gui_getTop(guiGUI_t* gui)
 }
 
 void gui_setTop(guiGUI_t* gui, guiWidget_t* newTop)
-{/*
+{
 	if (gui->top) {
-		widget_setFocusManager(gui->top, NULL);
+		gui->top->v->w_setFocusManager(gui->top, NULL);
 	}
 	if (newTop) {
-		widget_setFocusManager(newTop, gui->focusManager);
-	}*/
+		newTop->v->w_setFocusManager(newTop, gui->focusManager);
+	}
 	gui->top = newTop;
 }
 
@@ -90,7 +90,11 @@ void gui_handleMouseMove(guiGUI_t* gui, mouseEvent_t* event)
 		}
 		done = (i == list_size(gui->widgetsUnderMouse));
 	}
+	
 	guiWidget_t* source = gui_getMouseEventSource(gui, &event->pos);
+	if (!source) {
+		return;
+	}
 	guiWidget_t* parent = source;
 	guiWidget_t* widget = parent;
 	guiWidget_t *swap;
@@ -134,11 +138,12 @@ void gui_handleMouseMove(guiGUI_t* gui, mouseEvent_t* event)
 		} while (parent != NULL);
 		
 	}
-
+	
+	
 	if (focus_getDragged(gui->focusManager)) {
-		mouseEvent_t *moved = mouseEvent_new(focus_getDragged(gui->focusManager),
-			&event->pos, gui->lastMouseDragButton, ME_DRAGGED);
-		gui_distributeMouseEvent(gui, widget, moved);
+		mouseEvent_t *dragged = mouseEvent_new(focus_getDragged(gui->focusManager),
+			&event->pos, mouse_getLastDragButton(gui->mouse), ME_DRAGGED);
+		gui_distributeMouseEvent(gui, focus_getDragged(gui->focusManager), dragged);
 	} else {
 		widget = source;
 		mouseEvent_t *moved = mouseEvent_new(widget, &event->pos, event->button, ME_MOVED);
@@ -150,25 +155,46 @@ void gui_handleMouseMove(guiGUI_t* gui, mouseEvent_t* event)
 void gui_handleMouse(guiGUI_t* gui, mouseEvent_t* event)
 {
 	if (event->type == ME_MOVED) {
-		//gui_handleMouseMove(gui, event);
+		gui_handleMouseMove(gui, event);
 	} else {
 		guiWidget_t* sourceWidget = gui_getMouseEventSource(gui, &event->pos);
 		if (focus_getDragged(gui->focusManager) != NULL) {
+			if (event->type == ME_RELEASED) {
+				if (sourceWidget != focus_getLastPressed(gui->focusManager)) {
+					focus_setLastPressed(gui->focusManager, NULL);
+				}
+			}
 			sourceWidget = focus_getDragged(gui->focusManager);
 		}
 
 		if (sourceWidget) {
 			gui_distributeEvent(gui, sourceWidget, (event_t*)event);
+			if (event->type == ME_RELEASED) {
+				if (event->button == mouse_getLastPressButton(gui->mouse)
+					&& focus_getLastPressed(gui->focusManager) == sourceWidget) {
+						mouseEvent_t *clicked = mouseEvent_new(sourceWidget, &event->pos , event->button, ME_CLICKED);
+						gui_distributeEvent(gui, sourceWidget, (event_t*)clicked);
+						focus_setLastPressed(gui->focusManager, NULL);
+				} else {
+					mouse_setLastPressButton(gui->mouse, MB_EMPTY);
+				}
+				if (focus_getDragged(gui->focusManager) != NULL) {
+					focus_setDragged(gui->focusManager, NULL);
+				}
+			} else if (event->type == ME_PRESSED) {
+				focus_setLastPressed(gui->focusManager, sourceWidget);
+				if (focus_getModalFocused(gui->focusManager) != NULL
+					&& widget_hasModalFocus(sourceWidget)
+					|| focus_getModalFocused(gui->focusManager) == NULL) {
+						widget_requestFocus(sourceWidget);
+				}
+				
+				focus_setDragged(gui->focusManager, sourceWidget);
+				mouse_setLastDragButton(gui->mouse, event->button);
+				mouse_setLastPressButton(gui->mouse, event->button);
+			}
+			
 		}
-		focus_setLastPressed(gui->focusManager, sourceWidget);
-		if (focus_getModalFocused(gui->focusManager) != NULL
-			&& widget_hasModalFocus(sourceWidget)
-			|| focus_getModalFocused(gui->focusManager) == NULL) {
-				widget_requestFocus(sourceWidget);
-		}
-		focus_setDragged(gui->focusManager, sourceWidget);
-		gui->lastMouseDragButton = event->button;
-
 	}	
 }
 
@@ -184,18 +210,17 @@ void gui_draw(guiGUI_t* gui)
 	}
 	
 	graph_beginDraw(gui->graphics);
-	graph_endDraw(gui->graphics);
-	/*
+	
 	guiDebugPrint("drawing top widget");
-	//graph_pushClipArea(gui->graphics, gui->top->dim);
+	graph_pushClipArea(gui->graphics, gui->top->dim);
 	gui->top->v->w_draw(gui->top, gui->graphics);
-	//graph_popClipArea(gui->graphics);
+	graph_popClipArea(gui->graphics);
 
-	/*if (gui->mouse) {
+	if (gui->mouse) {
 		mouse_drawCursor(gui->mouse, gui->graphics);
-	}*/
-/*
-	graph_endDraw(gui->graphics);*/
+	}
+
+	graph_endDraw(gui->graphics);
 }
 
 void gui_handleModalMouseInputFocus(guiGUI_t* gui)
@@ -236,8 +261,8 @@ void gui_handleModalFocusGained(guiGUI_t* gui)
 		guiWidget_t *w = (guiWidget_t*)list_front(gui->widgetsUnderMouse)->data;
 
 		if (gui_widgetExists(gui, w)) {
-			mouseEvent_t *exited = mouseEvent_new(w, &gui->mouse->oldMouseInput->pos, 
-				gui->mouse->oldMouseInput->button, ME_LEFT);
+			mouseEvent_t *exited = mouseEvent_new(w, &gui->mouse->lastMousePos, 
+				mouse_getLastPressButton(gui->mouse), ME_LEFT);
 			widget_handleEvent(w, (event_t*)exited);
 		}
 		list_pop_front(gui->widgetsUnderMouse);
@@ -247,9 +272,12 @@ void gui_handleModalFocusGained(guiGUI_t* gui)
 
 void gui_handleModalFocusReleased(guiGUI_t* gui)
 {
-	guiWidget_t *widget = gui_getMouseEventSource(gui, &gui->mouse->oldMouseInput->pos);
+	guiWidget_t *widget = gui_getMouseEventSource(gui, &gui->mouse->lastMousePos);
+	if (!widget) {
+		return;
+	}
 	guiWidget_t *parent = widget;
-	guiWidget_t *swap;
+	guiWidget_t *swap;	
 
 	bool found = false;
 	while (parent != NULL) {
@@ -264,8 +292,8 @@ void gui_handleModalFocusReleased(guiGUI_t* gui)
 		if (!found && gui_widgetExists(gui, widget)) {
 			guiInfo("Mouse entered widget");
 
-			mouseEvent_t *entered = mouseEvent_new(widget, &gui->mouse->oldMouseInput->pos,
-				gui->mouse->oldMouseInput->button, ME_ENTERED);
+			mouseEvent_t *entered = mouseEvent_new(widget, &gui->mouse->lastMousePos,
+				mouse_getLastPressButton(gui->mouse), ME_ENTERED);
 			gui_distributeMouseEvent(gui, widget, entered);
 			list_push_front(gui->widgetsUnderMouse, widget);
 		}
@@ -282,7 +310,7 @@ void gui_tick(guiGUI_t* gui)
 		guiError("No top widget set");
 		return;
 	}
-	/*gui_handleModalFocus(gui);
+	gui_handleModalFocus(gui);
 	gui_handleModalMouseInputFocus(gui);
 
 	if (gui->mouse) {
@@ -292,7 +320,7 @@ void gui_tick(guiGUI_t* gui)
 	if (gui->top->v->w_tick != widget_tick) {
 		gui->top->v->w_tick(gui->top);
 	}
-	*/
+	
 	guiDebugPrint("gui tick end");
 }
 
@@ -326,10 +354,13 @@ void gui_handleMouseInput(guiGUI_t* gui)
 	event_t *event;
 	while (queue_size(gui->mouse->mouseEventQueue) > 0) {
 		event = (event_t*)queue_front(gui->mouse->mouseEventQueue);
+		
 		if (event->eventType != EV_Mouse) {
 			guiError("Bad event type");
 			return;
 		}
+		
+		gui->mouse->lastMousePos = ((mouseEvent_t*)event)->pos;
 
 		gui_handleMouse(gui,  (mouseEvent_t*)event);
 		
@@ -363,7 +394,7 @@ guiWidget_t* gui_getWidgetAt(guiGUI_t* gui, vec2i_t *pos)
 guiWidget_t* gui_getMouseEventSource(guiGUI_t* gui, vec2i_t *pos)
 {
 	guiWidget_t *w = gui_getWidgetAt(gui, pos);
-	if (focus_getModalMouseInputFocused(gui->focusManager) != NULL
+	if (w && focus_getModalMouseInputFocused(gui->focusManager) != NULL
 		&& !widget_hasModalMouseInputFocus(w)) {
 		return focus_getModalMouseInputFocused(gui->focusManager);
 	}
@@ -377,6 +408,9 @@ void gui_addWidget(guiGUI_t *gui, void* widget)
 
 bool gui_widgetExists(guiGUI_t *gui, guiWidget_t* widget)
 {
+	if (!widget) {
+		return false;
+	}
 	for (listNode_t *it = gui->allWidgets->head; it; it = it->next) {
 		if (it->data == widget) {
 			return true;
@@ -398,14 +432,14 @@ void gui_distributeEvent(guiGUI_t* gui, guiWidget_t* source, event_t* event)
 
 	if (focus_getModalFocused(gui->focusManager) != NULL
 		&& !widget_hasModalFocus(widget)) {
-		return;
+			return;
 	}
 
 	if (focus_getModalMouseInputFocused(gui->focusManager) != NULL
 		&& !widget_hasModalMouseInputFocus(widget))	{
-		return;
+			return;
 	}
-
+	
 	while (parent != NULL) {
 		if (!gui_widgetExists(gui, widget)) {
 			return;
@@ -439,9 +473,13 @@ void gui_distributeEvent(guiGUI_t* gui, guiWidget_t* source, event_t* event)
 
 void gui_distributeMouseEvent(guiGUI_t* gui, guiWidget_t* widget, mouseEvent_t* event)
 {
+	if (!widget) {
+		guiError("distributing mouse event to non-existent widget");
+		return;
+	}
 	vec2i_t widgetPos;
-	widget_getAbsolutePosition(widget, &widgetPos);
 	
+	widget_getAbsolutePosition(widget, &widgetPos);
 	vec_sub(event->pos, widgetPos);
 	
 	list_t *listeners = widget_getListeners(widget);

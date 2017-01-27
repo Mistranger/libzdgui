@@ -35,30 +35,26 @@ void initLibZDGui(void)
 	
 	mouse_registerCursor(gui->mouse, s"DEFCURS", 32, 32, 0, 0);
 	string_t *str = string_new_char("Hello world");
-	/*guiImage_t panel = {288, 256, s"panel_2"};
+	guiImage_t panel = {288, 256, s"panel_2"};
 	guiWindow_t *window = window_new(gui, str, &panel);
 	guiRectangle_t rect = {100, 100, 288, 256};
-	widget_setDimension((guiWidget_t*)window, rect);*/
-	guiButton_t *button = button_new(gui, str);
-	gui_setTop(gui, (guiWidget_t*)button);
-	/*
-	
-	
+	widget_setDimension((guiWidget_t*)window, rect);
+	gui_setTop(gui, (guiWidget_t*)window);
 	
 	string_assign_char(str, "shithappens");
 	guiButton_t *button = button_new(gui, str);
 	vec2i_t pos = {0, 0};
-	//container_addAt((guiContainer_t*)window, (guiWidget_t*)button, pos);
+	
 	string_assign_char(str, "shithappens222");
 	guiButton_t *button2 = button_new(gui, str);
 	pos.x = 0;
 	pos.y = 10;
-	//container_addAt((guiContainer_t*)window, (guiWidget_t*)button2, pos);
+	
 	string_assign_char(str, "wowshithappens333");
 	guiButton_t *button3 = button_new(gui, str);
 	pos.x = 0;
 	pos.y = 60;
-	//container_addAt((guiContainer_t*)window, (guiWidget_t*)button3, pos);
+	
 	guiImageWidget_t *image = wimage_new(gui, s"TITLEPIC", 320, 200);
 	//image->imageFlags = IF_SCALETOSIZE;
 	widget_setSize(image, 320, 200);
@@ -104,8 +100,11 @@ void initLibZDGui(void)
 	pos.y = 20;
 	//image->widget.flags &= ~WF_VISIBLE;
 	
-	//container_addAt((guiContainer_t*)window, (guiWidget_t*)scroll, pos);
-	*/
+	container_addAtXY((guiContainer_t*)window, (guiWidget_t*)button, 0, 20);
+	container_addAtXY((guiContainer_t*)window, (guiWidget_t*)button2, 0, 40);
+	container_addAtXY((guiContainer_t*)window, (guiWidget_t*)button3, 0, 120);
+	container_addAtXY((guiContainer_t*)window, (guiWidget_t*)scroll, 20, 20);
+	
 	mouse_grabMouseInput(gui->mouse);
 	while (1) {
 		/*int *m = new(int);

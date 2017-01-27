@@ -25,7 +25,7 @@ typedef struct lifecycleListener_s {
 
 lifecycleEvent_t* lifecycleEvent_new(void *source, lifecycleEventType_t eventType);
 
-lifecycleListener_t* lifecycleListener_new(void *handler);
+lifecycleListener_t* lifecycleListener_new(void *handler, lifecycleEventType_t eventType, void (*func)(void *widget, lifecycleEvent_t *lifecycleEvent));
 void lifecycle_handleEvent(eventListener_t *listener, event_t *event);
 
 #endif // EVENT_LIFECYCLE_H_INCLUDED

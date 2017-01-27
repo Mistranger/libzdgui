@@ -13,11 +13,14 @@ dimensionEvent_t* dimensionEvent_new(void* source, const vec2i_t* pos, int width
 	return event;
 }
 
-dimensionListener_t* dimensionListener_new(void *handler)
+dimensionListener_t* dimensionListener_new(void *handler, dimensionEventType_t eventType, void (*func)(void *widget, dimensionEvent_t *dimEvent))
 {
 	dimensionListener_t *listener = new(dimensionListener_t);
+	listener->listener.listenerType = EV_Dimension;
 	listener->listener.handlerWidget = handler;
 	listener->listener.handleEvent = dimension_handleEvent;
+	listener->type = eventType;
+	listener->types.listen = func;
 	return listener;
 }
 
@@ -32,6 +35,9 @@ void dimension_handleEvent(eventListener_t *listener, event_t *event)
 			break;
 		case DE_RESIZED:
 			dimL->types.resized(listener->handlerWidget, dimE);
+			break;
+		default:
+			guiError("Unknown event!");
 			break;
 		}
 	}

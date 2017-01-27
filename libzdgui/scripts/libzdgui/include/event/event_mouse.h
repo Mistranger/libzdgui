@@ -32,13 +32,14 @@ typedef struct mouseListener_s {
 		void (*mouseEntered)(void *widget, mouseEvent_t *mouseEvent);
 		void (*mouseLeft)(void *widget, mouseEvent_t *mouseEvent);
 		void (*mouseClicked)(void *widget, mouseEvent_t *mouseEvent);
+		void (*mouseDragged)(void *widget, mouseEvent_t *mouseEvent);
 	} types;
 	mouseEventType_t type;
 } mouseListener_t;
 
 mouseEvent_t* mouseEvent_new(void *source, const vec2i_t *pos, mouseButtons_t button, mouseEventType_t eventType);
 
-mouseListener_t* mouseListener_new(void *handler);
+mouseListener_t* mouseListener_new(void *handler, mouseEventType_t eventType, void (*func)(void *widget, mouseEvent_t *mouseEvent));
 void mouse_handleEvent(eventListener_t *listener, event_t *event);
 
 

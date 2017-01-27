@@ -37,7 +37,7 @@ typedef struct guiScrollArea_vf {
 	struct guiWidget_s* (*w_getWidgetAt)(const struct guiScrollArea_s* widget, vec2i_t pos);
 	void(*w_draw)(const struct guiScrollArea_s* scrollarea, guiGraphics_t* graphics);
 	void(*w_tick)(struct guiScrollArea_s* scrollarea);
-	bool(*w_isWidgetExisting)(struct guiWidget_s* widget, const struct guiWidget_s* exist);
+	bool(*w_isWidgetExisting)(struct guiContainer_s* widget, const struct guiWidget_s* exist);
 	void(*w_setFocusHandler)(struct guiContainer_s *widget, void *focus);
 	
 	void (*c_showWidgetPart)(struct guiScrollArea_s *container, guiWidget_t *widget, guiRectangle_t area);
@@ -164,6 +164,7 @@ guiRectangle_t* scroll_getHorizontalMarkerDimension(const guiScrollArea_t* scrol
 
 // Event listeners
 void scroll_mousePressed(void *widget, mouseEvent_t *mouseEvent);
+void scroll_mouseDragged(void *widget, mouseEvent_t *mouseEvent);
 void scroll_mouseReleased(void *widget, mouseEvent_t *mouseEvent);
 void scroll_resized(void *widget, dimensionEvent_t *dimensionEvent);
 

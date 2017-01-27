@@ -27,7 +27,7 @@ typedef struct widgetListener_s {
 
 widgetEvent_t* widgetEvent_new(void *source, widgetEventType_t eventType);
 
-widgetListener_t* widgetListener_new(void *handler);
+widgetListener_t* widgetListener_new(void *handler, widgetEventType_t eventType, void (*func)(void *widget, widgetEvent_t *mouseEvent));
 void widgetListener_handleEvent(eventListener_t *listener, event_t *event);
 
 

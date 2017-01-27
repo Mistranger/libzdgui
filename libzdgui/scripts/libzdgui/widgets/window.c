@@ -10,7 +10,7 @@ guiWindow_vf_t guiWindow_vtable = {
 	window_draw,
 	container_tick,
 	container_isWidgetExisting,
-	container_setFocusHandler
+	container_setFocusManager
 };
 
 const char *WindowType = "Window";
