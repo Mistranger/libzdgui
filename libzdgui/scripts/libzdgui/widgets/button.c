@@ -87,7 +87,7 @@ void button_draw(const guiButton *button, guiGraphics *graphics)
 		graph_drawImage(graphics, 0, 0, image_getImage(*img));
 	}
 	graph_drawText(graphics, widget_getFont(button), button_isPressed(button) ? 1 : 0, button_isPressed(button) ? 1 : 0,
-		button_getCaption(button)->s);
+		widget_getFontColor(button), button_getCaption(button)->s);
 }
 
 void button_setCaption(guiButton *button, const string_t *caption)

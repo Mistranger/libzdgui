@@ -128,13 +128,12 @@ guiRectangle *window_getChildrenArea(const guiWindow *window)
 {
 	return &(guiRectangle) {
 		window_getPadding(window), 0,
-						  widget_getWidth(window) - 2 * window_getPadding(window), widget_getHeight(window) - window_getPadding(window)
+			widget_getWidth(window) - 2 * window_getPadding(window), widget_getHeight(window) - window_getPadding(window)
 	};
 }
 
 void window_mousePressed(void *widget, guiMouseEvent *mouseEvent)
 {
-	guiInfo("1" );
 	if (event_getSource(mouseEvent) != widget) {
 		return;
 	}

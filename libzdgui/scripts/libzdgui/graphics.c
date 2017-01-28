@@ -166,7 +166,7 @@ void graph_drawImageScaled(guiGraphics *graphics, int dstX, int dstY,
 	ACS_SetHudClipRect(top->rect.pos.x, top->rect.pos.y, top->rect.width, top->rect.height);
 }
 
-void graph_drawText(guiGraphics *graphics, guiFont *font, int x, int y, const char *format, ...)
+void graph_drawText(guiGraphics *graphics, guiFont *font, int x, int y, __str fontColor, const char *format, ...)
 {
 	va_list args;
 
@@ -178,7 +178,7 @@ void graph_drawText(guiGraphics *graphics, guiFont *font, int x, int y, const ch
 
 	guiClipRectangle *top = (guiClipRectangle *)vecstack_top(graphics->clipStack);
 	ACS_SetFont(font->f);
-	ACS_HudMessage(HUDMSG_PLAIN, --graphics->drawOrder, CR_BLACK, (fixed)(x + top->offset.x) + 0.1,
+	ACS_HudMessageColor(HUDMSG_PLAIN, --graphics->drawOrder, fontColor, (fixed)(x + top->offset.x) + 0.1,
 				   (fixed)(y + top->offset.y) + 0.1, 0.03k, text);
 }
 

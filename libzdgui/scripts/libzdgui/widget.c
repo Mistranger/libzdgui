@@ -91,6 +91,7 @@ void widget_init(guiWidget *widget)
 
 	widget->eventListeners = list_new();
 	widget->font = (guiFont *)&FONT_CONFONT;
+	widget->fontColor = s"Gray";
 	widget->parent = NULL;
 	widget->gui = NULL;
 	widget->v = &guiWidget_vtable;

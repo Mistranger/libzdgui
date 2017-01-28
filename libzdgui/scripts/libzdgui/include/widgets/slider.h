@@ -7,6 +7,7 @@
 
 #include "event.h"
 #include "event/event_mouse.h"
+#include "gui.h"
 #include "image.h"
 #include "util/string.h"
 #include "widget.h"
@@ -60,7 +61,7 @@ typedef struct guiSlider {
 ----------------------------------------------------------------------------*/
 
 const char *slider_typename(guiSlider *widget);
-guiSlider *slider_new(const int maxScale);
+guiSlider *slider_new(guiGUI *gui, const int maxScale);
 
 void slider_init(guiSlider *slider, const int maxScale);
 void slider_draw(const guiSlider *slider, guiGraphics *graphics);
@@ -75,7 +76,7 @@ int slider_valueToMarkerPosition(const guiSlider *slider, int value);
 	{ clamp((_value), slider_getScaleStart((guiSlider*)(_widget)), slider_getScaleEnd((guiSlider*)(_widget)));   \
 		((guiSlider*)_widget)->value = (_value); }
 #define slider_getMarkerLength(_widget) (((guiSlider*)_widget)->markerLength)
-#define slider_setMarkerLength(_widget, _value) { ((guiSlider*)_widget)->markerLength = _value; }
+#define slider_setMarkerLength(_widget, _value) { ((guiSlider*)_widget)->markerLength = (_value); }
 #define slider_getStepLength(_widget) (((guiSlider*)_widget)->stepLength)
 #define slider_setStepLength(_widget, _value) { ((guiSlider*)_widget)->stepLength = _value; }
 
@@ -97,6 +98,6 @@ int slider_valueToMarkerPosition(const guiSlider *slider, int value);
 
 // Event listeners
 void slider_mousePressed(void *widget, guiMouseEvent *mouseEvent);
-
+void slider_mouseDragged(void *widget, guiMouseEvent *mouseEvent);
 
 #endif // WIDGETS_SLIDER_H_INCLUDED

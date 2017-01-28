@@ -31,7 +31,7 @@ void graph_drawRectAlpha(guiGraphics *graphics, int x, int y, int width, int hei
 void graph_drawImage(guiGraphics *graphics, int x, int y, __str image);
 void graph_drawImageScaled(guiGraphics *graphics, int dstX, int dstY,
 						   int srcWidth, int srcHeight, int dstWidth, int dstHeight, __str image);
-void graph_drawText(guiGraphics *graphics, guiFont *font, int x, int y, const char *format, ...);
+void graph_drawText(guiGraphics *graphics, guiFont *font, int x, int y, __str fontColor, const char *format, ...);
 
 
 #endif // GRAPHICS_H_INCLUDED

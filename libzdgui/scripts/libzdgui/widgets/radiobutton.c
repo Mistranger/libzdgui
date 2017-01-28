@@ -107,7 +107,7 @@ void radio_draw(const guiRadioButton *radiobutton, guiGraphics *graphics)
 		width += width / 2;
 	}
 
-	graph_drawText(graphics, widget_getFont(radiobutton), width - 2, 0, string_cstr(radio_getCaption(radiobutton)));
+	graph_drawText(graphics, widget_getFont(radiobutton), width - 2, 0, widget_getFontColor(radiobutton), string_cstr(radio_getCaption(radiobutton)));
 }
 
 void radio_setCaption(guiRadioButton *radiobutton, const string_t *caption)

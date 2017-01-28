@@ -41,6 +41,7 @@ typedef struct guiListBox {
 	guiWidget widget;
 	list_t *items;
 	int selected;
+	__str selectedFontColor;
 
 	guiImage *itemImage;
 } guiListBox;
@@ -66,6 +67,9 @@ void listbox_setSelected(guiListBox *listbox, int selected);
 void listbox_addItem(guiListBox *listbox, const string_t *item);
 void listbox_addItemAt(guiListBox *listbox, const string_t *item, size_t index);
 void listbox_removeItemAt(guiListBox *listbox, size_t index);
+
+#define listbox_getSelectedColor(_widget) (((guiListBox*)_widget)->selectedFontColor)
+#define listbox_setSelectedColor(_widget, _font) { ((guiListBox*)_widget)->selectedFontColor = _font; }
 
 #define scroll_getItemImage(_widget) (((guiListBox*)_widget)->itemImage)
 #define scroll_setItemImage(_widget, _image) { ((guiListBox*)_widget)->itemImage = _image; }

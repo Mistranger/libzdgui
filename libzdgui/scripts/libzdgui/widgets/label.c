@@ -136,9 +136,9 @@ void label_draw(const guiLabel *label, guiGraphics *graphics)
 	
 	
 	if (label->isMultiline) {
-		graph_drawText(graphics, widget_getFont(label), textX, textY, label->textWrap->s);
+		graph_drawText(graphics, widget_getFont(label), textX, textY, widget_getFontColor(label), label->textWrap->s);
 	} else {
-		graph_drawText(graphics, widget_getFont(label), textX, textY, label->caption->s);
+		graph_drawText(graphics, widget_getFont(label), textX, textY, widget_getFontColor(label), label->caption->s);
 	} 
 }
 

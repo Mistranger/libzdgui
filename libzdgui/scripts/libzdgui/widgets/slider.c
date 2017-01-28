@@ -16,6 +16,9 @@ guiSlider_vf_t guiSlider_vtable = {
 	widget_setFocusManager
 };
 
+const guiImage sliderDefImageBack = {170, 13, s"SLIDBACK"};
+const guiImage sliderDefImageMarker = {5, 11, s"SLIDMARK"};
+
 const char *SliderType = "Slider";
 
 const char *slider_typename(guiSlider *widget)
@@ -23,11 +26,11 @@ const char *slider_typename(guiSlider *widget)
 	return SliderType;
 }
 
-guiSlider *slider_new(const int maxScale)
+guiSlider *slider_new(guiGUI *gui, const int maxScale)
 {
 	guiSlider *slider = new (guiSlider);
 	slider_init(slider, maxScale);
-
+	gui_addWidget(gui, slider);
 	return slider;
 }
 
@@ -37,16 +40,19 @@ void slider_init(guiSlider *slider, const int maxScale)
 
 	slider->widget.v = (guiWidget_vf_t *)&guiSlider_vtable;
 
-	slider->markerImage = NULL;
-	slider->backgroundImage = NULL;
-	slider->disabledBackgroundImage = NULL;
+	slider->markerImage = (guiImage*)&sliderDefImageMarker;
+	slider->backgroundImage = (guiImage*)&sliderDefImageBack;
+	slider->disabledBackgroundImage = (guiImage*)&sliderDefImageBack;
 	slider->end = maxScale;
 	slider->start = 0;
 	slider_setOrientation(slider, SLIDER_HORIZONTAL);
 	slider_setStepLength(slider, (slider->end - slider->start) / 10);
-	slider_setMarkerLength(slider, 10);
+	int markerLen = (slider->markerImage ? 
+		(slider_getOrientation(slider) == SLIDER_HORIZONTAL ? image_getWidth(*slider->markerImage) : image_getHeight(*slider->markerImage)) : 10);
+	slider_setMarkerLength(slider, markerLen);
 
 	widget_addMouseListener(&slider->widget, ME_PRESSED, slider_mousePressed);
+	widget_addMouseListener(&slider->widget, ME_DRAGGED, slider_mouseDragged);
 }
 
 static void slider_drawMarker(const guiSlider *slider, guiGraphics *graphics)
@@ -112,7 +118,7 @@ int slider_valueToMarkerPosition(const guiSlider *slider, int value)
 			 * (value  - slider_getScaleStart(slider))
 			 / (slider_getScaleEnd(slider) - slider_getScaleStart(slider)));
 
-	clamp(w, 0, slider_getMarkerLength(slider));
+	clamp(w, 0, v - slider_getMarkerLength(slider));
 
 	return w;
 }
@@ -133,5 +139,20 @@ void slider_mousePressed(void *widget, guiMouseEvent *mouseEvent)
 		guiWidgetEvent *changed = widgetEvent_new(slider, WE_VALUE_CHANGED);
 		widget_handleEvent((guiWidget *)slider, (guiEvent *)changed, true);
 	}
+}
+
+void slider_mouseDragged(void *widget, guiMouseEvent *mouseEvent)
+{
+	guiSlider *slider = (guiSlider *)widget;
+	int val;
+	if (slider_getOrientation(slider) == SLIDER_HORIZONTAL) {
+		val = slider_markerPositionToValue(slider, mouseEvent->pos.x - slider_getMarkerLength(slider) / 2);
+	} else {
+		val = slider_markerPositionToValue(slider, widget_getHeight(slider) - mouseEvent->pos.y - slider_getMarkerLength(slider) / 2);
+	}
+	
+	slider_setValue(slider, val);
+	guiWidgetEvent *changed = widgetEvent_new(slider, WE_VALUE_CHANGED);
+	widget_handleEvent((guiWidget *)slider, (guiEvent *)changed, true);
 }
 

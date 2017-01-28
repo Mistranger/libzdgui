@@ -132,12 +132,16 @@ void initLibZDGui(void)
 	string_assign_char(str, "Option 2");
 	guiRadioButton *radio2 = radio_new(gui, str);
 	radio_adjustSize(radio2);
+	
+	guiSlider *slider = slider_new(gui, 200);
+	widget_setSize(slider, 150, 13);
 	container_addAtXY(window, radio2, 20, 60);
 	container_addAtXY(window, button, 0, 100);
 	container_addAtXY(window, button2, 0, 120);
 	container_addAtXY(window, button3, 0, 140);
 	container_addAtXY(window, scroll2, 50, 120);
 	container_addAtXY(window, label, 100, 20);
+	container_addAtXY(window, slider, 20, 220);
 	container_addAtXY(cont, window, 100, 20);
 	//container_addAtXY((guiContainer_t*)window, (guiWidget*)scroll, 20, 20);
 

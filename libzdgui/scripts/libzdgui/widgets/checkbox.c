@@ -92,7 +92,7 @@ void checkbox_draw(const guiCheckBox *checkbox, guiGraphics *graphics)
 
 	graph_drawText(graphics, widget_getFont(checkbox), width - 2, 
 		abs(image_getHeight(*checkbox->image) - font_getCharHeight(*widget_getFont(checkbox))) / 2,
-		string_cstr(checkbox_getCaption(checkbox)));
+		widget_getFontColor(checkbox), string_cstr(checkbox_getCaption(checkbox)));
 }
 
 void checkbox_adjustSize(guiCheckBox *checkbox)

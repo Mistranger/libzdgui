@@ -20,6 +20,7 @@
 #include "widgets/listbox.h"
 #include "widgets/radiobutton.h"
 #include "widgets/scrollarea.h"
+#include "widgets/slider.h"
 #include "widgets/window.h"
 
 #include "util/list.h"

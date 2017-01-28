@@ -74,9 +74,7 @@ void gui_handleMouseMove(guiGUI *gui, guiMouseEvent *event)
 					|| !widget_isVisible(w)) {
 					guiMouseEvent *left = mouseEvent_new(w, &event->pos, event->button, ME_LEFT);
 					gui_distributeEvent(gui, w, (guiEvent*)left, true, true);
-					guiInfo("Mouse left widget %d" _C_ list_size(gui->widgetsUnderMouse));
 					list_erase(gui->widgetsUnderMouse, it);
-
 					break;
 				}
 			}
@@ -120,8 +118,6 @@ void gui_handleMouseMove(guiGUI *gui, guiMouseEvent *event)
 				}
 			}
 			if (!found && gui_widgetExists(gui, widget)) {
-				guiInfo("Mouse entered widget %d" _C_ list_size(gui->widgetsUnderMouse));
-
 				guiMouseEvent *entered = mouseEvent_new(widget, &event->pos, event->button, ME_ENTERED);
 				gui_distributeEvent(gui, widget, (guiEvent*)entered, true, true);
 				list_push_front(gui->widgetsUnderMouse, widget);

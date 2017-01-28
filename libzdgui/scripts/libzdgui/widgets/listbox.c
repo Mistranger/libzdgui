@@ -15,6 +15,8 @@ guiListBox_vf_t guiListBox_vtable = {
 	widget_setFocusManager
 };
 
+const guiImage listDefImageItem = {200, 19, s"LISTITEM"};
+
 const char *ListBoxType = "ListBox";
 
 const char *listbox_typename(guiListBox *widget)
@@ -37,6 +39,8 @@ void listbox_init(guiListBox *listbox, guiScrollArea *scrollarea)
 
 	listbox->selected = -1;
 	listbox->items = list_new();
+	listbox->selectedFontColor = s"Yellow";
+	listbox->itemImage = (guiImage*)&listDefImageItem;
 	scroll_setContent(scrollarea, (guiWidget *)listbox);
 }
 
@@ -61,13 +65,14 @@ void listbox_draw(const guiListBox *listbox, guiGraphics *graphics)
 	for (listNode_t *node = listbox->items->head; node; node = node->next) {
 		string_t *s = (string_t *)node->data;
 		if (img) {
-			graph_drawImage(graphics, 0, 0, image_getImage(*img));
+			graph_drawImage(graphics, 0, y, image_getImage(*img));
 		}
 		if (i == listbox_getSelected(listbox)) {
-			// FIXME
-			graph_drawText(graphics, widget_getFont(listbox), 1, y + (height - font_getCharHeight(*widget_getFont(listbox))), s->s);
+			graph_drawText(graphics, widget_getFont(listbox), 1, y + (height - font_getCharHeight(*widget_getFont(listbox))),
+				listbox_getSelectedColor(listbox), string_cstr(s));
 		} else {
-			graph_drawText(graphics, widget_getFont(listbox), 1, y + (height - font_getCharHeight(*widget_getFont(listbox))), s->s);
+			graph_drawText(graphics, widget_getFont(listbox), 1, y + (height - font_getCharHeight(*widget_getFont(listbox))), 
+				widget_getFontColor(listbox), string_cstr(s));
 		}
 		y += height;
 	}

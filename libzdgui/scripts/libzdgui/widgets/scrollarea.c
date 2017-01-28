@@ -632,7 +632,6 @@ void scroll_mousePressed(void *widget, guiMouseEvent *mouseEvent)
 	if (rect_isPointInRect(scroll_getUpButtonDimension(scrollarea), mouseEvent->pos)) {
 		scroll_setVerticalScrollAmount(scrollarea, scroll_getVerticalScrollAmount(scrollarea)
 			- scrollarea->upButtonScrollAmount);
-		guiInfo("1");
 		scrollarea->upButtonPressed = true;
 	} else if (rect_isPointInRect(scroll_getDownButtonDimension(scrollarea), mouseEvent->pos)) {
 		scroll_setVerticalScrollAmount(scrollarea, scroll_getVerticalScrollAmount(scrollarea)
