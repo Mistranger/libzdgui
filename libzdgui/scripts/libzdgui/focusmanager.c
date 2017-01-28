@@ -4,10 +4,10 @@
 
 #include "event/event_focus.h"
 
-guiFocusManager_t* focusManager_new()
+guiFocusManager_t *focusManager_new()
 {
-	guiFocusManager_t *focusManager = new(guiFocusManager_t);
-	focusManager->widgets = vector_new(sizeof(guiWidget_t*));
+	guiFocusManager_t *focusManager = new (guiFocusManager_t);
+	focusManager->widgets = vector_new(sizeof(guiWidget_t *));
 	focusManager->focusedWidget = NULL;
 	focusManager->draggedWidget = NULL;
 	focusManager->lastPressed = NULL;
@@ -31,14 +31,14 @@ void focus_requestFocus(guiFocusManager_t *focusManager, guiWidget_t *widget)
 	}
 	int focused = -1;
 	for (size_t i = 0; i < vector_size(focusManager->widgets); ++i)	{
-		guiWidget_t *w = vector_get(focusManager->widgets, i, guiWidget_t*);
-		
-		if (vector_get(focusManager->widgets, i, guiWidget_t*) == widget) {
+		guiWidget_t *w = vector_get(focusManager->widgets, i, guiWidget_t *);
+
+		if (vector_get(focusManager->widgets, i, guiWidget_t *) == widget) {
 			focused = i;
 			break;
 		}
 	}
-	
+
 	if (focused < 0) {
 		guiError("Trying to focus a none existing widget.");
 		return;
@@ -47,16 +47,16 @@ void focus_requestFocus(guiFocusManager_t *focusManager, guiWidget_t *widget)
 	guiWidget_t *oldFocused = focus_getFocused(focusManager);
 
 	if (oldFocused != widget) {
-		focusManager->focusedWidget = vector_get(focusManager->widgets, focused, guiWidget_t*);
+		focusManager->focusedWidget = vector_get(focusManager->widgets, focused, guiWidget_t *);
 
 		if (oldFocused != NULL)	{
 			focusEvent_t *event = focusEvent_new(oldFocused, FE_FOCUSLOST);
-			widget_handleEvent(oldFocused, (event_t*)event);
+			widget_handleEvent(oldFocused, (event_t *)event, true);
 		}
 
-		focusEvent_t *event = focusEvent_new((void*)focusManager->focusedWidget, FE_FOCUSGAINED);
-		widget_handleEvent((void*)focusManager->focusedWidget, (event_t*)event);
-		
+		focusEvent_t *event = focusEvent_new((void *)focusManager->focusedWidget, FE_FOCUSGAINED);
+		widget_handleEvent((void *)focusManager->focusedWidget, (event_t *)event, true);
+
 	}
 }
 
@@ -76,8 +76,8 @@ void focus_requestModalMouseInputFocus(guiFocusManager_t *focusManager, guiWidge
 {
 	if (focusManager->modalMouseInputFocusedWidget != NULL
 		&& focusManager->modalMouseInputFocusedWidget != widget) {
-			guiWarning("Another widget already has modal focus.");
-			return;
+		guiWarning("Another widget already has modal focus.");
+		return;
 	}
 
 	focusManager->modalMouseInputFocusedWidget = widget;
@@ -100,11 +100,11 @@ void focus_releaseModalMouseInputFocus(guiFocusManager_t *focusManager, guiWidge
 void focus_focusNone(guiFocusManager_t *focusManager)
 {
 	if (focusManager->focusedWidget != NULL) {
-		guiWidget_t* focused = focusManager->focusedWidget;
+		guiWidget_t *focused = focusManager->focusedWidget;
 		focusManager->focusedWidget = NULL;
 
 		focusEvent_t *event = focusEvent_new(focused, FE_FOCUSLOST);
-		widget_handleEvent(focused, (event_t*)event);
+		widget_handleEvent(focused, (event_t *)event, true);
 	}
 }
 
@@ -121,7 +121,7 @@ void focus_removeFromManager(guiFocusManager_t *focusManager, guiWidget_t *widge
 
 	guiWidget_t *w;
 	for (size_t i = 0; i < vector_size(focusManager->widgets); ++i) {
-		if (vector_get(focusManager->widgets, i, guiWidget_t*) == widget) {
+		if (vector_get(focusManager->widgets, i, guiWidget_t *) == widget) {
 			vector_erase(focusManager->widgets, i);
 			break;
 		}

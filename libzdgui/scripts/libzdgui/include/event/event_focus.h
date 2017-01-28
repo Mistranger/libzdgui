@@ -23,9 +23,9 @@ typedef struct focusListener_s {
 	focusEventType_t type;
 } focusListener_t;
 
-focusEvent_t* focusEvent_new(void *source, int eventType);
+focusEvent_t *focusEvent_new(void *source, int eventType);
 
-focusListener_t* focusListener_new(void *handler, focusEventType_t eventType, void (*func)(void *widget, focusEvent_t *focusEvent));
+focusListener_t *focusListener_new(void *handler, focusEventType_t eventType, void (*func)(void *widget, focusEvent_t *focusEvent));
 void focus_handleEvent(eventListener_t *listener, event_t *event);
 
 #endif // EVENT_FOCUS_H_INCLUDED

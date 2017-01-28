@@ -6,12 +6,12 @@
  * @brief      Initializes the list (constructor)
  * @return     new list
  */
-list_t* list_new()
+list_t *list_new()
 {
-	list_t *new_list = new(list_t);
+	list_t *new_list = new (list_t);
 	new_list->count = 0;
-    new_list->head = NULL;
-    new_list->tail = NULL;
+	new_list->head = NULL;
+	new_list->tail = NULL;
 	return new_list;
 }
 
@@ -31,7 +31,7 @@ void list_remove(list_t *list, const void *data)
 	}
 }
 
-unsigned int list_size(const list_t* list)
+unsigned int list_size(const list_t *list)
 {
 	if (!list) {
 		return 0;
@@ -39,9 +39,9 @@ unsigned int list_size(const list_t* list)
 	return list->count;
 }
 
-void list_push_back(list_t* list, void* data)
+void list_push_back(list_t *list, void *data)
 {
-	listNode_t *elem = new(listNode_t);
+	listNode_t *elem = new (listNode_t);
 	elem->data = data;
 	elem->next = NULL;
 	if (!list->tail) { // list is empty
@@ -55,9 +55,9 @@ void list_push_back(list_t* list, void* data)
 	++list->count;
 }
 
-void list_push_front(list_t* list, void* data)
+void list_push_front(list_t *list, void *data)
 {
-	listNode_t *elem = new(listNode_t);
+	listNode_t *elem = new (listNode_t);
 	elem->data = data;
 	elem->prev = NULL;
 	if (!list->head) { // list is empty
@@ -71,7 +71,7 @@ void list_push_front(list_t* list, void* data)
 	++list->count;
 }
 
-void list_pop_front(list_t* list)
+void list_pop_front(list_t *list)
 {
 	listNode_t *elem = list->head;
 	list->head = list->head->next;
@@ -86,7 +86,7 @@ void list_pop_front(list_t* list)
 	free(elem);
 }
 
-void list_pop_back(list_t* list)
+void list_pop_back(list_t *list)
 {
 	listNode_t *elem = list->tail;
 	list->tail = list->tail->prev;
@@ -101,7 +101,7 @@ void list_pop_back(list_t* list)
 	free(elem);
 }
 
-void list_insert(list_t* list, listNode_t* at, bool before, void* data)
+void list_insert(list_t *list, listNode_t *at, bool before, void *data)
 {
 	if (!list || !at || !data) {
 		return;
@@ -110,7 +110,7 @@ void list_insert(list_t* list, listNode_t* at, bool before, void* data)
 	++list->count;
 	while (it) {
 		if (it == at) {
-			listNode_t *new_elem = new(listNode_t);
+			listNode_t *new_elem = new (listNode_t);
 			new_elem->data = data;
 			if (before) {
 				if (it->prev) {
@@ -137,7 +137,7 @@ void list_insert(list_t* list, listNode_t* at, bool before, void* data)
 					new_elem->next = NULL;
 					new_elem->prev = it;
 					it->next = new_elem;
-					
+
 					list->tail = new_elem;
 				}
 			}
@@ -146,7 +146,7 @@ void list_insert(list_t* list, listNode_t* at, bool before, void* data)
 	}
 }
 
-void* list_get(list_t *list, size_t index)
+void *list_get(list_t *list, size_t index)
 {
 	listNode_t *node;
 	for (node = list_front(list); index-- && node; node = node->next) {
@@ -154,7 +154,7 @@ void* list_get(list_t *list, size_t index)
 	return node;
 }
 
-listNode_t* list_find(list_t *list, void *data)
+listNode_t *list_find(list_t *list, void *data)
 {
 	for (listNode_t *node = list->head; node; node = node->next) {
 		if (node->data == data) {
@@ -164,7 +164,7 @@ listNode_t* list_find(list_t *list, void *data)
 	return NULL;
 }
 
-void list_erase(list_t* list, const listNode_t* what)
+void list_erase(list_t *list, const listNode_t *what)
 {
 	if (!list->count) {
 		return;
@@ -174,11 +174,11 @@ void list_erase(list_t* list, const listNode_t* what)
 			if (node == list->head) {
 				list->head = list->head->next;
 				list->head->prev = NULL;
-				
+
 			} else if (node == list->tail) {
 				list->tail = list->tail->prev;
 				list->tail->next = NULL;
-				
+
 			} else {
 				if (node->prev) {
 					node->prev->next = node->next;
@@ -187,13 +187,8 @@ void list_erase(list_t* list, const listNode_t* what)
 					node->next->prev = node->prev;
 				}
 			}
-			
-			// FIXME
-			/*
-			if (node->data) {
-				free(node->data);
-			}*/
-			//free(node);
+
+			free(node);
 			--list->count;
 			if (!list->count) {
 				list->head = list->tail = NULL;
@@ -203,7 +198,7 @@ void list_erase(list_t* list, const listNode_t* what)
 	}
 }
 
-void list_swap(list_t* list, listNode_t* elem1, listNode_t* elem2)
+void list_swap(list_t *list, listNode_t *elem1, listNode_t *elem2)
 {
 	void *temp = elem1->data;
 	elem1->data = elem2->data;

@@ -1,16 +1,16 @@
 #include "libzdgui.h"
 #include "unittest/CuTest.h"
 
-CuSuite* test_util_queue_getSuite();
-CuSuite* test_util_string_getSuite();
-CuSuite* test_util_vector_getSuite();
-CuSuite* test_util_mix_getSuite();
-CuSuite* test_util_list_getSuite();
+CuSuite *test_util_queue_getSuite();
+CuSuite *test_util_string_getSuite();
+CuSuite *test_util_vector_getSuite();
+CuSuite *test_util_mix_getSuite();
+CuSuite *test_util_list_getSuite();
 
 void RunAllTests()
 {
 	CuString *output = CuStringNew();
-	CuSuite* suite = CuSuiteNew();
+	CuSuite *suite = CuSuiteNew();
 	CuSuiteAddSuite(suite, test_util_queue_getSuite());
 	CuSuiteAddSuite(suite, test_util_string_getSuite());
 	CuSuiteAddSuite(suite, test_util_vector_getSuite());

@@ -40,14 +40,14 @@
 
 #define GUI_IsMouseInsideElement(GID, x, y) \
 	((#x >= GUIPool[#GID].ax && #x < GUIPool[#GID].ax + GUIPool[#GID].width && #y >= GUIPool[#GID].ay && #y < GUIPool[#GID].ay + GUIPool[#GID].height) \
-	? 1 \
-	: 0)
-	
+	 ? 1 \
+	 : 0)
+
 #define GUI_IsElementInsideElement(GID, inside) \
 	((GUIPool[#GID].ax >= GUIPool[#inside].ax && GUIPool[#GID].ax < GUIPool[#inside].ax + GUIPool[#inside].width \
-	&& GUIPool[#GID].ay >= GUIPool[#inside].ay && GUIPool[#GID].ay < GUIPool[#inside].ay + GUIPool[#inside].height) \
-	? 1 \
-	: 0)
+	  && GUIPool[#GID].ay >= GUIPool[#inside].ay && GUIPool[#GID].ay < GUIPool[#inside].ay + GUIPool[#inside].height) \
+	 ? 1 \
+	 : 0)
 
 /*
 --------------------------------------------------------------------------------------------------------
@@ -55,9 +55,9 @@
 --------------------------------------------------------------------------------------------------------
 */
 
-global GUIInfo_T 1:GUIPool[];
-global int 2:GUILast;
-global int 3:FreeGUICount;
+global GUIInfo_T 1: GUIPool[];
+global int 2: GUILast;
+global int 3: FreeGUICount;
 
 /*
 --------------------------------------------------------------------------------------------------------
@@ -84,10 +84,10 @@ enum GUIInternalFlags {
 */
 
 enum MouseState {
-   MS_NORMAL = 0,
-   MS_PRESS,
-   MS_REPEAT,
-   MS_RELEASE
+	MS_NORMAL = 0,
+	MS_PRESS,
+	MS_REPEAT,
+	MS_RELEASE
 };
 
 struct MouseInfo_T {
@@ -130,7 +130,7 @@ function int GUI_AllocNewElement(void)
 	} else {
 		freeGUI = ++GUILast;
 	}
-	
+
 	return freeGUI;
 }
 
@@ -143,14 +143,14 @@ function int GUI_CreateNewElement(
 		//GUI_ErrorMessage("GUI_CreateNewElement", "cannot allocate new element");
 		return -1;
 	}
-	
+
 	GUIPool[newElement].id = newElement;
 	GUIPool[newElement].width = width;
 	GUIPool[newElement].height = height;
 	GUIPool[newElement].flags = flags;
 	// Mark this element as non-ready
-	GUIPool[newElement].iflags = GUIPool[newElement].iflags | GIF_INIT;	
-	
-	
+	GUIPool[newElement].iflags = GUIPool[newElement].iflags | GIF_INIT;
+
+
 	return newElement;
 }

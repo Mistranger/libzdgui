@@ -21,10 +21,6 @@
 --  Defines
 ----------------------------------------------------------------------------*/
 
-// Type definitions
-
-//typedef __str __str;
-
 // ZDoom script types
 
 #define EXT [[extern("ACS")]]
@@ -45,7 +41,6 @@
 #define CLIENTSIDE [[script("Clientside")]]
 #define EVENT [[script("Event")]]
 
-
 #include "debug.h"
 
 /*----------------------------------------------------------------------------
@@ -54,21 +49,9 @@
 
 #define new(type) ((type*)malloc(sizeof(type)));
 
-__str ACS_StrParam (const char *format, ...);
 int ACS_HudMessage(int flags, int id, int color, fixed x, fixed y, fixed holdTime, __str format, ...);
 int ACS_HudMessage2(int flags, int id, int color, fixed x, fixed y, fixed holdTime, fixed oarg1, fixed oarg2, fixed oarg3, __str format, ...);
 int ACS_PrintLog(const char *format, ...);
 int ACS_PrintLogStr(__str format, ...);
-
-#define CharToStr(cstr) \
-  ( \
-   ACS_BeginStrParam(), \
-   __nprintf(cstr), \
-   ACS_EndStrParam() \
-  )
-
-
-  
-
 
 #endif // SYSTEM_H_INCLUDED

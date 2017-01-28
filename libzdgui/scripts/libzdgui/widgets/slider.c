@@ -1,6 +1,8 @@
 #include "system.h"
 
 #include "widgets/slider.h"
+
+#include "event/event_widget.h"
 #include "util/util.h"
 
 guiSlider_vf_t guiSlider_vtable = {
@@ -16,24 +18,24 @@ guiSlider_vf_t guiSlider_vtable = {
 
 const char *SliderType = "Slider";
 
-const char* slider_typename(guiSlider_t *widget)
+const char *slider_typename(guiSlider_t *widget)
 {
 	return SliderType;
 }
 
-guiSlider_t* slider_new(const int maxScale)
+guiSlider_t *slider_new(const int maxScale)
 {
-	guiSlider_t *slider = new(guiSlider_t);
+	guiSlider_t *slider = new (guiSlider_t);
 	slider_init(slider, maxScale);
 
 	return slider;
 }
 
-void slider_init(guiSlider_t* slider, const int maxScale)
+void slider_init(guiSlider_t *slider, const int maxScale)
 {
 	widget_init(&slider->widget);
 
-	slider->widget.v = (guiWidget_vf_t*)&guiSlider_vtable;
+	slider->widget.v = (guiWidget_vf_t *)&guiSlider_vtable;
 
 	slider->markerImage = NULL;
 	slider->backgroundImage = NULL;
@@ -47,7 +49,7 @@ void slider_init(guiSlider_t* slider, const int maxScale)
 	widget_addMouseListener(&slider->widget, ME_PRESSED, slider_mousePressed);
 }
 
-static void slider_drawMarker(const guiSlider_t* slider, guiGraphics_t* graphics)
+static void slider_drawMarker(const guiSlider_t *slider, guiGraphics_t *graphics)
 {
 	guiImage_t *img = slider->markerImage;
 
@@ -55,18 +57,18 @@ static void slider_drawMarker(const guiSlider_t* slider, guiGraphics_t* graphics
 		if (img) {
 			if (slider_getOrientation(slider) == SLIDER_HORIZONTAL) {
 				graph_drawImageScaled(graphics, slider_getMarkerPosition(slider), 0, image_getWidth(*img), image_getHeight(*img),
-					image_getWidth(*img), widget_getHeight(slider), image_getImage(*img));
+									  image_getWidth(*img), widget_getHeight(slider), image_getImage(*img));
 			} else {
-				graph_drawImageScaled(graphics, 0, 
-					(widget_getHeight(slider) - slider_getMarkerLength(slider)) - slider_getMarkerPosition(slider),
-					image_getWidth(*img), image_getHeight(*img),
-					widget_getHeight(slider), image_getHeight(*img), image_getImage(*img));
+				graph_drawImageScaled(graphics, 0,
+									  (widget_getHeight(slider) - slider_getMarkerLength(slider)) - slider_getMarkerPosition(slider),
+									  image_getWidth(*img), image_getHeight(*img),
+									  widget_getHeight(slider), image_getHeight(*img), image_getImage(*img));
 			}
 		}
 	}
 }
 
-void slider_draw(const guiSlider_t* slider, guiGraphics_t* graphics)
+void slider_draw(const guiSlider_t *slider, guiGraphics_t *graphics)
 {
 	guiImage_t *img;
 	if (widget_isEnabled(slider)) {
@@ -74,17 +76,17 @@ void slider_draw(const guiSlider_t* slider, guiGraphics_t* graphics)
 	} else {
 		img = slider->disabledBackgroundImage;
 	}
-	
+
 	if (img) {
 		graph_drawImageScaled(graphics, 0, 0, image_getWidth(*img), image_getHeight(*img),
-			widget_getWidth(slider), widget_getHeight(slider), image_getImage(*img));
+							  widget_getWidth(slider), widget_getHeight(slider), image_getImage(*img));
 		if (widget_isEnabled(slider)) {
 			slider_drawMarker(slider, graphics);
 		}
 	}
 }
 
-int slider_markerPositionToValue(const guiSlider_t* slider, int v)
+int slider_markerPositionToValue(const guiSlider_t *slider, int v)
 {
 	int w;
 	if (slider_getOrientation(slider) == SLIDER_HORIZONTAL) {
@@ -97,7 +99,7 @@ int slider_markerPositionToValue(const guiSlider_t* slider, int v)
 	return ((100 - pos) * slider_getScaleStart(slider) + pos * slider_getScaleEnd(slider)) / 100;
 }
 
-int slider_valueToMarkerPosition(const guiSlider_t* slider, int value)
+int slider_valueToMarkerPosition(const guiSlider_t *slider, int value)
 {
 	int v;
 	if (slider_getOrientation(slider) == SLIDER_HORIZONTAL) {
@@ -107,28 +109,29 @@ int slider_valueToMarkerPosition(const guiSlider_t* slider, int value)
 	}
 
 	int w = ((v - slider_getMarkerLength(slider))
-		* (value  - slider_getScaleStart(slider))
-		/ (slider_getScaleEnd(slider) - slider_getScaleStart(slider)));
+			 * (value  - slider_getScaleStart(slider))
+			 / (slider_getScaleEnd(slider) - slider_getScaleStart(slider)));
 
 	clamp(w, 0, slider_getMarkerLength(slider));
 
 	return w;
 }
 
-void slider_mousePressed(void* widget, mouseEvent_t* mouseEvent)
+void slider_mousePressed(void *widget, mouseEvent_t *mouseEvent)
 {
-	guiSlider_t *slider = (guiSlider_t*)widget;
+	guiSlider_t *slider = (guiSlider_t *)widget;
 	int val;
 	if (mouseEvent->button == ME_LEFT
 		&& mouseEvent->pos.x >= 0 && mouseEvent->pos.x <= widget_getWidth(slider)
 		&& mouseEvent->pos.y >= 0 && mouseEvent->pos.y <= widget_getHeight(slider)) {
-			if (slider_getOrientation(slider) == SLIDER_HORIZONTAL) {
-				val = slider_markerPositionToValue(slider, mouseEvent->pos.x - slider_getMarkerLength(slider) / 2);
-			} else {
-				val = slider_markerPositionToValue(slider, widget_getHeight(slider) - mouseEvent->pos.y - slider_getMarkerLength(slider) / 2);
-			}
-			slider_setValue(slider, val);
-			// FIXME event
+		if (slider_getOrientation(slider) == SLIDER_HORIZONTAL) {
+			val = slider_markerPositionToValue(slider, mouseEvent->pos.x - slider_getMarkerLength(slider) / 2);
+		} else {
+			val = slider_markerPositionToValue(slider, widget_getHeight(slider) - mouseEvent->pos.y - slider_getMarkerLength(slider) / 2);
 		}
+		slider_setValue(slider, val);
+		widgetEvent_t *changed = widgetEvent_new(slider, WE_VALUE_CHANGED);
+		widget_handleEvent((guiWidget_t *)slider, (event_t *)changed, true);
+	}
 }
 

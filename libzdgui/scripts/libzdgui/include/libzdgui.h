@@ -13,9 +13,12 @@
 #include "widget.h"
 
 #include "widgets/button.h"
+#include "widgets/checkbox.h"
 #include "widgets/container.h"
 #include "widgets/imagewidget.h"
 #include "widgets/label.h"
+#include "widgets/listbox.h"
+#include "widgets/radiobutton.h"
 #include "widgets/scrollarea.h"
 #include "widgets/window.h"
 

@@ -5,11 +5,10 @@
 #include "mouse.h"
 #include "util/util.h"
 
-
-void mouse_init(guiMouse_t* mouse)
+void mouse_init(guiMouse_t *mouse)
 {
-	mouse->mouseInput = new(inputMouse_t);
-	mouse->oldMouseInput = new(inputMouse_t);
+	mouse->mouseInput = new (inputMouse_t);
+	mouse->oldMouseInput = new (inputMouse_t);
 	memset(mouse->mouseInput, 0, sizeof(inputMouse_t));
 	memset(mouse->oldMouseInput, 0, sizeof(inputMouse_t));
 	mouse->mouseEventQueue = queue_init();
@@ -18,12 +17,12 @@ void mouse_init(guiMouse_t* mouse)
 
 	mouse->lastMousePressButton = MB_EMPTY;
 	mouse->lastMouseDragButton = MB_EMPTY;
-	mouse->lastMousePos = (vec2i_t){0, 0};
+	mouse->lastMousePos = (vec2i_t) {0, 0};
 	mouse->lastMousePressTime = 0;
 	mouse->mClickCount = 0;
 }
 
-void mouse_drawCursor(guiMouse_t* mouse, guiGraphics_t* graphics)
+void mouse_drawCursor(guiMouse_t *mouse, guiGraphics_t *graphics)
 {
 	if (!mouse->currentCursor) {
 		guiError("No cursor defined!");
@@ -33,9 +32,9 @@ void mouse_drawCursor(guiMouse_t* mouse, guiGraphics_t* graphics)
 	graph_drawImage(graphics, mouse->cursorPos.x, mouse->cursorPos.y, image_getImage(mouse->currentCursor->image));
 }
 
-void mouse_registerCursor(guiMouse_t* mouse, __str image, int width, int height, int hotspotX, int hotspotY)
+void mouse_registerCursor(guiMouse_t *mouse, __str image, int width, int height, int hotspotX, int hotspotY)
 {
-	guiCursor_t *cursor = new(guiCursor_t);
+	guiCursor_t *cursor = new (guiCursor_t);
 	cursor->image.filename = image;
 	cursor->image.imageWidth = width;
 	cursor->image.imageHeight = height;
@@ -48,21 +47,20 @@ void mouse_registerCursor(guiMouse_t* mouse, __str image, int width, int height,
 	guiInfo("Registered new cursor");
 }
 
-void mouse_grabMouseInput(guiMouse_t* mouse)
+void mouse_grabMouseInput(guiMouse_t *mouse)
 {
 	ACS_SetPlayerProperty(0, 1, PROP_TOTALLYFROZEN);
 }
 
-void mouse_releaseMouseInput(guiMouse_t* mouse)
+void mouse_releaseMouseInput(guiMouse_t *mouse)
 {
 	ACS_SetPlayerProperty(0, 0, PROP_TOTALLYFROZEN);
 }
 
-
-void mouse_getInput(guiMouse_t* mouse, guiGraphics_t *graphics)
+void mouse_getInput(guiMouse_t *mouse, guiGraphics_t *graphics)
 {
 	*mouse->oldMouseInput = *mouse->mouseInput;
-	
+
 	int dx = ACS_GetPlayerInput(-1, INPUT_YAW);
 	int dy = ACS_GetPlayerInput(-1, INPUT_PITCH);
 	mouse->mouseInput->pos.x += -dx	/ 35;
@@ -70,25 +68,25 @@ void mouse_getInput(guiMouse_t* mouse, guiGraphics_t *graphics)
 	clamp(mouse->mouseInput->pos.x, 0, graph_getScreenWidth(graphics));
 	clamp(mouse->mouseInput->pos.y, 0, graph_getScreenHeight(graphics));
 	mouse->cursorPos.x = mouse->mouseInput->pos.x;
-	mouse->cursorPos.y = mouse->mouseInput->pos.y;	
-	
+	mouse->cursorPos.y = mouse->mouseInput->pos.y;
+
 	int buttons = ACS_GetPlayerInput(-1, INPUT_BUTTONS);
-	
+
 	mouse->mouseInput->button = 0;
 	if (buttons & BT_ATTACK) {
 		mouse->mouseInput->button |= MB_LEFT;
 	}
-	
+
 	if (buttons & BT_ALTATTACK) {
 		mouse->mouseInput->button |= MB_RIGHT;
 	}
-	
+
 	if (mouse->mouseInput->pos.x != mouse->oldMouseInput->pos.x
 		|| mouse->mouseInput->pos.y != mouse->oldMouseInput->pos.y) {
-			mouseEvent_t *event = mouseEvent_new(NULL, &mouse->mouseInput->pos, MB_EMPTY, ME_MOVED);
-			queue_push(mouse->mouseEventQueue, event);
+		mouseEvent_t *event = mouseEvent_new(NULL, &mouse->mouseInput->pos, MB_EMPTY, ME_MOVED);
+		queue_push(mouse->mouseEventQueue, event);
 	}
-	
+
 	if (mouse->mouseInput->button != mouse->oldMouseInput->button) {
 		mouseEvent_t *event = mouseEvent_new(NULL, &mouse->mouseInput->pos, MB_EMPTY, ME_MOVED);
 		if ((mouse->mouseInput->button & MB_LEFT) && !(mouse->oldMouseInput->button & MB_LEFT)) {
@@ -107,5 +105,5 @@ void mouse_getInput(guiMouse_t* mouse, guiGraphics_t *graphics)
 			guiError("Wrong mouse buttons!");
 		}
 		queue_push(mouse->mouseEventQueue, event);
-	}	
+	}
 }

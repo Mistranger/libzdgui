@@ -26,7 +26,7 @@ typedef struct vector_s {
 --  Functions
 ----------------------------------------------------------------------------*/
 
-vector_t* vector_new(size_t elemSize);
+vector_t *vector_new(size_t elemSize);
 
 #define vector_at(_vector, _index) ((void*)((unsigned char*)((_vector)->data) + (_index)*((_vector)->elemSize)))
 #define vector_get(_vector, _index, _type) ((_type)(*(_type*)vector_at(_vector, _index)))

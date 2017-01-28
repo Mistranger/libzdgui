@@ -32,7 +32,7 @@ typedef struct focusManager_s {
 --  Functions
 ----------------------------------------------------------------------------*/
 
-guiFocusManager_t* focusManager_new();
+guiFocusManager_t *focusManager_new();
 void focusManager_delete(guiFocusManager_t *focusManager);
 
 void focus_requestFocus(guiFocusManager_t *focusManager, guiWidget_t *widget);

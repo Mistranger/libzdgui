@@ -31,15 +31,15 @@ typedef enum ScrollAreaPolicy {
 extern const char *ScrollAreaType;
 
 typedef struct guiScrollArea_vf {
-	const char* (*w_typename)(struct guiScrollArea_s *widget);
+	const char *(*w_typename)(struct guiScrollArea_s *widget);
 	void (*w_destructor)(struct guiScrollArea_s *widget);
-	struct guiRectangle_s* (*w_getChildrenArea)(const struct guiScrollArea_s* scrollarea);
-	struct guiWidget_s* (*w_getWidgetAt)(const struct guiScrollArea_s* widget, vec2i_t pos);
-	void(*w_draw)(const struct guiScrollArea_s* scrollarea, guiGraphics_t* graphics);
-	void(*w_tick)(struct guiScrollArea_s* scrollarea);
-	bool(*w_isWidgetExisting)(struct guiContainer_s* widget, const struct guiWidget_s* exist);
+	struct guiRectangle_s *(*w_getChildrenArea)(const struct guiScrollArea_s *scrollarea);
+	struct guiWidget_s *(*w_getWidgetAt)(const struct guiScrollArea_s *widget, vec2i_t pos);
+	void(*w_draw)(const struct guiScrollArea_s *scrollarea, guiGraphics_t *graphics);
+	void(*w_tick)(struct guiScrollArea_s *scrollarea);
+	bool(*w_isWidgetExisting)(struct guiContainer_s *widget, const struct guiWidget_s *exist);
 	void(*w_setFocusHandler)(struct guiContainer_s *widget, void *focus);
-	
+
 	void (*c_showWidgetPart)(struct guiScrollArea_s *container, guiWidget_t *widget, guiRectangle_t area);
 } guiScrollArea_vf_t;
 
@@ -50,6 +50,8 @@ typedef struct guiScrollArea_s {
 	int scrollBarWidth;
 	vec2i_t scrollPos;
 	ScrollAreaPolicy_t hPolicy, vPolicy;
+	dimensionListener_t *dimListener;
+	lifecycleListener_t *lifecycleListener;
 	int upButtonScrollAmount;
 	int downButtonScrollAmount;
 	int leftButtonScrollAmount;
@@ -81,53 +83,54 @@ typedef struct guiScrollArea_s {
 --  Functions
 ----------------------------------------------------------------------------*/
 
-guiScrollArea_t* scroll_new(guiGUI_t *gui, guiWidget_t *content);
-void scroll_init(guiScrollArea_t* scrollarea, guiWidget_t *content);
-static void scroll_destructor(guiScrollArea_t *scrollarea);
+guiScrollArea_t *scroll_new(guiGUI_t *gui, guiWidget_t *content);
+void scroll_init(guiScrollArea_t *scrollarea, guiWidget_t *content);
+void scroll_destructor(guiScrollArea_t *scrollarea);
+void scroll_death(void *widget, lifecycleEvent_t *event);
 
 // Virtual inherited from guiWidget_t
-const char* scroll_typename(guiScrollArea_t *widget);
-guiRectangle_t* scroll_getChildrenArea(const guiScrollArea_t* scrollarea);
-guiWidget_t* scroll_getWidgetAt(const guiScrollArea_t *scrollarea, vec2i_t pos);
-void scroll_draw(const guiScrollArea_t* scrollarea, guiGraphics_t* graphics);
+const char *scroll_typename(guiScrollArea_t *widget);
+guiRectangle_t *scroll_getChildrenArea(const guiScrollArea_t *scrollarea);
+guiWidget_t *scroll_getWidgetAt(const guiScrollArea_t *scrollarea, vec2i_t pos);
+void scroll_draw(const guiScrollArea_t *scrollarea, guiGraphics_t *graphics);
 void scroll_tick(guiScrollArea_t *scrollarea);
 
 #define scroll_getContent(_widget) \
 	(list_size(((guiContainer_t*)_widget)->children) > 0 ? ((guiWidget_t*)list_front(((guiContainer_t*)_widget)->children)->data) : NULL)
-void scroll_setContent(guiScrollArea_t* scrollarea, guiWidget_t *content);
-guiRectangle_t* scroll_getContentDimension(const guiScrollArea_t* scrollarea);
-void scroll_showWidgetPart(guiScrollArea_t* scrollarea, guiWidget_t *widget, guiRectangle_t area);
+void scroll_setContent(guiScrollArea_t *scrollarea, guiWidget_t *content);
+guiRectangle_t *scroll_getContentDimension(const guiScrollArea_t *scrollarea);
+void scroll_showWidgetPart(guiScrollArea_t *scrollarea, guiWidget_t *widget, guiRectangle_t area);
 
 // Scroll bars
-void scroll_checkPolicies(guiScrollArea_t* scrollarea);
-int scroll_getHorizontalMaxScroll(const guiScrollArea_t* scrollarea);
-int scroll_getVerticalMaxScroll(const guiScrollArea_t* scrollarea);
-guiRectangle_t* scroll_getVerticalBarDimension(const guiScrollArea_t* scrollarea);
-guiRectangle_t* scroll_getHorizontalBarDimension(const guiScrollArea_t* scrollarea);
-guiRectangle_t* scroll_getUpButtonDimension(const guiScrollArea_t* scrollarea);
-guiRectangle_t* scroll_getDownButtonDimension(const guiScrollArea_t* scrollarea);
-guiRectangle_t* scroll_getLeftButtonDimension(const guiScrollArea_t* scrollarea);
-guiRectangle_t* scroll_getRightButtonDimension(const guiScrollArea_t* scrollarea);
-guiRectangle_t* scroll_getVerticalMarkerDimension(const guiScrollArea_t* scrollarea);
-guiRectangle_t* scroll_getHorizontalMarkerDimension(const guiScrollArea_t* scrollarea);
+void scroll_checkPolicies(guiScrollArea_t *scrollarea);
+int scroll_getHorizontalMaxScroll(const guiScrollArea_t *scrollarea);
+int scroll_getVerticalMaxScroll(const guiScrollArea_t *scrollarea);
+guiRectangle_t *scroll_getVerticalBarDimension(const guiScrollArea_t *scrollarea);
+guiRectangle_t *scroll_getHorizontalBarDimension(const guiScrollArea_t *scrollarea);
+guiRectangle_t *scroll_getUpButtonDimension(const guiScrollArea_t *scrollarea);
+guiRectangle_t *scroll_getDownButtonDimension(const guiScrollArea_t *scrollarea);
+guiRectangle_t *scroll_getLeftButtonDimension(const guiScrollArea_t *scrollarea);
+guiRectangle_t *scroll_getRightButtonDimension(const guiScrollArea_t *scrollarea);
+guiRectangle_t *scroll_getVerticalMarkerDimension(const guiScrollArea_t *scrollarea);
+guiRectangle_t *scroll_getHorizontalMarkerDimension(const guiScrollArea_t *scrollarea);
 #define scroll_getScrollbarWidth(_widget) (((guiScrollArea_t*)_widget)->scrollBarWidth)
 #define scroll_setScrollbarWidth(_widget, _width) { ((guiScrollArea_t*)_widget)->scrollBarWidth = _width; }
 #define scroll_getHorizontalScrollAmount(_widget) (((guiScrollArea_t*)_widget)->scrollPos.x)
 #define scroll_getVerticalScrollAmount(_widget) (((guiScrollArea_t*)_widget)->scrollPos.y)
 #define scroll_setHorizontalScrollAmount(_widget, _amount) {            \
-	int max = scroll_getHorizontalMaxScroll((guiScrollArea_t*)_widget); \
-	((guiScrollArea_t*)_widget)->scrollPos.x = _amount;                 \
-	clamp(((guiScrollArea_t*)_widget)->scrollPos.x, 0, max);            \
- }
+		int max = scroll_getHorizontalMaxScroll((guiScrollArea_t*)_widget); \
+		((guiScrollArea_t*)_widget)->scrollPos.x = _amount;                 \
+		clamp(((guiScrollArea_t*)_widget)->scrollPos.x, 0, max);            \
+	}
 #define scroll_setVerticalScrollAmount(_widget, _amount) {              \
-	int max = scroll_getVerticalMaxScroll((guiScrollArea_t*)_widget);   \
-	((guiScrollArea_t*)_widget)->scrollPos.y = _amount;                 \
-	clamp(((guiScrollArea_t*)_widget)->scrollPos.y, 0, max);            \
- }
+		int max = scroll_getVerticalMaxScroll((guiScrollArea_t*)_widget);   \
+		((guiScrollArea_t*)_widget)->scrollPos.y = _amount;                 \
+		clamp(((guiScrollArea_t*)_widget)->scrollPos.y, 0, max);            \
+	}
 #define scroll_setScrollAmount(_hScroll, _vScroll) {                    \
-	setHorizontalScrollAmount(_hScroll);                                \
-	setVerticalScrollAmount(_vScroll);                                  \
-}
+		setHorizontalScrollAmount(_hScroll);                                \
+		setVerticalScrollAmount(_vScroll);                                  \
+	}
 
 #define scroll_getLeftButtonScrollAmount(_widget) (((guiScrollArea_t*)_widget)->leftButtonScrollAmount)
 #define scroll_setLeftButtonScrollAmount(_widget, _amount) { ((guiScrollArea_t*)_widget)->leftButtonScrollAmount = _amount; }

@@ -16,14 +16,14 @@ guiCheckBox_vf_t guiCheckBox_vtable = {
 
 const char *CheckBoxType = "CheckBox";
 
-const char* checkbox_typename(guiCheckBox_t *widget)
+const char *checkbox_typename(guiCheckBox_t *widget)
 {
 	return CheckBoxType;
 }
 
-guiCheckBox_t* checkbox_new(guiGUI_t *gui, const string_t *caption)
+guiCheckBox_t *checkbox_new(guiGUI_t *gui, const string_t *caption)
 {
-	guiCheckBox_t *checkbox = new(guiCheckBox_t);
+	guiCheckBox_t *checkbox = new (guiCheckBox_t);
 	checkbox_init(checkbox, caption);
 	gui_addWidget(gui, checkbox);
 	return checkbox;
@@ -33,7 +33,7 @@ void checkbox_init(guiCheckBox_t *checkbox, const string_t *caption)
 {
 	widget_init(&checkbox->widget);
 
-	checkbox->widget.v = (guiWidget_vf_t*)&guiCheckBox_vtable;
+	checkbox->widget.v = (guiWidget_vf_t *)&guiCheckBox_vtable;
 
 
 	checkbox->imageChecked = NULL;
@@ -77,18 +77,17 @@ void checkbox_draw(const guiCheckBox_t *checkbox, guiGraphics_t *graphics)
 	if (checkbox->image) {
 		width = image_getWidth(*checkbox->image);
 		width += width / 2;
-	}
-	else {
+	} else {
 		width = widget_getHeight(checkbox);
 		width += width / 2;
 	}
 
-	graph_drawText(graphics, width - 2, 0, string_cstr(checkbox_getCaption(checkbox)));
+	graph_drawText(graphics, widget_getFont(checkbox), width - 2, 0, string_cstr(checkbox_getCaption(checkbox)));
 }
 
 void checkbox_mousePressed(void *widget, mouseEvent_t *mouseEvent)
 {
-	guiCheckBox_t *checkbox = (guiCheckBox_t*)widget;
+	guiCheckBox_t *checkbox = (guiCheckBox_t *)widget;
 	if (mouseEvent->button == MB_LEFT) {
 		checkbox->mouseDown = true;
 	}
@@ -96,7 +95,7 @@ void checkbox_mousePressed(void *widget, mouseEvent_t *mouseEvent)
 
 void checkbox_mouseReleased(void *widget, mouseEvent_t *mouseEvent)
 {
-	guiCheckBox_t *checkbox = (guiCheckBox_t*)widget;
+	guiCheckBox_t *checkbox = (guiCheckBox_t *)widget;
 	if (mouseEvent->button == MB_LEFT) {
 		checkbox->mouseDown = false;
 	}
@@ -104,10 +103,10 @@ void checkbox_mouseReleased(void *widget, mouseEvent_t *mouseEvent)
 
 void checkbox_mouseClicked(void *widget, mouseEvent_t *mouseEvent)
 {
-	guiCheckBox_t *checkbox = (guiCheckBox_t*)widget;
+	guiCheckBox_t *checkbox = (guiCheckBox_t *)widget;
 	if (mouseEvent->button == MB_LEFT) {
 		checkbox_setChecked(checkbox, !checkbox_isChecked(checkbox));
 		widgetEvent_t *changed = widgetEvent_new(checkbox, WE_VALUE_CHANGED);
-		widget_handleEvent((guiWidget_t*)checkbox, (event_t*)changed);
+		widget_handleEvent((guiWidget_t *)checkbox, (event_t *)changed, true);
 	}
 }

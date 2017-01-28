@@ -10,7 +10,7 @@
 #define DEBUG_ALL 0x0F
 
 // Global debug level
-#define DEBUGLEVEL DEBUG_ALL// (DEBUG_INFO + DEBUG_ERRORS + DEBUG_WARNINGS)
+#define DEBUGLEVEL (DEBUG_INFO + DEBUG_ERRORS + DEBUG_WARNINGS)
 
 #define _C_ ,
 
@@ -20,38 +20,38 @@
 #if DEBUGLEVEL > DEBUG_NONE
 #define guiAssert(cond)   \
 	do { if (!(cond)) {   \
-		PrintFunction();  \
-		abort(); }} while (0)
+			PrintFunction();  \
+			abort(); }} while (0)
 #else
-	#define guiAssert(args) {}
+#define guiAssert(args) {}
 #endif
 
 #if (DEBUGLEVEL & DEBUG_ERRORS)
-	#define guiError(args) \
-		do { PrintFunction(); ACS_PrintLogStr(s"    \CgERROR: " args); } while (0) 
+#define guiError(args) \
+	do { PrintFunction(); ACS_PrintLogStr(s"    \CgERROR: " args); } while (0)
 #else
-	#define guiError(args)
+#define guiError(args)
 #endif
 
 #if (DEBUGLEVEL & DEBUG_WARNINGS)
-	#define guiWarning(args) \
-		do { PrintFunction(); ACS_PrintLogStr(s"    \CdWARNING\C-: " args); } while (0) 
+#define guiWarning(args) \
+	do { PrintFunction(); ACS_PrintLogStr(s"    \CdWARNING\C-: " args); } while (0)
 #else
-	#define guiWarning(args)
+#define guiWarning(args)
 #endif
 
 #if (DEBUGLEVEL & DEBUG_INFO)
-	#define guiInfo(args) \
-		do { PrintFunction(); ACS_PrintLogStr(s"    \CtINFO\C-: " args); } while (0) 
+#define guiInfo(args) \
+	do { PrintFunction(); ACS_PrintLogStr(s"    \CtINFO\C-: " args); } while (0)
 #else
-	#define guiInfo(args)
+#define guiInfo(args)
 #endif
 
 #if (DEBUGLEVEL & DEBUG_DEBUG)
-	#define guiDebugPrint(args) \
-		do { PrintFunction(); ACS_PrintLogStr(s"    \CeDEBUG\C-: " args); } while (0) 
+#define guiDebugPrint(args) \
+	do { PrintFunction(); ACS_PrintLogStr(s"    \CeDEBUG\C-: " args); } while (0)
 #else
-	#define guiDebugPrint(args)
+#define guiDebugPrint(args)
 #endif
 
 #endif // DEBUG_H_INCLUDED

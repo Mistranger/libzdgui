@@ -2,20 +2,20 @@
 
 #include "util/stack.h"
 
-stack_t* stack_init()
+stack_t *stack_init()
 {
-	stack_t *new_stack = new(stack_t);
+	stack_t *new_stack = new (stack_t);
 	new_stack->count = 0;
-    new_stack->head = NULL;
+	new_stack->head = NULL;
 	return new_stack;
 }
 
-void stack_push(stack_t* stack, void* element)
+void stack_push(stack_t *stack, void *element)
 {
 	if (!stack) {
 		return;
 	}
-	stackNode_t *temp = new(stackNode_t);
+	stackNode_t *temp = new (stackNode_t);
 	temp->data = element;
 	if (!stack->head) {
 		temp->next = NULL;
@@ -27,7 +27,7 @@ void stack_push(stack_t* stack, void* element)
 	++stack->count;
 }
 
-void stack_pop(stack_t* stack)
+void stack_pop(stack_t *stack)
 {
 	if (!stack || !stack_size(stack)) {
 		return;
@@ -39,7 +39,7 @@ void stack_pop(stack_t* stack)
 	free(temp);
 }
 
-void stack_free(stackNode_t* stack)
+void stack_free(stackNode_t *stack)
 {
 	// FIXME rewrite
 	stackNode_t *temp;
@@ -51,7 +51,7 @@ void stack_free(stackNode_t* stack)
 	free(stack);
 }
 
-unsigned int stack_size(stack_t* stack)
+unsigned int stack_size(stack_t *stack)
 {
 	if (!stack) {
 		return 0;

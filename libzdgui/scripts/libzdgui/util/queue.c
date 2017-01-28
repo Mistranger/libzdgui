@@ -2,21 +2,21 @@
 
 #include "util/queue.h"
 
-queue_t* queue_init()
+queue_t *queue_init()
 {
-	queue_t *new_queue = new(queue_t);
+	queue_t *new_queue = new (queue_t);
 	new_queue->count = 0;
-    new_queue->head = NULL;
-    new_queue->tail = NULL;
+	new_queue->head = NULL;
+	new_queue->tail = NULL;
 	return new_queue;
 }
 
-void queue_remove(queue_t* queue, bool clear)
+void queue_remove(queue_t *queue, bool clear)
 {
 	//FIXME
 }
 
-unsigned int queue_size(const queue_t* queue)
+unsigned int queue_size(const queue_t *queue)
 {
 	if (!queue) {
 		return 0;
@@ -24,9 +24,9 @@ unsigned int queue_size(const queue_t* queue)
 	return queue->count;
 }
 
-void queue_push(queue_t* queue, void* data)
+void queue_push(queue_t *queue, void *data)
 {
-	queueNode_t *elem = new(queueNode_t);
+	queueNode_t *elem = new (queueNode_t);
 	elem->data = data;
 	elem->next = NULL;
 	++queue->count;
@@ -38,7 +38,7 @@ void queue_push(queue_t* queue, void* data)
 	}
 }
 
-void queue_pop(queue_t* queue)
+void queue_pop(queue_t *queue)
 {
 	if (queue->count > 0) {
 		queueNode_t *elem = queue->head;
@@ -53,12 +53,12 @@ void queue_pop(queue_t* queue)
 	}
 }
 
-void* queue_back(queue_t* queue)
+void *queue_back(queue_t *queue)
 {
 	return queue->tail->data;
 }
 
-void* queue_front(queue_t* queue)
+void *queue_front(queue_t *queue)
 {
 	return queue->head->data;
 }

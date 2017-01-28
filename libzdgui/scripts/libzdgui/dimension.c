@@ -3,7 +3,7 @@
 #include "dimension.h"
 #include "util/util.h"
 
-void rect_intersect(guiRectangle_t* rect, const guiRectangle_t* other)
+void rect_intersect(guiRectangle_t *rect, const guiRectangle_t *other)
 {
 	/*
 	int x5 = MAX(rect->pos.x, other->pos.x);
@@ -15,10 +15,10 @@ void rect_intersect(guiRectangle_t* rect, const guiRectangle_t* other)
 	rect->pos.y = y5 >= y6 ? y6 : y5;
 	rect->height = y5 >= y6 ? y5 - y6 :  y6 - y5;
 	*/
-	
+
 	rect->pos.x -= other->pos.x;
 	rect->pos.y -= other->pos.y;
-	
+
 	if (rect->pos.x < 0) {
 		rect->width += rect->pos.x;
 		rect->pos.x = 0;
@@ -28,11 +28,11 @@ void rect_intersect(guiRectangle_t* rect, const guiRectangle_t* other)
 		rect->height += rect->pos.y;
 		rect->pos.y = 0;
 	}
-	
+
 	rect->width = (rect->pos.x + rect->width > other->width) ? (other->width - rect->pos.x) : rect->width;
 	rect->height = (rect->pos.y + rect->height > other->height) ? (other->height - rect->pos.y) : rect->height;
-	
-	
+
+
 	/*if (rect->width <= 0 || rect->height <= 0) {
 		rect->height = 0;
 		rect->width = 0;

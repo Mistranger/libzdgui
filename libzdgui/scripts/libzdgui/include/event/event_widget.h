@@ -7,7 +7,7 @@
 
 typedef enum widgetEventType {
 	WE_VALUE_CHANGED = 0,
-	
+
 } widgetEventType_t;
 
 typedef struct widgetEvent_s {
@@ -20,14 +20,14 @@ typedef struct widgetListener_s {
 	union {
 		void (*listen)(void *widget, widgetEvent_t *widgetEvent);
 		void (*valueChanged)(void *widget, widgetEvent_t *widgetEvent);
-		
+
 	} types;
 	widgetEventType_t type;
 } widgetListener_t;
 
-widgetEvent_t* widgetEvent_new(void *source, widgetEventType_t eventType);
+widgetEvent_t *widgetEvent_new(void *source, widgetEventType_t eventType);
 
-widgetListener_t* widgetListener_new(void *handler, widgetEventType_t eventType, void (*func)(void *widget, widgetEvent_t *mouseEvent));
+widgetListener_t *widgetListener_new(void *handler, widgetEventType_t eventType, void (*func)(void *widget, widgetEvent_t *mouseEvent));
 void widgetListener_handleEvent(eventListener_t *listener, event_t *event);
 
 

@@ -9,9 +9,9 @@
 
 #define MIN(val1, val2) \
 	(val1 < val2 ? val1 : val2)
-	
+
 #define MAX(val1, val2) \
 	(val1 > val2 ? val1 : val2)
 
-			
+
 #endif // UTIL_H_INCLUDED

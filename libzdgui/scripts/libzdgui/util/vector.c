@@ -2,9 +2,9 @@
 
 #include "util/vector.h"
 
-vector_t* vector_new(size_t elemSize)
+vector_t *vector_new(size_t elemSize)
 {
-	vector_t *vector = new(vector_t);
+	vector_t *vector = new (vector_t);
 	vector->capacity = VECTOR_CAPACITY;
 	vector->size = 0;
 	vector->elemSize = elemSize;
@@ -12,7 +12,7 @@ vector_t* vector_new(size_t elemSize)
 	return vector;
 }
 
-inline size_t vector_size(vector_t* vector)
+inline size_t vector_size(vector_t *vector)
 {
 	if (!vector) {
 		guiError("null vector");
@@ -21,7 +21,7 @@ inline size_t vector_size(vector_t* vector)
 	return vector->size;
 }
 
-size_t vector_capacity(vector_t* vector)
+size_t vector_capacity(vector_t *vector)
 {
 	if (!vector) {
 		return 0;
@@ -29,7 +29,7 @@ size_t vector_capacity(vector_t* vector)
 	return vector->capacity;
 }
 
-void vector_resize(vector_t* vector, size_t newSize)
+void vector_resize(vector_t *vector, size_t newSize)
 {
 	if (newSize > vector->capacity) {
 		void **newData = realloc(vector->data, vector->elemSize * newSize);
@@ -38,7 +38,7 @@ void vector_resize(vector_t* vector, size_t newSize)
 			vector->capacity = newSize;
 		}
 	} else if (newSize < vector->capacity) {
-		free(&(vector->data) + newSize*vector->elemSize);
+		free(&(vector->data) + newSize * vector->elemSize);
 		vector->capacity = newSize;
 		if (vector->size > vector->capacity) {
 			vector->size = vector->capacity;
@@ -46,7 +46,7 @@ void vector_resize(vector_t* vector, size_t newSize)
 	}
 }
 
-void vector_push_back(vector_t* vector, void* data)
+void vector_push_back(vector_t *vector, void *data)
 {
 	if (vector->size == vector->capacity) {
 		vector_resize(vector, vector->size * 2);
@@ -55,7 +55,7 @@ void vector_push_back(vector_t* vector, void* data)
 	++vector->size;
 }
 
-void vector_pop_back(vector_t* vector)
+void vector_pop_back(vector_t *vector)
 {
 	if (!vector->size) {
 		guiError("vector out of range");
@@ -65,7 +65,7 @@ void vector_pop_back(vector_t* vector)
 	--vector->size;
 }
 
-void vector_insert(vector_t* vector, size_t index, void* data)
+void vector_insert(vector_t *vector, size_t index, void *data)
 {
 	if (index >= vector->size) { // special case
 		vector_push_back(vector, data);
@@ -80,7 +80,7 @@ void vector_insert(vector_t* vector, size_t index, void* data)
 	++vector->size;
 }
 
-void vector_erase(vector_t* vector, size_t index)
+void vector_erase(vector_t *vector, size_t index)
 {
 	if (index >= vector->size) { // special case
 		vector_pop_back(vector);
@@ -91,7 +91,7 @@ void vector_erase(vector_t* vector, size_t index)
 	--vector->size;
 }
 
-void vector_clear(vector_t* vector)
+void vector_clear(vector_t *vector)
 {
 	vector->size = 0;
 }
