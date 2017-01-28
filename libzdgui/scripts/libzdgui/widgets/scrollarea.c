@@ -16,20 +16,20 @@ guiScrollArea_vf_t guiScrollArea_vtable = {
 
 const char *ScrollAreaType = "ScrollArea";
 
-const char *scroll_typename(guiScrollArea_t *widget)
+const char *scroll_typename(guiScrollArea *widget)
 {
 	return ScrollAreaType;
 }
 
-guiScrollArea_t *scroll_new(guiGUI_t *gui, guiWidget_t *content)
+guiScrollArea *scroll_new(guiGUI *gui, guiWidget *content)
 {
-	guiScrollArea_t *scrollarea = new (guiScrollArea_t);
+	guiScrollArea *scrollarea = new (guiScrollArea);
 	scroll_init(scrollarea, content);
 	gui_addWidget(gui, scrollarea);
 	return scrollarea;
 }
 
-void scroll_init(guiScrollArea_t *scrollarea, guiWidget_t *content)
+void scroll_init(guiScrollArea *scrollarea, guiWidget *content)
 {
 	container_init(&scrollarea->widget);
 	scrollarea->widget.widget.v = (guiWidget_vf_t *)&guiScrollArea_vtable;
@@ -46,7 +46,7 @@ void scroll_init(guiScrollArea_t *scrollarea, guiWidget_t *content)
 	scrollarea->vBarImage = NULL;
 	scrollarea->markerImage = NULL;
 
-	scrollarea->scrollPos = (vec2i_t) { 0, 0 };
+	scrollarea->scrollPos = (vec2i) { 0, 0 };
 	scrollarea->scrollBarWidth = 20;
 	scrollarea->hPolicy = SAP_AUTO;
 	scrollarea->vPolicy = SAP_AUTO;
@@ -73,7 +73,7 @@ void scroll_init(guiScrollArea_t *scrollarea, guiWidget_t *content)
 	widget_addListener(&scrollarea->widget, scrollarea->dimListener);
 }
 
-void scroll_destructor(guiScrollArea_t *scrollarea)
+void scroll_destructor(guiScrollArea *scrollarea)
 {
 	scroll_setContent(scrollarea, NULL);
 	free(scrollarea->dimListener);
@@ -81,9 +81,9 @@ void scroll_destructor(guiScrollArea_t *scrollarea)
 	container_destructor((guiContainer *)scrollarea);
 }
 
-void scroll_death(void *widget, lifecycleEvent_t *event)
+void scroll_death(void *widget, guiLifecycleEvent *event)
 {
-	guiScrollArea_t *scrollarea = (guiScrollArea_t *)widget;
+	guiScrollArea *scrollarea = (guiScrollArea *)widget;
 	listNode_t *remove = list_find(((guiContainer *)scrollarea)->children, event_getSource(event));
 	if (!remove) {
 		guiError("There is no such widget in this container.");
@@ -91,7 +91,7 @@ void scroll_death(void *widget, lifecycleEvent_t *event)
 	list_erase(((guiContainer *)scrollarea)->children, remove);
 }
 
-void scroll_checkPolicies(guiScrollArea_t *scrollarea)
+void scroll_checkPolicies(guiScrollArea *scrollarea)
 {
 	if (!scroll_getContent(scrollarea)) {
 		scrollarea->hBarVisible = (scrollarea->hPolicy == SAP_ALWAYS);
@@ -101,7 +101,7 @@ void scroll_checkPolicies(guiScrollArea_t *scrollarea)
 
 	int w = widget_getWidth(scrollarea);
 	int h = widget_getHeight(scrollarea);
-	guiWidget_t *content = scroll_getContent(scrollarea);
+	guiWidget *content = scroll_getContent(scrollarea);
 
 	scrollarea->hBarVisible = false;
 	scrollarea->vBarVisible = false;
@@ -161,15 +161,15 @@ void scroll_checkPolicies(guiScrollArea_t *scrollarea)
 	}
 }
 
-void scroll_setContent(guiScrollArea_t *scrollarea, guiWidget_t *content)
+void scroll_setContent(guiScrollArea *scrollarea, guiWidget *content)
 {
 	if (content) {
 		container_add((guiContainer *)scrollarea, content);
-		widget_setPosition(scrollarea, ((vec2i_t) {0, 0}));
+		widget_setPosition(scrollarea, ((vec2i) {0, 0}));
 		widget_addListener(content, scrollarea->dimListener);
 	} else {
 		if (list_size(((guiContainer *)scrollarea)->children)) {
-			guiWidget_t *w = (guiWidget_t*)list_front(((guiContainer *)scrollarea)->children)->data;
+			guiWidget *w = (guiWidget*)list_front(((guiContainer *)scrollarea)->children)->data;
 			widget_removeListener(w, scrollarea->dimListener);
 			widget_removeListener(w, scrollarea->lifecycleListener);
 		}
@@ -180,33 +180,31 @@ void scroll_setContent(guiScrollArea_t *scrollarea, guiWidget_t *content)
 	scroll_checkPolicies(scrollarea);
 }
 
-int scroll_getHorizontalMaxScroll(const guiScrollArea_t *scrollarea)
+int scroll_getHorizontalMaxScroll(const guiScrollArea *scrollarea)
 {
 	if (!scroll_getContent(scrollarea)) {
 		return 0;
 	}
-	//scroll_checkPolicies(scrollarea);
 
-	guiWidget_t *content = scroll_getContent(scrollarea);
+	guiWidget *content = scroll_getContent(scrollarea);
 	//FIXME
 	int value = widget_getWidth(content) ;//- (&(guiRectangle_t)scroll_getChildrenArea(scrollarea)).width;
 	return value < 0 ? 0 : value;
 }
 
-int scroll_getVerticalMaxScroll(const guiScrollArea_t *scrollarea)
+int scroll_getVerticalMaxScroll(const guiScrollArea *scrollarea)
 {
 	if (!scroll_getContent(scrollarea)) {
 		return 0;
 	}
-	//scroll_checkPolicies(scrollarea);
 
-	guiWidget_t *content = scroll_getContent(scrollarea);
+	guiWidget *content = scroll_getContent(scrollarea);
 
 	int value = widget_getHeight(content);// - scroll_getChildrenArea(scrollarea).height;
 	return value < 0 ? 0 : value;
 }
 
-guiWidget_t *scroll_getWidgetAt(const guiScrollArea_t *scrollarea, vec2i_t pos)
+guiWidget *scroll_getWidgetAt(const guiScrollArea *scrollarea, vec2i pos)
 {
 	if (rect_isPointInRect(scroll_getChildrenArea(scrollarea), pos)) {
 		return scroll_getContent(scrollarea);
@@ -215,7 +213,7 @@ guiWidget_t *scroll_getWidgetAt(const guiScrollArea_t *scrollarea, vec2i_t pos)
 	return NULL;
 }
 
-void scroll_showWidgetPart(guiScrollArea_t *scrollarea, guiWidget_t *widget, guiRectangle_t area)
+void scroll_showWidgetPart(guiScrollArea *scrollarea, guiWidget *widget, guiRectangle area)
 {
 	if (scroll_getContent(scrollarea) != widget) {
 		guiWarning("Widget not content widget");
@@ -227,62 +225,62 @@ void scroll_showWidgetPart(guiScrollArea_t *scrollarea, guiWidget_t *widget, gui
 	scroll_setVerticalScrollAmount(scrollarea, -widget_getY(scroll_getContent(scrollarea)));
 }
 
-guiRectangle_t *scroll_getChildrenArea(const guiScrollArea_t *scrollarea)
+guiRectangle *scroll_getChildrenArea(const guiScrollArea *scrollarea)
 {
 	if (scrollarea->vBarVisible && scrollarea->hBarVisible) {
-		return &(guiRectangle_t) {
+		return &(guiRectangle) {
 			0, 0, widget_getWidth(scrollarea) - scrollarea->scrollBarWidth,
 			widget_getHeight(scrollarea) - scrollarea->scrollBarWidth
 		};
 	}
 	if (scrollarea->vBarVisible) {
-		return &(guiRectangle_t) {
+		return &(guiRectangle) {
 			0, 0, widget_getWidth(scrollarea) - scrollarea->scrollBarWidth,
 			widget_getHeight(scrollarea)
 		};
 	}
 
 	if (scrollarea->hBarVisible) {
-		return &(guiRectangle_t) {
+		return &(guiRectangle) {
 			0, 0, widget_getWidth(scrollarea),
 			widget_getHeight(scrollarea) - scrollarea->scrollBarWidth
 		};
 	}
-	return &(guiRectangle_t) {
+	return &(guiRectangle) {
 		0, 0, widget_getWidth(scrollarea),
 		widget_getHeight(scrollarea)
 	};
 }
 
-guiRectangle_t *scroll_getContentDimension(const guiScrollArea_t *scrollarea)
+guiRectangle *scroll_getContentDimension(const guiScrollArea *scrollarea)
 {
 	if (scrollarea->vBarVisible && scrollarea->hBarVisible) {
-		return &(guiRectangle_t) {
+		return &(guiRectangle) {
 			0, 0, widget_getWidth(scrollarea) - scrollarea->scrollBarWidth,
 			widget_getHeight(scrollarea) - scrollarea->scrollBarWidth
 		};
 	}
 
 	if (scrollarea->vBarVisible) {
-		return &(guiRectangle_t) {0, 0, widget_getWidth(scrollarea) - scrollarea->scrollBarWidth, widget_getHeight(scrollarea)};
+		return &(guiRectangle) {0, 0, widget_getWidth(scrollarea) - scrollarea->scrollBarWidth, widget_getHeight(scrollarea)};
 	}
 
 	if (scrollarea->hBarVisible) {
-		return &(guiRectangle_t) {
+		return &(guiRectangle) {
 			0, 0, widget_getWidth(scrollarea), widget_getHeight(scrollarea) - scrollarea->scrollBarWidth
 		};
 	}
 
-	return &(guiRectangle_t) {
+	return &(guiRectangle) {
 		0, 0, widget_getWidth(scrollarea),
 		widget_getHeight(scrollarea)
 	};
 }
 
-guiRectangle_t *scroll_getVerticalBarDimension(const guiScrollArea_t *scrollarea)
+guiRectangle *scroll_getVerticalBarDimension(const guiScrollArea *scrollarea)
 {
 	if (!scrollarea->vBarVisible) {
-		return &(guiRectangle_t) {0, 0, 0, 0};
+		return &(guiRectangle) {0, 0, 0, 0};
 	}
 
 	if (scrollarea->hBarVisible) {
@@ -294,7 +292,7 @@ guiRectangle_t *scroll_getVerticalBarDimension(const guiScrollArea_t *scrollarea
 					  - (scroll_getUpButtonDimension(scrollarea))->height
 					  - (scroll_getDownButtonDimension(scrollarea))->height
 					  - scrollarea->scrollBarWidth);
-		return &(guiRectangle_t) {
+		return &(guiRectangle) {
 			widget_getWidth(scrollarea) - scrollarea->scrollBarWidth,
 							(scroll_getUpButtonDimension(scrollarea))->height,
 							scrollarea->scrollBarWidth,
@@ -305,7 +303,7 @@ guiRectangle_t *scroll_getVerticalBarDimension(const guiScrollArea_t *scrollarea
 		};
 	}
 
-	return &(guiRectangle_t) {
+	return &(guiRectangle) {
 		widget_getWidth(scrollarea) - scrollarea->scrollBarWidth,
 						(scroll_getUpButtonDimension(scrollarea))->height,
 						scrollarea->scrollBarWidth,
@@ -315,14 +313,14 @@ guiRectangle_t *scroll_getVerticalBarDimension(const guiScrollArea_t *scrollarea
 	};
 }
 
-guiRectangle_t *scroll_getHorizontalBarDimension(const guiScrollArea_t *scrollarea)
+guiRectangle *scroll_getHorizontalBarDimension(const guiScrollArea *scrollarea)
 {
 	if (!scrollarea->hBarVisible) {
-		return &(guiRectangle_t) {0, 0, 0, 0};
+		return &(guiRectangle) {0, 0, 0, 0};
 	}
 
 	if (scrollarea->vBarVisible) {
-		return &(guiRectangle_t) {
+		return &(guiRectangle) {
 			(scroll_getLeftButtonDimension(scrollarea))->width,
 			widget_getHeight(scrollarea) - scrollarea->scrollBarWidth,
 			widget_getWidth(scrollarea)
@@ -333,7 +331,7 @@ guiRectangle_t *scroll_getHorizontalBarDimension(const guiScrollArea_t *scrollar
 		};
 	}
 
-	return &(guiRectangle_t) {
+	return &(guiRectangle) {
 		(scroll_getLeftButtonDimension(scrollarea))->width,
 		widget_getHeight(scrollarea) - scrollarea->scrollBarWidth,
 		widget_getWidth(scrollarea)
@@ -343,13 +341,13 @@ guiRectangle_t *scroll_getHorizontalBarDimension(const guiScrollArea_t *scrollar
 	};
 }
 
-guiRectangle_t *scroll_getUpButtonDimension(const guiScrollArea_t *scrollarea)
+guiRectangle *scroll_getUpButtonDimension(const guiScrollArea *scrollarea)
 {
 	if (!scrollarea->vBarVisible) {
-		return &(guiRectangle_t) {0, 0, 0, 0};
+		return &(guiRectangle) {0, 0, 0, 0};
 	}
 
-	return &(guiRectangle_t) {
+	return &(guiRectangle) {
 		widget_getWidth(scrollarea) - scrollarea->scrollBarWidth,
 						0,
 						scrollarea->scrollBarWidth,
@@ -357,14 +355,14 @@ guiRectangle_t *scroll_getUpButtonDimension(const guiScrollArea_t *scrollarea)
 	};
 }
 
-guiRectangle_t *scroll_getDownButtonDimension(const guiScrollArea_t *scrollarea)
+guiRectangle *scroll_getDownButtonDimension(const guiScrollArea *scrollarea)
 {
 	if (!scrollarea->vBarVisible) {
-		return &(guiRectangle_t) {0, 0, 0, 0};
+		return &(guiRectangle) {0, 0, 0, 0};
 	}
 
 	if (scrollarea->vBarVisible && scrollarea->hBarVisible)	{
-		return &(guiRectangle_t) {
+		return &(guiRectangle) {
 			widget_getWidth(scrollarea) - scrollarea->scrollBarWidth,
 							widget_getHeight(scrollarea) - scrollarea->scrollBarWidth * 2,
 							scrollarea->scrollBarWidth,
@@ -372,7 +370,7 @@ guiRectangle_t *scroll_getDownButtonDimension(const guiScrollArea_t *scrollarea)
 		};
 	}
 
-	return &(guiRectangle_t) {
+	return &(guiRectangle) {
 		widget_getWidth(scrollarea) - scrollarea->scrollBarWidth,
 						widget_getHeight(scrollarea) - scrollarea->scrollBarWidth,
 						scrollarea->scrollBarWidth,
@@ -380,13 +378,13 @@ guiRectangle_t *scroll_getDownButtonDimension(const guiScrollArea_t *scrollarea)
 	};
 }
 
-guiRectangle_t *scroll_getLeftButtonDimension(const guiScrollArea_t *scrollarea)
+guiRectangle *scroll_getLeftButtonDimension(const guiScrollArea *scrollarea)
 {
 	if (!scrollarea->hBarVisible) {
-		return &(guiRectangle_t) {0, 0, 0, 0};
+		return &(guiRectangle) {0, 0, 0, 0};
 	}
 
-	return &(guiRectangle_t) {
+	return &(guiRectangle) {
 		0,
 		widget_getHeight(scrollarea) - scrollarea->scrollBarWidth,
 		scrollarea->scrollBarWidth,
@@ -394,14 +392,14 @@ guiRectangle_t *scroll_getLeftButtonDimension(const guiScrollArea_t *scrollarea)
 	};
 }
 
-guiRectangle_t *scroll_getRightButtonDimension(const guiScrollArea_t *scrollarea)
+guiRectangle *scroll_getRightButtonDimension(const guiScrollArea *scrollarea)
 {
 	if (!scrollarea->hBarVisible) {
-		return &(guiRectangle_t) {0, 0, 0, 0};
+		return &(guiRectangle) {0, 0, 0, 0};
 	}
 
 	if (scrollarea->vBarVisible && scrollarea->hBarVisible) {
-		return &(guiRectangle_t) {
+		return &(guiRectangle) {
 			widget_getWidth(scrollarea) - scrollarea->scrollBarWidth * 2,
 							widget_getHeight(scrollarea) - scrollarea->scrollBarWidth,
 							scrollarea->scrollBarWidth,
@@ -409,7 +407,7 @@ guiRectangle_t *scroll_getRightButtonDimension(const guiScrollArea_t *scrollarea
 		};
 	}
 
-	return &(guiRectangle_t) {
+	return &(guiRectangle) {
 		widget_getWidth(scrollarea) - scrollarea->scrollBarWidth,
 						widget_getHeight(scrollarea) - scrollarea->scrollBarWidth,
 						scrollarea->scrollBarWidth,
@@ -417,15 +415,15 @@ guiRectangle_t *scroll_getRightButtonDimension(const guiScrollArea_t *scrollarea
 	};
 }
 
-guiRectangle_t *scroll_getVerticalMarkerDimension(const guiScrollArea_t *scrollarea)
+guiRectangle *scroll_getVerticalMarkerDimension(const guiScrollArea *scrollarea)
 {
 	if (!scrollarea->vBarVisible) {
-		return &(guiRectangle_t) {0, 0, 0, 0};
+		return &(guiRectangle) {0, 0, 0, 0};
 	}
 
 	int length, pos;
-	guiRectangle_t barDim = *scroll_getVerticalBarDimension(scrollarea);
-	guiWidget_t *content = scroll_getContent(scrollarea);
+	guiRectangle barDim = *scroll_getVerticalBarDimension(scrollarea);
+	guiWidget *content = scroll_getContent(scrollarea);
 
 	if (content && widget_getHeight(content) != 0)	{
 		length = image_getHeight(*scrollarea->markerImage);
@@ -446,18 +444,18 @@ guiRectangle_t *scroll_getVerticalMarkerDimension(const guiScrollArea_t *scrolla
 		pos = 0;
 	}
 
-	return &(guiRectangle_t) {barDim.pos.x, barDim.pos.y + pos, scrollarea->scrollBarWidth, length};
+	return &(guiRectangle) {barDim.pos.x, barDim.pos.y + pos, scrollarea->scrollBarWidth, length};
 }
 
-guiRectangle_t *scroll_getHorizontalMarkerDimension(const guiScrollArea_t *scrollarea)
+guiRectangle *scroll_getHorizontalMarkerDimension(const guiScrollArea *scrollarea)
 {
 	if (!scrollarea->hBarVisible) {
-		return &(guiRectangle_t) { 0, 0, 0, 0 };
+		return &(guiRectangle) { 0, 0, 0, 0 };
 	}
 
 	int length, pos;
-	guiRectangle_t barDim = *scroll_getHorizontalBarDimension(scrollarea);
-	guiWidget_t *content = scroll_getContent(scrollarea);
+	guiRectangle barDim = *scroll_getHorizontalBarDimension(scrollarea);
+	guiWidget *content = scroll_getContent(scrollarea);
 
 	if (content && widget_getWidth(content) != 0) {
 		length = image_getWidth(*scrollarea->markerImage);
@@ -480,7 +478,7 @@ guiRectangle_t *scroll_getHorizontalMarkerDimension(const guiScrollArea_t *scrol
 		pos = 0;
 	}
 
-	return &(guiRectangle_t) {
+	return &(guiRectangle) {
 		barDim.pos.x + pos, barDim.pos.y, length, scrollarea->scrollBarWidth
 	};
 }
@@ -490,9 +488,9 @@ guiRectangle_t *scroll_getHorizontalMarkerDimension(const guiScrollArea_t *scrol
 }
 */
 
-static void scroll_drawHBar(const guiScrollArea_t *scrollarea, guiGraphics_t *graphics)
+static void scroll_drawHBar(const guiScrollArea *scrollarea, guiGraphics *graphics)
 {
-	guiRectangle_t dim = *scroll_getHorizontalBarDimension(scrollarea);
+	guiRectangle dim = *scroll_getHorizontalBarDimension(scrollarea);
 	graph_pushClipArea(graphics, dim);
 	graph_drawImageScaled(graphics, 0, 0,
 						  image_getWidth(*scrollarea->hBarImage),
@@ -501,9 +499,9 @@ static void scroll_drawHBar(const guiScrollArea_t *scrollarea, guiGraphics_t *gr
 	graph_popClipArea(graphics);
 }
 
-static void scroll_drawVBar(const guiScrollArea_t *scrollarea, guiGraphics_t *graphics)
+static void scroll_drawVBar(const guiScrollArea *scrollarea, guiGraphics *graphics)
 {
-	guiRectangle_t dim = *scroll_getVerticalBarDimension(scrollarea);
+	guiRectangle dim = *scroll_getVerticalBarDimension(scrollarea);
 
 	graph_pushClipArea(graphics, dim);
 	graph_drawImageScaled(graphics, 0, 0,
@@ -513,7 +511,7 @@ static void scroll_drawVBar(const guiScrollArea_t *scrollarea, guiGraphics_t *gr
 	graph_popClipArea(graphics);
 }
 
-void scroll_draw(const guiScrollArea_t *scrollarea, guiGraphics_t *graphics)
+void scroll_draw(const guiScrollArea *scrollarea, guiGraphics *graphics)
 {
 	// Check if we have all required graphics
 	if (!scrollarea->upButtonImage || !scrollarea->downButtonImage || !scrollarea->leftButtonImage
@@ -525,7 +523,7 @@ void scroll_draw(const guiScrollArea_t *scrollarea, guiGraphics_t *graphics)
 		return;
 	}
 	guiDebugPrint("drawing scrollarea");
-	guiRectangle_t dim;
+	guiRectangle dim;
 
 	if (scrollarea->vBarVisible) {
 		if (scrollarea->upButtonPressed) {
@@ -605,9 +603,9 @@ void scroll_draw(const guiScrollArea_t *scrollarea, guiGraphics_t *graphics)
 							  dim.width, dim.height,
 							  image_getImage(*scrollarea->markerImage));
 	}
-	guiWidget_t *content = scroll_getContent(scrollarea);
+	guiWidget *content = scroll_getContent(scrollarea);
 	if (content && (widget_isVisible(content))) {
-		guiRectangle_t contdim = widget_getDimensions(content);
+		guiRectangle contdim = widget_getDimensions(content);
 		graph_pushClipArea(graphics, *scroll_getContentDimension(scrollarea));
 		graph_pushClipArea(graphics, contdim);
 		content->v->w_draw(content, graphics);
@@ -616,24 +614,25 @@ void scroll_draw(const guiScrollArea_t *scrollarea, guiGraphics_t *graphics)
 	}
 }
 
-void scroll_tick(guiScrollArea_t *scrollarea)
+void scroll_tick(guiScrollArea *scrollarea)
 {
 	scroll_setVerticalScrollAmount(scrollarea, scroll_getVerticalScrollAmount(scrollarea));
 	scroll_setHorizontalScrollAmount(scrollarea, scroll_getHorizontalScrollAmount(scrollarea));
 	if (scroll_getContent(scrollarea) != NULL) {
-		vec2i_t pos = {-scrollarea->scrollPos.x, -scrollarea->scrollPos.y};
+		vec2i pos = {-scrollarea->scrollPos.x, -scrollarea->scrollPos.y};
 		widget_setPosition(scroll_getContent(scrollarea), pos);
 		scroll_getContent(scrollarea)->v->w_tick(scroll_getContent(scrollarea));
 	}
 }
 
-void scroll_mousePressed(void *widget, mouseEvent_t *mouseEvent)
+void scroll_mousePressed(void *widget, guiMouseEvent *mouseEvent)
 {
-	guiScrollArea_t *scrollarea = (guiScrollArea_t *)widget;
+	guiScrollArea *scrollarea = (guiScrollArea *)widget;
 
 	if (rect_isPointInRect(scroll_getUpButtonDimension(scrollarea), mouseEvent->pos)) {
 		scroll_setVerticalScrollAmount(scrollarea, scroll_getVerticalScrollAmount(scrollarea)
-									   - scrollarea->upButtonScrollAmount);
+			- scrollarea->upButtonScrollAmount);
+		guiInfo("1");
 		scrollarea->upButtonPressed = true;
 	} else if (rect_isPointInRect(scroll_getDownButtonDimension(scrollarea), mouseEvent->pos)) {
 		scroll_setVerticalScrollAmount(scrollarea, scroll_getVerticalScrollAmount(scrollarea)
@@ -677,14 +676,14 @@ void scroll_mousePressed(void *widget, mouseEvent_t *mouseEvent)
 	}
 }
 
-void scroll_mouseDragged(void *widget, mouseEvent_t *mouseEvent)
+void scroll_mouseDragged(void *widget, guiMouseEvent *mouseEvent)
 {
-	guiScrollArea_t *scrollarea = (guiScrollArea_t *)widget;
+	guiScrollArea *scrollarea = (guiScrollArea *)widget;
 	if (scrollarea->isVerticalMarkerDragged) {
 		int pos = mouseEvent->pos.y - scroll_getVerticalBarDimension(scrollarea)->pos.y - scrollarea->verticalMarkerDragOffset;
 		int length = scroll_getVerticalMarkerDimension(scrollarea)->height;
 
-		guiRectangle_t barDim = *scroll_getVerticalBarDimension(scrollarea);
+		guiRectangle barDim = *scroll_getVerticalBarDimension(scrollarea);
 
 		if ((barDim.height - length) > 0) {
 			scroll_setVerticalScrollAmount(scrollarea, (scroll_getVerticalMaxScroll(scrollarea) * pos) / (barDim.height - length));
@@ -697,7 +696,7 @@ void scroll_mouseDragged(void *widget, mouseEvent_t *mouseEvent)
 		int pos = mouseEvent->pos.x - scroll_getHorizontalBarDimension(scrollarea)->pos.x - scrollarea->horizontalMarkerDragOffset;
 		int length = scroll_getHorizontalMarkerDimension(scrollarea)->width;
 
-		guiRectangle_t barDim = *scroll_getHorizontalBarDimension(scrollarea);
+		guiRectangle barDim = *scroll_getHorizontalBarDimension(scrollarea);
 
 		if ((barDim.width - length) > 0) {
 			scroll_setHorizontalScrollAmount(scrollarea, (scroll_getHorizontalMaxScroll(scrollarea) * pos) / (barDim.width - length));
@@ -707,9 +706,9 @@ void scroll_mouseDragged(void *widget, mouseEvent_t *mouseEvent)
 	}
 }
 
-void scroll_mouseReleased(void *widget, mouseEvent_t *mouseEvent)
+void scroll_mouseReleased(void *widget, guiMouseEvent *mouseEvent)
 {
-	guiScrollArea_t *scrollarea = (guiScrollArea_t *)widget;
+	guiScrollArea *scrollarea = (guiScrollArea *)widget;
 	scrollarea->upButtonPressed = false;
 	scrollarea->downButtonPressed = false;
 	scrollarea->leftButtonPressed = false;
@@ -718,8 +717,8 @@ void scroll_mouseReleased(void *widget, mouseEvent_t *mouseEvent)
 	scrollarea->isVerticalMarkerDragged = false;
 }
 
-void scroll_resized(void *widget, dimensionEvent_t *dimensionEvent)
+void scroll_resized(void *widget, guiDimensionEvent *dimensionEvent)
 {
-	scroll_checkPolicies((guiScrollArea_t *)widget);
+	scroll_checkPolicies((guiScrollArea *)widget);
 }
 

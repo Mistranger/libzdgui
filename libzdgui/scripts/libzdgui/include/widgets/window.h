@@ -29,34 +29,41 @@ typedef enum WindowButtons {
 	WB_MINIMIZE = 0x00000002,
 } WindowButtons_t;
 
-struct guiWindow_s;
+struct guiWindow;
 
 typedef struct guiWindow_vf {
-	const char *(*w_typename)(struct guiWindow_s *widget);
-	void (*w_destructor)(struct guiWindow_s *widget);
-	struct guiRectangle_s *(*w_getChildrenArea)(const struct guiWindow_s *window);
-	struct guiWidget_s *(*w_getWidgetAt)(const struct guiContainer *widget, vec2i_t pos);
-	void (*w_draw)(const struct guiWindow_s *window, guiGraphics_t *graphics);
+	const char *(*w_typename)(struct guiWindow *widget);
+	void (*w_destructor)(struct guiWindow *widget);
+	struct guiRectangle *(*w_getChildrenArea)(const struct guiWindow *window);
+	struct guiWidget *(*w_getWidgetAt)(const struct guiContainer *widget, vec2i pos);
+	void (*w_draw)(const struct guiWindow *window, guiGraphics *graphics);
 	void (*w_tick)(struct guiContainer *widget);
-	bool (*w_isWidgetExisting)(struct guiContainer *widget, const struct guiWidget_s *exist);
+	bool (*w_isWidgetExisting)(struct guiContainer *widget, const struct guiWidget *exist);
 	void(*w_setFocusHandler)(struct guiContainer *widget, void *focus);
 } guiWindow_vf_t;
 
-typedef struct guiWindow_s {
+typedef struct guiWindow {
 	guiContainer widget;
 	string_t *caption;
 	bool canDrag;
 	bool isSizable;
 	bool hasTitleBar;
 
-	vec2i_t newSize;
+	guiRectangle newDim;
+	vec2i resizePos;
+	bool isHorizontalRightResizing;
+	bool isVerticalRightResizing;
+	bool isHorizontalLeftResizing;
+	bool isVerticalLeftResizing;
+	
 	bool isDragging;
-
+	vec2i dragOffset;
+	
 	WindowButtons_t windowButtons;
 	size_t padding;
 	size_t titleBarHeight;
-	guiImage_t *background;
-} guiWindow_t;
+	guiImage *background;
+} guiWindow;
 
 /*----------------------------------------------------------------------------
 --  Functions
@@ -68,39 +75,40 @@ typedef struct guiWindow_s {
  * @brief              Constructor (window initialization with caption)
  * @param caption      title caption
  */
-guiWindow_t *window_new(guiGUI_t *gui, const string_t *caption, guiImage_t *background);
-void window_init(guiWindow_t *window, const string_t *caption, guiImage_t *background);
-void window_destructor(guiWindow_t *window);
+guiWindow *window_new(guiGUI *gui, const string_t *caption, guiImage *background);
+void window_init(guiWindow *window, const string_t *caption, guiImage *background);
+void window_destructor(guiWindow *window);
 
 // Virtual inherited from guiWidget_t
 
-const char *window_typename(guiWindow_t *widget);
-guiRectangle_t *window_getChildrenArea(const guiWindow_t *window);
-void window_draw(const guiWindow_t *window, guiGraphics_t *graphics);
+const char *window_typename(guiWindow *widget);
+guiRectangle *window_getChildrenArea(const guiWindow *window);
+void window_draw(const guiWindow *window, guiGraphics *graphics);
 
 /**
  * @brief				Sets windows title caption
  * @param window
  * @param caption
  */
-void window_setCaption(guiWindow_t *window, const string_t *caption);
+void window_setCaption(guiWindow *window, const string_t *caption);
 
 /**
  * @brief 				Gets window's title caption
  * @param window
  */
-string_t *window_getCaption(const guiWindow_t *window);
+string_t *window_getCaption(const guiWindow *window);
 
 #define window_getPadding(_window) (window->padding)
 #define window_setPadding(_window, _padding) { _window->padding = _padding; }
 
-void window_resizeToContent(const guiWindow_t *window);
+void window_resizeToContent(const guiWindow *window);
 
 // Event listeners
 
-void window_mousePressed(void *widget, mouseEvent_t *mouseEvent);
-void window_mouseReleased(void *widget, mouseEvent_t *mouseEvent);
-void window_mouseMoved(void *widget, mouseEvent_t *mouseEvent);
-void window_resized(void *widget, dimensionEvent_t *dimEvent);
+void window_mousePressed(void *widget, guiMouseEvent *mouseEvent);
+void window_mouseReleased(void *widget, guiMouseEvent *mouseEvent);
+void window_mouseMoved(void *widget, guiMouseEvent *mouseEvent);
+void window_mouseDragged(void *widget, guiMouseEvent *mouseEvent);
+void window_resized(void *widget, guiDimensionEvent *dimEvent);
 
 #endif // WIDGETS_WINDOW_H_INCLUDED

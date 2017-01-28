@@ -1,18 +1,18 @@
 #include "system.h"
 #include "event/event_widget.h"
 
-widgetEvent_t *widgetEvent_new(void *source, widgetEventType_t eventType)
+guiWidgetEvent *widgetEvent_new(void *source, guiWidgetEventType eventType)
 {
-	widgetEvent_t *event = new (widgetEvent_t);
-	((event_t *)event)->eventType = EV_Widget;
-	((event_t *)event)->sourceWidget = source;
+	guiWidgetEvent *event = new (guiWidgetEvent);
+	((guiEvent *)event)->eventType = EV_Widget;
+	((guiEvent *)event)->sourceWidget = source;
 	event->type = eventType;
 	return event;
 }
 
-widgetListener_t *widgetListener_new(void *handler, widgetEventType_t eventType, void (*func)(void *widget, widgetEvent_t *mouseEvent))
+guiWidgetListener *widgetListener_new(void *handler, guiWidgetEventType eventType, void (*func)(void *widget, guiWidgetEvent *mouseEvent))
 {
-	widgetListener_t *listener = new (widgetListener_t);
+	guiWidgetListener *listener = new (guiWidgetListener);
 	listener->listener.listenerType = EV_Widget;
 	listener->listener.handlerWidget = handler;
 	listener->listener.handleEvent = widgetListener_handleEvent;
@@ -21,10 +21,10 @@ widgetListener_t *widgetListener_new(void *handler, widgetEventType_t eventType,
 	return listener;
 }
 
-void widgetListener_handleEvent(eventListener_t *listener, event_t *event)
+void widgetListener_handleEvent(guiEventListener *listener, guiEvent *event)
 {
-	widgetListener_t *widgetL = (widgetListener_t *)listener;
-	widgetEvent_t *widgetE = (widgetEvent_t *)event;
+	guiWidgetListener *widgetL = (guiWidgetListener *)listener;
+	guiWidgetEvent *widgetE = (guiWidgetEvent *)event;
 	if (widgetL->type == widgetE->type) {
 		switch (widgetL->type) {
 			case WE_VALUE_CHANGED:

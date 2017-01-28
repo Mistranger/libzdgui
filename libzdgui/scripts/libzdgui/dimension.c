@@ -3,7 +3,7 @@
 #include "dimension.h"
 #include "util/util.h"
 
-void rect_intersect(guiRectangle_t *rect, const guiRectangle_t *other)
+void rect_intersect(guiRectangle *rect, const guiRectangle *other)
 {
 	/*
 	int x5 = MAX(rect->pos.x, other->pos.x);

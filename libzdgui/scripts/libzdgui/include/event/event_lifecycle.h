@@ -6,26 +6,26 @@
 typedef enum lifecycleEventType {
 	LE_CREATED = 0,
 	LE_DESTROYED
-} lifecycleEventType_t;
+} guiLifecycleEventType;
 
-typedef struct lifecycleEvent_s {
-	event_t event;
-	lifecycleEventType_t type;
-} lifecycleEvent_t;
+typedef struct guiLifecycleEvent {
+	guiEvent event;
+	guiLifecycleEventType type;
+} guiLifecycleEvent;
 
-typedef struct lifecycleListener_s {
-	eventListener_t listener;
+typedef struct guiLifecycleListener {
+	guiEventListener listener;
 	union {
-		void (*listen)(void *widget, lifecycleEvent_t *lifeEvent);
-		void (*created)(void *widget, lifecycleEvent_t *lifeEvent);
-		void (*destroyed)(void *widget, lifecycleEvent_t *lifeEvent);
+		void (*listen)(void *widget, guiLifecycleEvent *lifeEvent);
+		void (*created)(void *widget, guiLifecycleEvent *lifeEvent);
+		void (*destroyed)(void *widget, guiLifecycleEvent *lifeEvent);
 	} types;
-	lifecycleEventType_t type;
-} lifecycleListener_t;
+	guiLifecycleEventType type;
+} guiLifecycleListener;
 
-lifecycleEvent_t *lifecycleEvent_new(void *source, lifecycleEventType_t eventType);
+guiLifecycleEvent *lifecycleEvent_new(void *source, guiLifecycleEventType eventType);
 
-lifecycleListener_t *lifecycleListener_new(void *handler, lifecycleEventType_t eventType, void (*func)(void *widget, lifecycleEvent_t *lifecycleEvent));
-void lifecycle_handleEvent(eventListener_t *listener, event_t *event);
+guiLifecycleListener *lifecycleListener_new(void *handler, guiLifecycleEventType eventType, void (*func)(void *widget, guiLifecycleEvent *lifecycleEvent));
+void lifecycle_handleEvent(guiEventListener *listener, guiEvent *event);
 
 #endif // EVENT_LIFECYCLE_H_INCLUDED

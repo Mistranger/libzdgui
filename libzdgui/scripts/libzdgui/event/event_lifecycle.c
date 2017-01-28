@@ -1,18 +1,18 @@
 #include "system.h"
 #include "event/event_lifecycle.h"
 
-lifecycleEvent_t *lifecycleEvent_new(void *source, lifecycleEventType_t eventType)
+guiLifecycleEvent *lifecycleEvent_new(void *source, guiLifecycleEventType eventType)
 {
-	lifecycleEvent_t *event = new (lifecycleEvent_t);
-	((event_t *)event)->eventType = EV_LifeCycle;
-	((event_t *)event)->sourceWidget = source;
+	guiLifecycleEvent *event = new (guiLifecycleEvent);
+	((guiEvent *)event)->eventType = EV_LifeCycle;
+	((guiEvent *)event)->sourceWidget = source;
 	event->type = eventType;
 	return event;
 }
 
-lifecycleListener_t *lifecycleListener_new(void *handler, lifecycleEventType_t eventType, void (*func)(void *widget, lifecycleEvent_t *lifecycleEvent))
+guiLifecycleListener *lifecycleListener_new(void *handler, guiLifecycleEventType eventType, void (*func)(void *widget, guiLifecycleEvent *lifecycleEvent))
 {
-	lifecycleListener_t *listener = new (lifecycleListener_t);
+	guiLifecycleListener *listener = new (guiLifecycleListener);
 	listener->listener.listenerType = EV_LifeCycle;
 	listener->listener.handlerWidget = handler;
 	listener->listener.handleEvent = lifecycle_handleEvent;
@@ -21,10 +21,10 @@ lifecycleListener_t *lifecycleListener_new(void *handler, lifecycleEventType_t e
 	return listener;
 }
 
-void lifecycle_handleEvent(eventListener_t *listener, event_t *event)
+void lifecycle_handleEvent(guiEventListener *listener, guiEvent *event)
 {
-	lifecycleListener_t *lifecycleL = (lifecycleListener_t *)listener;
-	lifecycleEvent_t *lifecycleE = (lifecycleEvent_t *)event;
+	guiLifecycleListener *lifecycleL = (guiLifecycleListener *)listener;
+	guiLifecycleEvent *lifecycleE = (guiLifecycleEvent *)event;
 	if (lifecycleL->type == lifecycleE->type) {
 		switch (lifecycleL->type) {
 			case LE_CREATED:

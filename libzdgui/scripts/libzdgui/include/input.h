@@ -2,10 +2,10 @@
 #define INPUT_H_INCLUDED
 
 
-typedef struct guiInput_s {
+typedef struct guiInput {
 	int a;
-} guiInput_t;
+} guiInput;
 
-void input_init(guiInput_t *input);
+void input_init(guiInput *input);
 
 #endif // INPUT_H_INCLUDED

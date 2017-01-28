@@ -18,6 +18,11 @@ guiButton_vf_t guiButton_vtable = {
 	widget_setFocusManager
 };
 
+const guiImage buttonDefImage = {80, 15, s"B1"};
+const guiImage buttonDefImagePressed = {80, 15, s"B1PRESS"};
+const guiImage buttonDefImageHover = {80, 15, s"B1HOVER"};
+const guiImage buttonDefImageDisabled = {80, 15, s"B1DIS"};
+
 const char *ButtonType = "Button";
 
 const char *button_typename(guiButton *widget)
@@ -25,7 +30,7 @@ const char *button_typename(guiButton *widget)
 	return ButtonType;
 }
 
-guiButton *button_new(guiGUI_t *gui, const string_t *caption)
+guiButton *button_new(guiGUI *gui, const string_t *caption)
 {
 	guiButton *button = new (guiButton);
 	button_init(button, caption);
@@ -36,7 +41,7 @@ guiButton *button_new(guiGUI_t *gui, const string_t *caption)
 void button_destructor(guiButton *button)
 {
 	string_delete(button->caption);
-	widget_destructor((guiWidget_t *)button);
+	widget_destructor((guiWidget *)button);
 }
 
 void button_init(guiButton *button, const string_t *caption)
@@ -45,14 +50,14 @@ void button_init(guiButton *button, const string_t *caption)
 
 	button->widget.v = (guiWidget_vf_t *)&guiButton_vtable;
 
-	widget_setFont(button, (guiFont_t *)&FONT_CONFONT);
+	widget_setFont(button, (guiFont *)&FONT_CONFONT);
 	widget_setFocusable(button, true);
 	button->isPressed = false;
 	button->hasMouse = false;
-	button->image = NULL;
-	button->imageDisabled = NULL;
-	button->imagePressed = NULL;
-	button->imageHover = NULL;
+	button->image = (guiImage*)&buttonDefImage;
+	button->imageDisabled = (guiImage*)&buttonDefImageDisabled;
+	button->imagePressed = (guiImage*)&buttonDefImagePressed;
+	button->imageHover = (guiImage*)&buttonDefImageHover;
 
 	button->caption = string_new_string(caption);
 	button_adjustSize(button);
@@ -62,15 +67,15 @@ void button_init(guiButton *button, const string_t *caption)
 	widget_addMouseListener(&button->widget, ME_RELEASED, button_mouseReleased);
 	widget_addMouseListener(&button->widget, ME_ENTERED, button_mouseEntered);
 	widget_addMouseListener(&button->widget, ME_LEFT, button_mouseLeft);
-	focusListener_t *focus = focusListener_new(button, FE_FOCUSLOST, button_focusLost);
+	guiFocusListener *focus = focusListener_new(button, FE_FOCUSLOST, button_focusLost);
 	widget_addListener(button, focus);
 
 }
 
-void button_draw(const guiButton *button, guiGraphics_t *graphics)
+void button_draw(const guiButton *button, guiGraphics *graphics)
 {
 	guiDebugPrint("drawing button");
-	guiImage_t *img = NULL;
+	guiImage *img = button->image;
 	if (!widget_isEnabled(button)) {
 		img = button->imageDisabled ? button->imageDisabled : button->image;
 	} else if (button_isPressed(button)) {
@@ -81,7 +86,8 @@ void button_draw(const guiButton *button, guiGraphics_t *graphics)
 	if (img) {
 		graph_drawImage(graphics, 0, 0, image_getImage(*img));
 	}
-	graph_drawText(graphics, widget_getFont(button), 0,	0, button_getCaption(button)->s);
+	graph_drawText(graphics, widget_getFont(button), button_isPressed(button) ? 1 : 0, button_isPressed(button) ? 1 : 0,
+		button_getCaption(button)->s);
 }
 
 void button_setCaption(guiButton *button, const string_t *caption)
@@ -97,14 +103,14 @@ const string_t *button_getCaption(const guiButton *button)
 void button_adjustSize(guiButton *button)
 {
 	if (button->image) {
-		widget_setSize((guiWidget_t *)button, image_getWidth(*button->image), image_getHeight(*button->image));
+		widget_setSize((guiWidget *)button, image_getWidth(*button->image), image_getHeight(*button->image));
 	} else {
-		widget_setSize((guiWidget_t *)button,
+		widget_setSize((guiWidget *)button,
 					   font_getWidthString(widget_getFont(button), button_getCaption(button), false) + 8, font_getCharHeight(*widget_getFont(button)) + 8);
 	}
 }
 
-void button_mousePressed(void *widget, mouseEvent_t *mouseEvent)
+void button_mousePressed(void *widget, guiMouseEvent *mouseEvent)
 {
 	guiButton *button = (guiButton *)widget;
 
@@ -114,7 +120,7 @@ void button_mousePressed(void *widget, mouseEvent_t *mouseEvent)
 	}
 }
 
-void button_mouseReleased(void *widget, mouseEvent_t *mouseEvent)
+void button_mouseReleased(void *widget, guiMouseEvent *mouseEvent)
 {
 	guiButton *button = (guiButton *)widget;
 	if (mouseEvent->button == MB_LEFT) {
@@ -127,19 +133,19 @@ void button_mouseReleased(void *widget, mouseEvent_t *mouseEvent)
 	}
 }
 
-void button_mouseEntered(void *widget, mouseEvent_t *mouseEvent)
+void button_mouseEntered(void *widget, guiMouseEvent *mouseEvent)
 {
 	guiButton *button = (guiButton *)widget;
 	button->hasMouse = true;
 }
 
-void button_mouseLeft(void *widget, mouseEvent_t *mouseEvent)
+void button_mouseLeft(void *widget, guiMouseEvent *mouseEvent)
 {
 	guiButton *button = (guiButton *)widget;
 	button->hasMouse = false;
 }
 
-void button_focusLost(void *widget, focusEvent_t *focusEvent)
+void button_focusLost(void *widget, guiFocusEvent *focusEvent)
 {
 	guiButton *button = (guiButton *)widget;
 	button->isPressed = false;

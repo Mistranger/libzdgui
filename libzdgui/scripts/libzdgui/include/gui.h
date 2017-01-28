@@ -9,48 +9,48 @@
 #include "mouse.h"
 #include "widget.h"
 
-typedef struct guiGUI_s {
+typedef struct guiGUI {
 	// The top widget
-	guiWidget_t *top;
-	guiGraphics_t *graphics;
-	guiInput_t *input;
-	guiMouse_t *mouse;
-	guiFocusManager_t *focusManager;
+	guiWidget *top;
+	guiGraphics *graphics;
+	guiInput *input;
+	guiMouse *mouse;
+	guiFocusManager *focusManager;
 
 	list_t *allWidgets;
 	list_t *widgetsUnderMouse;
-} guiGUI_t;
+} guiGUI;
 
 // Constructor
-void gui_init(guiGUI_t *gui, int screenWidth, int screenHeight);
-void gui_destroy(guiGUI_t *gui);
+void gui_init(guiGUI *gui, int screenWidth, int screenHeight);
+void gui_destroy(guiGUI *gui);
 
-guiWidget_t *gui_getTop(guiGUI_t *gui);
-void gui_setTop(guiGUI_t *gui, guiWidget_t *newTop);
-#define gui_getTop(_gui) (((guiGUI_t*)_gui)->top)
-#define gui_getMouse(_gui) (((guiGUI_t*)_gui)->mouse)
-#define gui_getInput(_gui) (((guiGUI_t*)_gui)->input)
-#define gui_getGraphics(_gui) (((guiGUI_t*)_gui)->graphics)
+guiWidget *gui_getTop(guiGUI *gui);
+void gui_setTop(guiGUI *gui, guiWidget *newTop);
+#define gui_getTop(_gui) (((guiGUI*)_gui)->top)
+#define gui_getMouse(_gui) (((guiGUI*)_gui)->mouse)
+#define gui_getInput(_gui) (((guiGUI*)_gui)->input)
+#define gui_getGraphics(_gui) (((guiGUI*)_gui)->graphics)
 
 // Widget access and management
-guiWidget_t *gui_getWidgetAt(guiGUI_t *gui, vec2i_t *pos);
-guiWidget_t *gui_getMouseEventSource(guiGUI_t *gui, vec2i_t *pos);
-void gui_addWidget(guiGUI_t *gui, void *widget);
-bool gui_widgetExists(guiGUI_t *gui, guiWidget_t *widget);
-void gui_deleteWidget(guiGUI_t *gui, guiWidget_t *widget);
+guiWidget *gui_getWidgetAt(guiGUI *gui, vec2i *pos);
+guiWidget *gui_getMouseEventSource(guiGUI *gui, vec2i *pos);
+void gui_addWidget(guiGUI *gui, void *widget);
+bool gui_widgetExists(guiGUI *gui, guiWidget *widget);
+void gui_deleteWidget(guiGUI *gui, guiWidget *widget);
 
 // Focus
-void gui_handleModalFocusGained(guiGUI_t *gui);
-void gui_handleModalFocusReleased(guiGUI_t *gui);
+void gui_handleModalFocusGained(guiGUI *gui);
+void gui_handleModalFocusReleased(guiGUI *gui);
 
 // Drawing and logic
-void gui_draw(guiGUI_t *gui);
-void gui_tick(guiGUI_t *gui);
+void gui_draw(guiGUI *gui);
+void gui_tick(guiGUI *gui);
 
 // Event handling functions
-void gui_handleMouseInput(guiGUI_t *gui);
-void gui_handleMousePressed(guiGUI_t *gui, event_t *event);
-void gui_handleMouseReleased(guiGUI_t *gui, event_t *event);
-void gui_distributeEvent(guiGUI_t *gui, guiWidget_t *source, event_t *event);
+void gui_handleMouseInput(guiGUI *gui);
+void gui_handleMousePressed(guiGUI *gui, guiEvent *event);
+void gui_handleMouseReleased(guiGUI *gui, guiEvent *event);
+void gui_distributeEvent(guiGUI *gui, guiWidget *source, guiEvent *event, bool force, bool toSourceOnly);
 
 #endif // GUI_H_INCLUDED

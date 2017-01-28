@@ -1,18 +1,18 @@
 #include "system.h"
 #include "fonts.h"
 
-const guiFont_t FONT_CONFONT = {8, 8, s"CONFONT"};
+const guiFont FONT_CONFONT = {8, 8, s"CONFONT"};
 
-guiFont_t *font_new(__str fontImage, int charWidth, int charHeight)
+guiFont *font_new(__str fontImage, int charWidth, int charHeight)
 {
-	guiFont_t *font = new (guiFont_t);
+	guiFont *font = new (guiFont);
 	font->f = fontImage;
 	font->charWidth = charWidth;
 	font->charHeight = charHeight;
 	return font;
 }
 
-int font_getWidthChar(const guiFont_t *font, const char *text, bool checkSpace)
+int font_getWidthChar(const guiFont *font, const char *text, bool checkSpace)
 {
 	const size_t l = strlen(text);
 	size_t size = 0;

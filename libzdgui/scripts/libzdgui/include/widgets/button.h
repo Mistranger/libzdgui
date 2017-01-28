@@ -16,37 +16,33 @@ extern const char *ButtonType;
 typedef struct guiButton_vf {
 	const char *(*w_typename)(struct guiButton *widget);
 	void (*w_destructor)(struct guiButton *widget);
-	struct guiRectangle_s *(*w_getChildrenArea)(const struct guiWidget_s *widget);
-	struct guiWidget_s *(*w_getWidgetAt)(const struct guiWidget_s *widget, vec2i_t pos);
-	void (*w_draw)(const struct guiButton *button, guiGraphics_t *graphics);
-	void (*w_tick)(struct guiWidget_s *widget);
-	bool (*w_isWidgetExisting)(struct guiWidget_s *widget, const struct guiWidget_s *exist);
-	void(*w_setFocusHandler)(struct guiWidget_s *widget, void *focus);
+	struct guiRectangle *(*w_getChildrenArea)(const struct guiWidget *widget);
+	struct guiWidget *(*w_getWidgetAt)(const struct guiWidget *widget, vec2i pos);
+	void (*w_draw)(const struct guiButton *button, guiGraphics *graphics);
+	void (*w_tick)(struct guiWidget *widget);
+	bool (*w_isWidgetExisting)(struct guiWidget *widget, const struct guiWidget *exist);
+	void(*w_setFocusHandler)(struct guiWidget *widget, void *focus);
 } guiButton_vf_t;
 
 typedef struct guiButton {
-	guiWidget_t widget;
+	guiWidget widget;
 
 	bool isPressed;
 	bool hasMouse;
 
 	string_t *caption;
-	guiImage_t *image;
-	guiImage_t *imageDisabled;
-	guiImage_t *imagePressed;
-	guiImage_t *imageHover;
+	guiImage *image;
+	guiImage *imageDisabled;
+	guiImage *imagePressed;
+	guiImage *imageHover;
 } guiButton;
 
-// Virtual inherited from guiWidget_t
+// Virtual inherited from guiWidget
 const char *button_typename(guiButton *widget);
-void button_draw(const guiButton *button, guiGraphics_t *graphics);
-//guiRectangle_t* button_getChildrenArea(const guiWidget_t *widget);
-//guiWidget_t* button_getWidgetAt(const guiWidget_t *widget, int x, int y);
-//void button_tick(guiWidget_t *widget);
-//bool button_isWidgetExisting(guiWidget_t *widget, const guiWidget_t *exist);
+void button_draw(const guiButton *button, guiGraphics *graphics);
 
 // Constructor
-guiButton *button_new(guiGUI_t *gui, const string_t *caption);
+guiButton *button_new(guiGUI *gui, const string_t *caption);
 void button_destructor(guiButton *button);
 
 void button_init(guiButton *button, const string_t *caption);
@@ -68,9 +64,9 @@ void button_adjustSize(guiButton *button);
 #define button_setImageHover(_widget, _image) { ((guiButton*)_widget)->imageHover = _image; }
 
 // Event listeners
-void button_mousePressed(void *widget, mouseEvent_t *mouseEvent);
-void button_mouseReleased(void *widget, mouseEvent_t *mouseEvent);
-void button_mouseEntered(void *widget, mouseEvent_t *mouseEvent);
-void button_mouseLeft(void *widget, mouseEvent_t *mouseEvent);
-void button_focusLost(void *widget, focusEvent_t *focusEvent);
+void button_mousePressed(void *widget, guiMouseEvent *mouseEvent);
+void button_mouseReleased(void *widget, guiMouseEvent *mouseEvent);
+void button_mouseEntered(void *widget, guiMouseEvent *mouseEvent);
+void button_mouseLeft(void *widget, guiMouseEvent *mouseEvent);
+void button_focusLost(void *widget, guiFocusEvent *focusEvent);
 #endif // WIDGETS_BUTTON_H_INCLUDED

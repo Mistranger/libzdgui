@@ -9,27 +9,29 @@
 
 #define HUDMESSAGE_ID 0x0000FFFF
 
-typedef struct guiGraphics_s {
+typedef struct guiGraphics {
 	vecstack_t *clipStack;
 	__str fontName;
 
 	int screenWidth, screenHeight;
 	int drawOrder;
-} guiGraphics_t;
+} guiGraphics;
 
-void graph_init(guiGraphics_t *graphics, int width, int height);
-void graph_beginDraw(guiGraphics_t *graphics);
-void graph_endDraw(guiGraphics_t *graphics);
-void graph_pushClipArea(guiGraphics_t *graphics, const guiRectangle_t area);
-void graph_popClipArea(guiGraphics_t *graphics);
-int graph_getScreenWidth(guiGraphics_t *graphics);
-int graph_getScreenHeight(guiGraphics_t *graphics);
+void graph_init(guiGraphics *graphics, int width, int height);
+void graph_beginDraw(guiGraphics *graphics);
+void graph_endDraw(guiGraphics *graphics);
+void graph_pushClipArea(guiGraphics *graphics, const guiRectangle area);
+void graph_popClipArea(guiGraphics *graphics);
+int graph_getScreenWidth(guiGraphics *graphics);
+int graph_getScreenHeight(guiGraphics *graphics);
 
-void graph_setFont(guiGraphics_t *graphics, __str font);
-void graph_drawImage(guiGraphics_t *graphics, int x, int y, __str image);
-void graph_drawImageScaled(guiGraphics_t *graphics, int dstX, int dstY,
+void graph_setFont(guiGraphics *graphics, __str font);
+void graph_drawRect(guiGraphics *graphics, int x, int y, int width, int height, __str color);
+void graph_drawRectAlpha(guiGraphics *graphics, int x, int y, int width, int height, __str color, fixed alpha);
+void graph_drawImage(guiGraphics *graphics, int x, int y, __str image);
+void graph_drawImageScaled(guiGraphics *graphics, int dstX, int dstY,
 						   int srcWidth, int srcHeight, int dstWidth, int dstHeight, __str image);
-void graph_drawText(guiGraphics_t *graphics, guiFont_t *font, int x, int y, const char *format, ...);
+void graph_drawText(guiGraphics *graphics, guiFont *font, int x, int y, const char *format, ...);
 
 
 #endif // GRAPHICS_H_INCLUDED

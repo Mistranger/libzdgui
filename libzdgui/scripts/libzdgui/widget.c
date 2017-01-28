@@ -19,15 +19,15 @@ guiWidget_vf_t guiWidget_vtable = {
 	widget_setFocusManager
 };
 
-const char *widget_typename(struct guiWidget_s *widget)
+const char *widget_typename(struct guiWidget *widget)
 {
 	return WidgetType;
 }
 
-void widget_destructor(guiWidget_t *widget)
+void widget_destructor(guiWidget *widget)
 {
-	lifecycleEvent_t *destroyed = lifecycleEvent_new(widget, LE_DESTROYED);
-	widget_handleEvent(widget, (event_t *)destroyed, true);
+	guiLifecycleEvent *destroyed = lifecycleEvent_new(widget, LE_DESTROYED);
+	widget_handleEvent(widget, (guiEvent *)destroyed, true);
 
 	// Destruction
 	list_delete(widget->eventListeners);
@@ -36,52 +36,52 @@ void widget_destructor(guiWidget_t *widget)
 
 void widget_addListener(void *widget, void *listener)
 {
-	list_push_back(((guiWidget_t *)widget)->eventListeners, (void *)listener);
+	list_push_back(((guiWidget *)widget)->eventListeners, (void *)listener);
 }
 
-mouseListener_t *widget_addMouseListener(void *widget,
-										 mouseEventType_t mouseType, void(*listenerFunc)(void *widget, mouseEvent_t *event))
+guiMouseListener *widget_addMouseListener(void *widget,
+										 mouseEventType_t mouseType, void(*listenerFunc)(void *widget, guiMouseEvent *event))
 {
-	mouseListener_t *listener = mouseListener_new(widget, mouseType, listenerFunc);
+	guiMouseListener *listener = mouseListener_new(widget, mouseType, listenerFunc);
 
-	list_push_back(((guiWidget_t *)widget)->eventListeners, (void *)listener);
+	list_push_back(((guiWidget *)widget)->eventListeners, (void *)listener);
 	return listener;
 }
 
 dimensionListener_t *widget_addDimensionListener(void *widget,
-												 dimensionEventType_t dimType, void(*listenerFunc)(void *widget, dimensionEvent_t *event))
+												 guiDimensionEventType dimType, void(*listenerFunc)(void *widget, guiDimensionEvent *event))
 {
 	dimensionListener_t *listener = dimensionListener_new(widget, dimType, listenerFunc);
-	list_push_back(((guiWidget_t *)widget)->eventListeners, (void *)listener);
+	list_push_back(((guiWidget *)widget)->eventListeners, (void *)listener);
 	return listener;
 }
 
-lifecycleListener_t *widget_addLifeCycleListener(void *widget,
-												 lifecycleEventType_t lifeType, void(*listenerFunc)(void *widget, lifecycleEvent_t *event))
+guiLifecycleListener *widget_addLifeCycleListener(void *widget,
+												 guiLifecycleEventType lifeType, void(*listenerFunc)(void *widget, guiLifecycleEvent *event))
 {
-	lifecycleListener_t *listener = lifecycleListener_new(widget, lifeType, listenerFunc);
-	list_push_back(((guiWidget_t *)widget)->eventListeners, (void *)listener);
+	guiLifecycleListener *listener = lifecycleListener_new(widget, lifeType, listenerFunc);
+	list_push_back(((guiWidget *)widget)->eventListeners, (void *)listener);
 	return listener;
 }
 
 void widget_removeListener(void *widget, void *listener)
 {
-	list_remove(((guiWidget_t *)widget)->eventListeners, listener);
+	list_remove(((guiWidget *)widget)->eventListeners, listener);
 }
 
-void widget_tick(guiWidget_t *widget)
+void widget_tick(guiWidget *widget)
 {
 	return;
 }
 
-void widget_draw(const guiWidget_t *widget, guiGraphics_t *graphics)
+void widget_draw(const guiWidget *widget, guiGraphics *graphics)
 {
 	return;
 }
 
-void widget_init(guiWidget_t *widget)
+void widget_init(guiWidget *widget)
 {
-	guiRectangle_t dim = {0, 0, 0, 0};
+	guiRectangle dim = {0, 0, 0, 0};
 	widget->dim = dim;
 
 	widget->isVisible = true;
@@ -90,29 +90,30 @@ void widget_init(guiWidget_t *widget)
 	widget->isContainer = false;
 
 	widget->eventListeners = list_new();
-	widget->font = (guiFont_t *)&FONT_CONFONT;
+	widget->font = (guiFont *)&FONT_CONFONT;
 	widget->parent = NULL;
+	widget->gui = NULL;
 	widget->v = &guiWidget_vtable;
 
 	guiInfo("new widget created");
 }
 
-guiRectangle_t *widget_getChildrenArea(const guiWidget_t *widget)
+guiRectangle *widget_getChildrenArea(const guiWidget *widget)
 {
-	return &(guiRectangle_t) {0, 0, 0, 0};
+	return &(guiRectangle) {0, 0, 0, 0};
 }
 
-guiWidget_t *widget_getWidgetAt(const guiWidget_t *widget, vec2i_t pos)
+guiWidget *widget_getWidgetAt(const guiWidget *widget, vec2i pos)
 {
 	return NULL;
 }
 
-bool widget_isWidgetExisting(guiWidget_t *widget, const guiWidget_t *exist)
+bool widget_isWidgetExisting(guiWidget *widget, const guiWidget *exist)
 {
 	return widget == exist ? true : false;
 }
 
-void widget_setFocusManager(guiWidget_t *widget, void *focus)
+void widget_setFocusManager(guiWidget *widget, void *focus)
 {
 	if (widget->focusManager) {
 		widget_releaseModalFocus(widget);
@@ -120,21 +121,21 @@ void widget_setFocusManager(guiWidget_t *widget, void *focus)
 	}
 
 	if (focus) {
-		focus_addToManager((guiFocusManager_t *)focus, widget);
+		focus_addToManager((guiFocusManager *)focus, widget);
 	}
 
 	widget->focusManager = focus;
 }
 
-void _widget_setFocusable(guiWidget_t *widget, bool state)
+void _widget_setFocusable(guiWidget *widget, bool state)
 {
-	if (!state && ((guiWidget_t *)widget)->isFocusable) {
-		focus_focusNone(((guiWidget_t *)widget)->focusManager);
+	if (!state && widget_isFocused(widget)) {
+		focus_focusNone(((guiWidget *)widget)->focusManager);
 	}
-	((guiWidget_t *)widget)->isFocusable = state;
+	((guiWidget *)widget)->isFocusable = state;
 }
 
-void widget_requestFocus(guiWidget_t *widget)
+void widget_requestFocus(guiWidget *widget)
 {
 	if (!widget->focusManager) {
 		guiError("No focushandler set (did you add the widget to the gui?).");
@@ -146,7 +147,7 @@ void widget_requestFocus(guiWidget_t *widget)
 	}
 }
 
-void widget_requestModalFocus(guiWidget_t *widget)
+void widget_requestModalFocus(guiWidget *widget)
 {
 	if (!widget->focusManager) {
 		guiError("No focushandler set (did you add the widget to the gui?).");
@@ -155,7 +156,7 @@ void widget_requestModalFocus(guiWidget_t *widget)
 	focus_requestModalFocus(widget->focusManager, widget);
 }
 
-void widget_requestModalMouseInputFocus(guiWidget_t *widget)
+void widget_requestModalMouseInputFocus(guiWidget *widget)
 {
 	if (!widget->focusManager) {
 		guiError("No focushandler set (did you add the widget to the gui?).");
@@ -164,7 +165,7 @@ void widget_requestModalMouseInputFocus(guiWidget_t *widget)
 	focus_requestModalMouseInputFocus(widget->focusManager, widget);
 }
 
-void widget_releaseModalFocus(guiWidget_t *widget)
+void widget_releaseModalFocus(guiWidget *widget)
 {
 	if (!widget->focusManager) {
 		return;
@@ -172,7 +173,7 @@ void widget_releaseModalFocus(guiWidget_t *widget)
 	focus_releaseModalFocus(widget->focusManager, widget);
 }
 
-void widget_releaseModalMouseInputFocus(guiWidget_t *widget)
+void widget_releaseModalMouseInputFocus(guiWidget *widget)
 {
 	if (!widget->focusManager) {
 		return;
@@ -180,7 +181,7 @@ void widget_releaseModalMouseInputFocus(guiWidget_t *widget)
 	focus_releaseModalMouseInputFocus(widget->focusManager, widget);
 }
 
-bool widget_hasModalFocus(const guiWidget_t *widget)
+bool widget_hasModalFocus(const guiWidget *widget)
 {
 	if (!widget->focusManager) {
 		guiError("No focushandler set (did you add the widget to the gui?).");
@@ -192,7 +193,7 @@ bool widget_hasModalFocus(const guiWidget_t *widget)
 	return focus_getModalFocused(widget->focusManager) == widget;
 }
 
-bool widget_hasModalMouseInputFocus(const guiWidget_t *widget)
+bool widget_hasModalMouseInputFocus(const guiWidget *widget)
 {
 	if (!widget->focusManager) {
 		guiError("No focushandler set (did you add the widget to the gui?).");
@@ -205,21 +206,21 @@ bool widget_hasModalMouseInputFocus(const guiWidget_t *widget)
 	return focus_getModalFocused(widget->focusManager) == widget;
 }
 
-void widget_setDimension(guiWidget_t *widget, const guiRectangle_t newDim)
+void widget_setDimension(guiWidget *widget, const guiRectangle newDim)
 {
-	guiRectangle_t oldDim = widget->dim;
+	guiRectangle oldDim = widget->dim;
 	widget->dim = newDim;
 	if (widget->dim.width != oldDim.width || widget->dim.height != oldDim.height) {
-		dimensionEvent_t *event = dimensionEvent_new((void *)widget, &newDim.pos, newDim.width, newDim.height, DE_RESIZED);
-		widget_handleEvent(widget, (event_t *)event, true);
+		guiDimensionEvent *event = dimensionEvent_new((void *)widget, &newDim.pos, newDim.width, newDim.height, DE_RESIZED);
+		widget_handleEvent(widget, (guiEvent *)event, true);
 	}
 	if (widget->dim.pos.x != oldDim.pos.x || widget->dim.pos.y != oldDim.pos.y) {
-		dimensionEvent_t *event = dimensionEvent_new(widget, &newDim.pos, newDim.width, newDim.height, DE_MOVED);
-		widget_handleEvent(widget, (event_t *)event, true);
+		guiDimensionEvent *event = dimensionEvent_new(widget, &newDim.pos, newDim.width, newDim.height, DE_MOVED);
+		widget_handleEvent(widget, (guiEvent *)event, true);
 	}
 }
 
-void widget_getAbsolutePosition(guiWidget_t *widget, vec2i_t *pos)
+void widget_getAbsolutePosition(guiWidget *widget, vec2i *pos)
 {
 	if (!widget->parent) {
 		pos->x = widget->dim.pos.x;
@@ -227,25 +228,25 @@ void widget_getAbsolutePosition(guiWidget_t *widget, vec2i_t *pos)
 		return;
 	}
 
-	vec2i_t parentPos;
+	vec2i parentPos;
 
 	widget_getAbsolutePosition(widget->parent, &parentPos);
 
-	guiRectangle_t rect = *widget->parent->v->w_getChildrenArea(widget->parent);
+	guiRectangle rect = *widget->parent->v->w_getChildrenArea(widget->parent);
 	pos->x = parentPos.x + widget->dim.pos.x + rect.pos.x;
 	pos->y = parentPos.y + widget->dim.pos.y + rect.pos.y;
 }
 
-void widget_handleEvent(guiWidget_t *widget, event_t *event, bool freeEvent)
+void widget_handleEvent(guiWidget *widget, guiEvent *event, bool freeEvent)
 {
 	if (!widget || !event) {
 		guiError("No widget handler or event to handle!");
 		return;
 	}
-	eventListener_t *listener;
+	guiEventListener *listener;
 
 	for (listNode_t *node = widget->eventListeners->head; node; node = node->next) {
-		listener = (eventListener_t *)node->data;
+		listener = (guiEventListener *)node->data;
 		if (listener->listenerType == event->eventType) {
 			listener->handleEvent(listener, event);
 		}

@@ -20,29 +20,29 @@
 ----------------------------------------------------------------------------*/
 
 /// Enum holding all possible mouse buttons
-typedef enum mouseButtons {
+typedef enum guiMouseButtons {
 	MB_EMPTY = 0x00,   /// No button is pressed
 	MB_LEFT = 0x01,    /// Left button is pressed
 	MB_RIGHT = 0x02,   /// Right button is pressed
 	MB_MIDDLE = 0x04   /// Middle button is pressed
-} mouseButtons_t;
+} guiMouseButtons;
 
 /// Cursor
-typedef struct guiCursor_s {
-	guiImage_t image;  /// Image used for cursor
-	vec2i_t hotspot;   /// Click position in the cursor
-} guiCursor_t;
+typedef struct guiCursor {
+	guiImage image;  /// Image used for cursor
+	vec2i hotspot;   /// Click position in the cursor
+} guiCursor;
 
 /// Structure with mouse input data
-typedef struct inputMouse_s {
-	vec2i_t pos;
-	mouseButtons_t button;
-} inputMouse_t;
+typedef struct guiMouseInput {
+	vec2i pos;
+	guiMouseButtons button;
+} guiMouseInput;
 
-typedef struct guiMouse_s {
+typedef struct guiMouse {
 	list_t *cursors;                           /// All cursors that are available
-	guiCursor_t *currentCursor;                /// Current cursor in use
-	vec2i_t cursorPos;                         /// Cursor position
+	guiCursor *currentCursor;                /// Current cursor in use
+	vec2i cursorPos;                         /// Cursor position
 	int mouseSensitivity;                      /// Overall mouse move sensitivity
 	int doubleClickDelay;                      /// Delay for double clicks
 
@@ -50,11 +50,11 @@ typedef struct guiMouse_s {
 	int lastMousePressTime;                    /// Internal: timestamp of mouse last press
 	int lastMousePressButton;                  /// Internal: last pressed button
 	int lastMouseDragButton;                   /// Internal: last button used for dragging
-	vec2i_t lastMousePos;                      /// Internal: last mouse position
+	vec2i lastMousePos;                      /// Internal: last mouse position
 
 	queue_t *mouseEventQueue;                  /// All mouse generated input first goes here
-	inputMouse_t *mouseInput, *oldMouseInput;  /// Mouse input data for current and last tic
-} guiMouse_t;
+	guiMouseInput *mouseInput, *oldMouseInput;  /// Mouse input data for current and last tic
+} guiMouse;
 
 /*----------------------------------------------------------------------------
 --  Functions
@@ -67,7 +67,7 @@ typedef struct guiMouse_s {
  *
  * @param input Mouse struct to init
  */
-void mouse_init(guiMouse_t *input);
+void mouse_init(guiMouse *input);
 
 /**
  * @brief Draws the current cursor
@@ -77,7 +77,7 @@ void mouse_init(guiMouse_t *input);
  * @param mouse Mouse subsystem
  * @param graphics Graphics subsystem
  */
-void mouse_drawCursor(guiMouse_t *mouse, guiGraphics_t *graphics);
+void mouse_drawCursor(guiMouse *mouse, guiGraphics *graphics);
 
 /**
  * @brief Registers new cursor in system
@@ -91,7 +91,7 @@ void mouse_drawCursor(guiMouse_t *mouse, guiGraphics_t *graphics);
  * @param hotspotX Cursor X click position
  * @param hotspotY Cursor Y click position
  */
-void mouse_registerCursor(guiMouse_t *mouse, __str image, int width, int height, int hotspotX, int hotspotY);
+void mouse_registerCursor(guiMouse *mouse, __str image, int width, int height, int hotspotX, int hotspotY);
 
 /**
  * @brief Put brief description here
@@ -101,12 +101,12 @@ void mouse_registerCursor(guiMouse_t *mouse, __str image, int width, int height,
  * @param mouse Put argument desc here
  * @return Put return information here
  */
-void mouse_grabMouseInput(guiMouse_t *mouse);
-void mouse_releaseMouseInput(guiMouse_t *mouse);
-void mouse_getInput(guiMouse_t *input, guiGraphics_t *graphics);
-#define mouse_getLastPressButton(_mouse) (((guiMouse_t*)_mouse)->lastMousePressButton)
-#define mouse_setLastPressButton(_mouse, _button) { ((guiMouse_t*)_mouse)->lastMousePressButton = _button; }
-#define mouse_getLastDragButton(_mouse) (((guiMouse_t*)_mouse)->lastMouseDragButton)
-#define mouse_setLastDragButton(_mouse, _button) { ((guiMouse_t*)_mouse)->lastMouseDragButton = _button; }
+void mouse_grabMouseInput(guiMouse *mouse);
+void mouse_releaseMouseInput(guiMouse *mouse);
+void mouse_getInput(guiMouse *input, guiGraphics *graphics);
+#define mouse_getLastPressButton(_mouse) (((guiMouse*)_mouse)->lastMousePressButton)
+#define mouse_setLastPressButton(_mouse, _button) { ((guiMouse*)_mouse)->lastMousePressButton = _button; }
+#define mouse_getLastDragButton(_mouse) (((guiMouse*)_mouse)->lastMouseDragButton)
+#define mouse_setLastDragButton(_mouse, _button) { ((guiMouse*)_mouse)->lastMouseDragButton = _button; }
 
 #endif // MOUSE_H_INCLUDED

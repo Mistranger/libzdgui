@@ -13,10 +13,10 @@
 -- Types
 ----------------------------------------------------------------------------*/
 
-typedef struct guiImage_s {
+typedef struct guiImage {
 	int imageWidth, imageHeight;
 	__str filename;
-} guiImage_t;
+} guiImage;
 
 /*----------------------------------------------------------------------------
 --  Functions

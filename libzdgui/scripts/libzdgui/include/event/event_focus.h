@@ -6,26 +6,26 @@
 typedef enum focusEventType {
 	FE_FOCUSGAINED = 0,
 	FE_FOCUSLOST
-} focusEventType_t;
+} guiFocusEventType;
 
-typedef struct focusEvent_s {
-	event_t event;
-	focusEventType_t type;
-} focusEvent_t;
+typedef struct guiFocusEvent {
+	guiEvent event;
+	guiFocusEventType type;
+} guiFocusEvent;
 
-typedef struct focusListener_s {
-	eventListener_t listener;
+typedef struct guiFocusListener {
+	guiEventListener listener;
 	union {
-		void (*listen)(void *widget, focusEvent_t *mouseEvent);
-		void (*focusGained)(void *widget, focusEvent_t *focusEvent);
-		void (*focusLost)(void *widget, focusEvent_t *focusEvent);
+		void (*listen)(void *widget, guiFocusEvent *mouseEvent);
+		void (*focusGained)(void *widget, guiFocusEvent *focusEvent);
+		void (*focusLost)(void *widget, guiFocusEvent *focusEvent);
 	} types;
-	focusEventType_t type;
-} focusListener_t;
+	guiFocusEventType type;
+} guiFocusListener;
 
-focusEvent_t *focusEvent_new(void *source, int eventType);
+guiFocusEvent *focusEvent_new(void *source, int eventType);
 
-focusListener_t *focusListener_new(void *handler, focusEventType_t eventType, void (*func)(void *widget, focusEvent_t *focusEvent));
-void focus_handleEvent(eventListener_t *listener, event_t *event);
+guiFocusListener *focusListener_new(void *handler, guiFocusEventType eventType, void (*func)(void *widget, guiFocusEvent *focusEvent));
+void focus_handleEvent(guiEventListener *listener, guiEvent *event);
 
 #endif // EVENT_FOCUS_H_INCLUDED

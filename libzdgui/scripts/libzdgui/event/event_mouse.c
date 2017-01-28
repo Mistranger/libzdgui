@@ -1,20 +1,20 @@
 #include "system.h"
 #include "event/event_mouse.h"
 
-mouseEvent_t *mouseEvent_new(void *source, const vec2i_t *pos, mouseButtons_t button, mouseEventType_t eventType)
+guiMouseEvent *mouseEvent_new(void *source, const vec2i *pos, guiMouseButtons button, mouseEventType_t eventType)
 {
-	mouseEvent_t *event = new (mouseEvent_t);
-	((event_t *)event)->eventType = EV_Mouse;
-	((event_t *)event)->sourceWidget = source;
+	guiMouseEvent *event = new (guiMouseEvent);
+	((guiEvent *)event)->eventType = EV_Mouse;
+	((guiEvent *)event)->sourceWidget = source;
 	event->pos = *pos;
 	event->button = button;
 	event->type = eventType;
 	return event;
 }
 
-mouseListener_t *mouseListener_new(void *handler, mouseEventType_t eventType, void (*func)(void *widget, mouseEvent_t *mouseEvent))
+guiMouseListener *mouseListener_new(void *handler, mouseEventType_t eventType, void (*func)(void *widget, guiMouseEvent *mouseEvent))
 {
-	mouseListener_t *listener = new (mouseListener_t);
+	guiMouseListener *listener = new (guiMouseListener);
 	listener->listener.listenerType = EV_Mouse;
 	listener->listener.handlerWidget = handler;
 	listener->listener.handleEvent = mouse_handleEvent;
@@ -23,10 +23,10 @@ mouseListener_t *mouseListener_new(void *handler, mouseEventType_t eventType, vo
 	return listener;
 }
 
-void mouse_handleEvent(eventListener_t *listener, event_t *event)
+void mouse_handleEvent(guiEventListener *listener, guiEvent *event)
 {
-	mouseListener_t *mouseL = (mouseListener_t *)listener;
-	mouseEvent_t *mouseE = (mouseEvent_t *)event;
+	guiMouseListener *mouseL = (guiMouseListener *)listener;
+	guiMouseEvent *mouseE = (guiMouseEvent *)event;
 	if (mouseL->type == mouseE->type) {
 		switch (mouseL->type) {
 			case ME_MOVED:

@@ -1,18 +1,18 @@
 #include "system.h"
 #include "event/event_focus.h"
 
-focusEvent_t *focusEvent_new(void *source, int eventType)
+guiFocusEvent *focusEvent_new(void *source, int eventType)
 {
-	focusEvent_t *event = new (focusEvent_t);
-	((event_t *)event)->eventType = EV_Focus;
-	((event_t *)event)->sourceWidget = source;
+	guiFocusEvent *event = new (guiFocusEvent);
+	((guiEvent *)event)->eventType = EV_Focus;
+	((guiEvent *)event)->sourceWidget = source;
 	event->type = eventType;
 	return event;
 }
 
-focusListener_t *focusListener_new(void *handler, focusEventType_t eventType, void (*func)(void *widget, focusEvent_t *focusEvent))
+guiFocusListener *focusListener_new(void *handler, guiFocusEventType eventType, void (*func)(void *widget, guiFocusEvent *focusEvent))
 {
-	focusListener_t *listener = new (focusListener_t);
+	guiFocusListener *listener = new (guiFocusListener);
 	listener->listener.listenerType = EV_Focus;
 	listener->listener.handlerWidget = handler;
 	listener->listener.handleEvent = focus_handleEvent;
@@ -21,10 +21,10 @@ focusListener_t *focusListener_new(void *handler, focusEventType_t eventType, vo
 	return listener;
 }
 
-void focus_handleEvent(eventListener_t *listener, event_t *event)
+void focus_handleEvent(guiEventListener *listener, guiEvent *event)
 {
-	focusListener_t *focusL = (focusListener_t *)listener;
-	focusEvent_t *focusE = (focusEvent_t *)event;
+	guiFocusListener *focusL = (guiFocusListener *)listener;
+	guiFocusEvent *focusE = (guiFocusEvent *)event;
 	if (focusL->type == focusE->type) {
 		switch (focusL->type) {
 			case FE_FOCUSGAINED:

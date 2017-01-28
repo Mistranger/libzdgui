@@ -22,55 +22,55 @@
 -- Types
 ----------------------------------------------------------------------------*/
 
-struct guiListBox_s;
+struct guiListBox;
 
 extern const char *ListBoxType;
 
 typedef struct guiListBox_vf {
-	const char *(*w_typename)(struct guiListBox_s *widget);
-	void (*w_destructor)(struct guiListBox_s *widget);
-	struct guiRectangle_s *(*w_getChildrenArea)(const struct guiWidget_s *listbox);
-	struct guiWidget_s *(*w_getWidgetAt)(const struct guiWidget_s *widget, vec2i_t pos);
-	void(*w_draw)(const struct guiListBox_s *listbox, guiGraphics_t *graphics);
-	void(*w_tick)(struct guiWidget_s *widget);
-	bool(*w_isWidgetExisting)(struct guiWidget_s *widget, const struct guiWidget_s *exist);
-	void(*w_setFocusHandler)(struct guiWidget_s *widget, void *focus);
+	const char *(*w_typename)(struct guiListBox *widget);
+	void (*w_destructor)(struct guiListBox *widget);
+	struct guiRectangle *(*w_getChildrenArea)(const struct guiWidget *listbox);
+	struct guiWidget *(*w_getWidgetAt)(const struct guiWidget *widget, vec2i pos);
+	void(*w_draw)(const struct guiListBox *listbox, guiGraphics *graphics);
+	void(*w_tick)(struct guiWidget *widget);
+	bool(*w_isWidgetExisting)(struct guiWidget *widget, const struct guiWidget *exist);
+	void(*w_setFocusHandler)(struct guiWidget *widget, void *focus);
 } guiListBox_vf_t;
 
-typedef struct guiListBox_s {
-	guiWidget_t widget;
+typedef struct guiListBox {
+	guiWidget widget;
 	list_t *items;
 	int selected;
 
-	guiImage_t *itemImage;
-} guiListBox_t;
+	guiImage *itemImage;
+} guiListBox;
 
 /*----------------------------------------------------------------------------
 --  Functions
 ----------------------------------------------------------------------------*/
 
-guiListBox_t *listbox_new(guiGUI_t *gui, guiScrollArea_t *scrollarea);
-void listbox_init(guiListBox_t *listbox, guiScrollArea_t *scrollarea);
-void listbox_destructor(guiListBox_t *listbox);
+guiListBox *listbox_new(guiGUI *gui, guiScrollArea *scrollarea);
+void listbox_init(guiListBox *listbox, guiScrollArea *scrollarea);
+void listbox_destructor(guiListBox *listbox);
 
-// Virtual inherited from guiWidget_t
+// Virtual inherited from guiWidget
 
-const char *listbox_typename(guiListBox_t *widget);
-void listbox_draw(const guiListBox_t *listbox, guiGraphics_t *graphics);
+const char *listbox_typename(guiListBox *widget);
+void listbox_draw(const guiListBox *listbox, guiGraphics *graphics);
 
-void listbox_adjustSize(guiListBox_t *button);
+void listbox_adjustSize(guiListBox *button);
 
-#define listbox_getSelected(_widget) (((guiListBox_t*)_widget)->selected)
-void listbox_setSelected(guiListBox_t *listbox, int selected);
-#define listbox_getSize(_widget) (list_size(((guiListBox_t*)_widget)->items))
-void listbox_addItem(guiListBox_t *listbox, const string_t *item);
-void listbox_addItemAt(guiListBox_t *listbox, const string_t *item, size_t index);
-void listbox_removeItemAt(guiListBox_t *listbox, size_t index);
+#define listbox_getSelected(_widget) (((guiListBox*)_widget)->selected)
+void listbox_setSelected(guiListBox *listbox, int selected);
+#define listbox_getSize(_widget) (list_size(((guiListBox*)_widget)->items))
+void listbox_addItem(guiListBox *listbox, const string_t *item);
+void listbox_addItemAt(guiListBox *listbox, const string_t *item, size_t index);
+void listbox_removeItemAt(guiListBox *listbox, size_t index);
 
-#define scroll_getItemImage(_widget) (((guiListBox_t*)_widget)->itemImage)
-#define scroll_setItemImage(_widget, _image) { ((guiListBox_t*)_widget)->itemImage = _image; }
+#define scroll_getItemImage(_widget) (((guiListBox*)_widget)->itemImage)
+#define scroll_setItemImage(_widget, _image) { ((guiListBox*)_widget)->itemImage = _image; }
 
-void listbox_mousePressed(void *widget, mouseEvent_t *mouseEvent);
+void listbox_mousePressed(void *widget, guiMouseEvent *mouseEvent);
 
 
 #endif // WIDGETS_LISTBOX_H_INCLUDED

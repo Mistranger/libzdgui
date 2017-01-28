@@ -10,7 +10,6 @@
 #include "widget.h"
 #include "event/event_dimension.h"
 #include "util/string.h"
-#include "util/vector.h"
 
 /*----------------------------------------------------------------------------
 -- Defines
@@ -26,37 +25,32 @@ typedef enum labelAlignment {
 	ALIGN_RIGHT,
 	ALIGN_TOP,
 	ALIGN_BOTTOM,
-} labelAlignment_t;
-
-// Label flags
-typedef enum LabelFlags {
-	LF_MULTILINE = 0x00000001,
-} LabelFlags_t;
+} guiLabelAlignment;
 
 extern const char *LabelType;
 
-struct guiLabel_s;
+struct guiLabel;
 
 typedef struct guiLabel_vf {
-	const char *(*w_typename)(struct guiLabel_s *widget);
-	void (*w_destructor)(struct guiWidget_s *widget);
-	struct guiRectangle_s *(*w_getChildrenArea)(const struct guiWidget_s *widget);
-	struct guiWidget_s *(*w_getWidgetAt)(const struct guiWidget_s *widget, vec2i_t pos);
-	void (*w_draw)(const struct guiLabel_s *container, guiGraphics_t *graphics);
-	void (*w_tick)(struct guiWidget_s *widget);
-	bool (*w_isWidgetExisting)(struct guiWidget_s *widget, const struct guiWidget_s *exist);
-	void(*w_setFocusHandler)(struct guiWidget_s *widget, void *focus);
+	const char *(*w_typename)(struct guiLabel *widget);
+	void (*w_destructor)(struct guiLabel *widget);
+	struct guiRectangle *(*w_getChildrenArea)(const struct guiWidget *widget);
+	struct guiWidget *(*w_getWidgetAt)(const struct guiWidget *widget, vec2i pos);
+	void (*w_draw)(const struct guiLabel *container, guiGraphics *graphics);
+	void (*w_tick)(struct guiWidget *widget);
+	bool (*w_isWidgetExisting)(struct guiWidget *widget, const struct guiWidget *exist);
+	void(*w_setFocusHandler)(struct guiWidget *widget, void *focus);
 } guiLabel_vf_t;
 
-typedef struct guiLabel_s {
-	guiWidget_t widget;
+typedef struct guiLabel {
+	guiWidget widget;
 	string_t *caption;
 	string_t *textWrap;
-	int textWrapCount;
-	LabelFlags_t labelFlags;
-	labelAlignment_t horizAlign;
-	labelAlignment_t vertAlign;
-} guiLabel_t;
+	int wrapLines;
+	bool isMultiline;
+	guiLabelAlignment horizAlign;
+	guiLabelAlignment vertAlign;
+} guiLabel;
 
 /*----------------------------------------------------------------------------
 --  Functions
@@ -67,30 +61,31 @@ typedef struct guiLabel_s {
  * @brief              Constructor (label initialization with caption)
  * @param caption      caption text
  */
-guiLabel_t *label_new(guiGUI_t *gui, const string_t *caption, const guiFont_t *font);
-void label_init(guiLabel_t *label, const string_t *caption, const guiFont_t *font);
+guiLabel *label_new(guiGUI *gui, const string_t *caption, const guiFont *font);
+void label_destructor(guiLabel *label);
+void label_init(guiLabel *label, const string_t *caption, const guiFont *font);
 
 
-// Virtual inherited from guiWidget_t
-const char *label_typename(guiLabel_t *widget);
-void label_draw(const guiLabel_t *widget, guiGraphics_t *graphics);
+// Virtual inherited from guiWidget
+const char *label_typename(guiLabel *widget);
+void label_draw(const guiLabel *widget, guiGraphics *graphics);
 
 
-void label_setCaption(guiLabel_t *label, const string_t *caption);
-const string_t *label_getCaption(const guiLabel_t *label);
+void label_setCaption(guiLabel *label, const string_t *caption);
+const string_t *label_getCaption(const guiLabel *label);
 
-#define label_getAlignment(_label) (((guiLabel_t*)_label)->horizAlign)
-#define label_setAlignment(_label, _align) { ((guiLabel_t*)_label)->horizAlign = _align; }
+#define label_getAlignment(_label) (((guiLabel*)_label)->horizAlign)
+#define label_setAlignment(_label, _align) { ((guiLabel*)_label)->horizAlign = _align; }
 
-#define label_getVerticalAlignment(_label) (((guiLabel_t*)_label)->vertAlign)
-#define label_setVerticalAlignment(_label, _align) { ((guiLabel_t*)_label)->vertAlign = _align; }
+#define label_getVerticalAlignment(_label) (((guiLabel*)_label)->vertAlign)
+#define label_setVerticalAlignment(_label, _align) { ((guiLabel*)_label)->vertAlign = _align; }
 
-void label_adjustSize(guiLabel_t *label);
-static void label_wordWrap(guiLabel_t *label);
+void label_adjustSize(guiLabel *label);
+static void label_wordWrap(guiLabel *label);
 
 // Event listeners
 
-void label_resized(void *widget, dimensionEvent_t *dimEvent);
+void label_resized(void *widget, guiDimensionEvent *dimEvent);
 
 
 #endif // WIDGETS_LABEL_H_INCLUDED

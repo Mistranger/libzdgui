@@ -21,26 +21,26 @@ enum ImageFlags {
 	IF_SCALETOSIZE = 0x00000001,
 };
 
-struct guiImageWidget_s;
+struct guiImageWidget;
 
 extern const char *ImageWidgetType;
 
 typedef struct guiImageWidget_vf {
-	const char *(*w_typename)(struct guiImageWidget_s *widget);
-	void (*w_destructor)(struct guiWidget_s *widget);
-	struct guiRectangle_s *(*w_getChildrenArea)(const struct guiWidget_s *widget);
-	struct guiWidget_s *(*w_getWidgetAt)(const struct guiWidget_s *widget, vec2i_t pos);
-	void (*w_draw)(const struct guiImageWidget_s *image, guiGraphics_t *graphics);
-	void (*w_tick)(struct guiWidget_s *widget);
-	bool (*w_isWidgetExisting)(struct guiWidget_s *widget, const struct guiWidget_s *exist);
-	void(*w_setFocusHandler)(struct guiWidget_s *widget, void *focus);
+	const char *(*w_typename)(struct guiImageWidget *widget);
+	void (*w_destructor)(struct guiWidget *widget);
+	struct guiRectangle *(*w_getChildrenArea)(const struct guiWidget *widget);
+	struct guiWidget *(*w_getWidgetAt)(const struct guiWidget *widget, vec2i pos);
+	void (*w_draw)(const struct guiImageWidget *image, guiGraphics *graphics);
+	void (*w_tick)(struct guiWidget *widget);
+	bool (*w_isWidgetExisting)(struct guiWidget *widget, const struct guiWidget *exist);
+	void(*w_setFocusHandler)(struct guiWidget *widget, void *focus);
 } guiImageWidget_vf_t;
 
-typedef struct guiImageWidget_s {
-	guiWidget_t widget;
-	guiImage_t image;
+typedef struct guiImageWidget {
+	guiWidget widget;
+	guiImage image;
 	enum ImageFlags imageFlags;
-} guiImageWidget_t;
+} guiImageWidget;
 
 /*----------------------------------------------------------------------------
 --  Functions
@@ -50,11 +50,11 @@ typedef struct guiImageWidget_s {
  * @brief              Constructor (image initialization with caption)
  * @param caption      title caption
  */
-guiImageWidget_t *wimage_new(guiGUI_t *gui, __str filename, int imageWidth, int imageHeight);
-void wimage_init(guiImageWidget_t *image, __str filename, int imageWidth, int imageHeight);
+guiImageWidget *wimage_new(guiGUI *gui, __str filename, int imageWidth, int imageHeight);
+void wimage_init(guiImageWidget *image, __str filename, int imageWidth, int imageHeight);
 
-// Virtual inherited from guiWidget_t
-const char *wimage_typename(guiImageWidget_t *widget);
-void wimage_draw(const guiImageWidget_t *widget, guiGraphics_t *graphics);
+// Virtual inherited from guiWidget
+const char *wimage_typename(guiImageWidget *widget);
+void wimage_draw(const guiImageWidget *widget, guiGraphics *graphics);
 
 #endif // WIDGETS_IMAGE_H_INCLUDED

@@ -50,7 +50,9 @@
 #define new(type) ((type*)malloc(sizeof(type)));
 
 int ACS_HudMessage(int flags, int id, int color, fixed x, fixed y, fixed holdTime, __str format, ...);
-int ACS_HudMessage2(int flags, int id, int color, fixed x, fixed y, fixed holdTime, fixed oarg1, fixed oarg2, fixed oarg3, __str format, ...);
+int ACS_HudMessageColor(int flags, int id, __str color, fixed x, fixed y, fixed holdTime, __str format, ...);
+int ACS_HudMessageExt(int flags, int id, int color, fixed x, fixed y, fixed holdTime, fixed oarg1, fixed oarg2, fixed oarg3, __str format, ...);
+int ACS_HudMessageColorExt(int flags, int id, __str color, fixed x, fixed y, fixed holdTime, fixed alpha, __str format, ...);
 int ACS_PrintLog(const char *format, ...);
 int ACS_PrintLogStr(__str format, ...);
 

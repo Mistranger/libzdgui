@@ -5,7 +5,7 @@
 #include "graphics.h"
 #include "util/util.h"
 
-void input_init(guiInput_t *input)
+void input_init(guiInput *input)
 {
 
 }

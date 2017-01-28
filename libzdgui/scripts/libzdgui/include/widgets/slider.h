@@ -19,19 +19,19 @@
 -- Types
 ----------------------------------------------------------------------------*/
 
-struct guiSlider_s;
+struct guiSlider;
 
 extern const char *SliderType;
 
 typedef struct guiSlider_vf {
-	const char *(*w_typename)(struct guiSlider_s *widget);
-	void (*w_destructor)(struct guiWidget_s *widget);
-	struct guiRectangle_s *(*w_getChildrenArea)(const struct guiWidget_s *widget);
-	struct guiWidget_s *(*w_getWidgetAt)(const struct guiWidget_s *widget, vec2i_t pos);
-	void(*w_draw)(const struct guiSlider_s *slider, guiGraphics_t *graphics);
-	void(*w_tick)(struct guiWidget_s *widget);
-	bool(*w_isWidgetExisting)(struct guiWidget_s *widget, const struct guiWidget_s *exist);
-	void(*w_setFocusHandler)(struct guiWidget_s *widget, void *focus);
+	const char *(*w_typename)(struct guiSlider *widget);
+	void (*w_destructor)(struct guiWidget *widget);
+	struct guiRectangle *(*w_getChildrenArea)(const struct guiWidget *widget);
+	struct guiWidget *(*w_getWidgetAt)(const struct guiWidget *widget, vec2i pos);
+	void(*w_draw)(const struct guiSlider *slider, guiGraphics *graphics);
+	void(*w_tick)(struct guiWidget *widget);
+	bool(*w_isWidgetExisting)(struct guiWidget *widget, const struct guiWidget *exist);
+	void(*w_setFocusHandler)(struct guiWidget *widget, void *focus);
 } guiSlider_vf_t;
 
 typedef enum guiSliderOrientation {
@@ -39,8 +39,8 @@ typedef enum guiSliderOrientation {
 	SLIDER_VERTIAL,
 } guiSliderOrientation_t;
 
-typedef struct guiSlider_s {
-	guiWidget_t widget;
+typedef struct guiSlider {
+	guiWidget widget;
 
 	bool isPressed;
 	bool hasMouse;
@@ -50,53 +50,53 @@ typedef struct guiSlider_s {
 	int stepLength;
 	guiSliderOrientation_t orientation;
 
-	guiImage_t *markerImage;
-	guiImage_t *backgroundImage;
-	guiImage_t *disabledBackgroundImage;
-} guiSlider_t;
+	guiImage *markerImage;
+	guiImage *backgroundImage;
+	guiImage *disabledBackgroundImage;
+} guiSlider;
 
 /*----------------------------------------------------------------------------
 --  Functions
 ----------------------------------------------------------------------------*/
 
-const char *slider_typename(guiSlider_t *widget);
-guiSlider_t *slider_new(const int maxScale);
+const char *slider_typename(guiSlider *widget);
+guiSlider *slider_new(const int maxScale);
 
-void slider_init(guiSlider_t *slider, const int maxScale);
-void slider_draw(const guiSlider_t *slider, guiGraphics_t *graphics);
+void slider_init(guiSlider *slider, const int maxScale);
+void slider_draw(const guiSlider *slider, guiGraphics *graphics);
 
-int slider_markerPositionToValue(const guiSlider_t *slider, int v);
-int slider_valueToMarkerPosition(const guiSlider_t *slider, int value);
+int slider_markerPositionToValue(const guiSlider *slider, int v);
+int slider_valueToMarkerPosition(const guiSlider *slider, int value);
 
-#define slider_getOrientation(_widget) (((guiSlider_t*)_widget)->orientation)
-#define slider_setOrientation(_widget, _orient) { ((guiSlider_t*)_widget)->orientation = _orient; }
-#define slider_getValue(_widget) (((guiSlider_t*)_widget)->value)
+#define slider_getOrientation(_widget) (((guiSlider*)_widget)->orientation)
+#define slider_setOrientation(_widget, _orient) { ((guiSlider*)_widget)->orientation = _orient; }
+#define slider_getValue(_widget) (((guiSlider*)_widget)->value)
 #define slider_setValue(_widget, _value)   \
-	{ clamp((_value), slider_getScaleStart((guiSlider_t*)(_widget)), slider_getScaleEnd((guiSlider_t*)(_widget)));   \
-		((guiSlider_t*)_widget)->value = (_value); }
-#define slider_getMarkerLength(_widget) (((guiSlider_t*)_widget)->markerLength)
-#define slider_setMarkerLength(_widget, _value) { ((guiSlider_t*)_widget)->markerLength = _value; }
-#define slider_getStepLength(_widget) (((guiSlider_t*)_widget)->stepLength)
-#define slider_setStepLength(_widget, _value) { ((guiSlider_t*)_widget)->stepLength = _value; }
+	{ clamp((_value), slider_getScaleStart((guiSlider*)(_widget)), slider_getScaleEnd((guiSlider*)(_widget)));   \
+		((guiSlider*)_widget)->value = (_value); }
+#define slider_getMarkerLength(_widget) (((guiSlider*)_widget)->markerLength)
+#define slider_setMarkerLength(_widget, _value) { ((guiSlider*)_widget)->markerLength = _value; }
+#define slider_getStepLength(_widget) (((guiSlider*)_widget)->stepLength)
+#define slider_setStepLength(_widget, _value) { ((guiSlider*)_widget)->stepLength = _value; }
 
-#define slider_getScaleStart(_widget) (((guiSlider_t*)_widget)->start)
-#define slider_getScaleEnd(_widget) (((guiSlider_t*)_widget)->end)
+#define slider_getScaleStart(_widget) (((guiSlider*)_widget)->start)
+#define slider_getScaleEnd(_widget) (((guiSlider*)_widget)->end)
 
-#define slider_setScale(_widget, _start, _end) { ((guiSlider_t*)_widget)->start = _start; ((guiSlider_t*)_widget)->_end = _end; }
-#define slider_setScaleStart(_widget, _start) { ((guiSlider_t*)_widget)->start = _start; }
-#define slider_setScaleEnd(_widget, _end) { ((guiSlider_t*)_widget)->start = _end; }
+#define slider_setScale(_widget, _start, _end) { ((guiSlider*)_widget)->start = _start; ((guiSlider*)_widget)->_end = _end; }
+#define slider_setScaleStart(_widget, _start) { ((guiSlider*)_widget)->start = _start; }
+#define slider_setScaleEnd(_widget, _end) { ((guiSlider*)_widget)->start = _end; }
 
-#define slider_getMarkerPosition(_widget) (slider_valueToMarkerPosition(((guiSlider_t*)_widget), ((guiSlider_t*)_widget)->value))
+#define slider_getMarkerPosition(_widget) (slider_valueToMarkerPosition(((guiSlider*)_widget), ((guiSlider*)_widget)->value))
 
-#define slider_getMarkerImage(_widget) (((guiSlider_t*)_widget)->markerImage)
-#define slider_setMarkerImage(_widget, _image) { ((guiSlider_t*)_widget)->markerImage = _image; }
-#define slider_getBackgroundImage(_widget) (((guiSlider_t*)_widget)->backgroundImage)
-#define slider_setBackgroundImage(_widget, _image) { ((guiSlider_t*)_widget)->backgroundImage = _image; }
-#define slider_getDisabledBackgroundImage(_widget) (((guiSlider_t*)_widget)->disabledBackgroundImage)
-#define slider_setDisabledBackgroundImage(_widget, _image) { ((guiSlider_t*)_widget)->disabledBackgroundImage = _image; }
+#define slider_getMarkerImage(_widget) (((guiSlider*)_widget)->markerImage)
+#define slider_setMarkerImage(_widget, _image) { ((guiSlider*)_widget)->markerImage = _image; }
+#define slider_getBackgroundImage(_widget) (((guiSlider*)_widget)->backgroundImage)
+#define slider_setBackgroundImage(_widget, _image) { ((guiSlider*)_widget)->backgroundImage = _image; }
+#define slider_getDisabledBackgroundImage(_widget) (((guiSlider*)_widget)->disabledBackgroundImage)
+#define slider_setDisabledBackgroundImage(_widget, _image) { ((guiSlider*)_widget)->disabledBackgroundImage = _image; }
 
 // Event listeners
-void slider_mousePressed(void *widget, mouseEvent_t *mouseEvent);
+void slider_mousePressed(void *widget, guiMouseEvent *mouseEvent);
 
 
 #endif // WIDGETS_SLIDER_H_INCLUDED

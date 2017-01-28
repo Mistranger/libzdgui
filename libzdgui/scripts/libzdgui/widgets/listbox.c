@@ -17,42 +17,42 @@ guiListBox_vf_t guiListBox_vtable = {
 
 const char *ListBoxType = "ListBox";
 
-const char *listbox_typename(guiListBox_t *widget)
+const char *listbox_typename(guiListBox *widget)
 {
 	return ListBoxType;
 }
 
-guiListBox_t *listbox_new(guiGUI_t *gui, guiScrollArea_t *scrollarea)
+guiListBox *listbox_new(guiGUI *gui, guiScrollArea *scrollarea)
 {
-	guiListBox_t *listbox = new (guiListBox_t);
+	guiListBox *listbox = new (guiListBox);
 	listbox_init(listbox, scrollarea);
 	gui_addWidget(gui, listbox);
 	return listbox;
 }
 
-void listbox_init(guiListBox_t *listbox, guiScrollArea_t *scrollarea)
+void listbox_init(guiListBox *listbox, guiScrollArea *scrollarea)
 {
-	widget_init((guiWidget_t *)listbox);
+	widget_init((guiWidget *)listbox);
 	listbox->widget.v = (guiWidget_vf_t *)&guiListBox_vtable;
 
 	listbox->selected = -1;
 	listbox->items = list_new();
-	scroll_setContent(scrollarea, (guiWidget_t *)listbox);
+	scroll_setContent(scrollarea, (guiWidget *)listbox);
 }
 
-void listbox_destructor(guiListBox_t *listbox)
+void listbox_destructor(guiListBox *listbox)
 {
 	list_clear(listbox->items);
-	widget_destructor((guiWidget_t *)listbox);
+	widget_destructor((guiWidget *)listbox);
 }
 
-void listbox_draw(const guiListBox_t *listbox, guiGraphics_t *graphics)
+void listbox_draw(const guiListBox *listbox, guiGraphics *graphics)
 {
 	if (!listbox_getSize(listbox)) {
 		return;
 	}
 
-	guiImage_t *img = listbox->itemImage;
+	guiImage *img = listbox->itemImage;
 	int height = (listbox->itemImage ? MAX(font_getCharHeight(*widget_getFont(listbox)),
 										   image_getHeight(*listbox->itemImage)) : font_getCharHeight(*widget_getFont(listbox)));
 
@@ -73,7 +73,7 @@ void listbox_draw(const guiListBox_t *listbox, guiGraphics_t *graphics)
 	}
 }
 
-void listbox_adjustSize(guiListBox_t *listbox)
+void listbox_adjustSize(guiListBox *listbox)
 {
 	int i, l;
 	int width = widget_getWidth(listbox);
@@ -92,7 +92,7 @@ void listbox_adjustSize(guiListBox_t *listbox)
 														image_getHeight(*listbox->itemImage)) : font_getCharHeight(*widget_getFont(listbox))) * listbox_getSize(listbox));
 }
 
-void listbox_setSelected(guiListBox_t *listbox, int selected)
+void listbox_setSelected(guiListBox *listbox, int selected)
 {
 	if (!list_size(listbox->items)) {
 		listbox->selected = -1;
@@ -105,51 +105,51 @@ void listbox_setSelected(guiListBox_t *listbox, int selected)
 			listbox->selected = selected;
 		}
 
-		guiWidget_t *par = widget_getParent(listbox);
+		guiWidget *par = widget_getParent(listbox);
 		if (!par || !par->isContainer) {
 			return;
 		}
 
-		guiRectangle_t scroll;
-		guiScrollArea_t *scrollarea = (guiScrollArea_t *)par;
+		guiRectangle scroll;
+		guiScrollArea *scrollarea = (guiScrollArea *)par;
 		scroll.pos.y = (listbox->itemImage ? MAX(font_getCharHeight(*widget_getFont(listbox)),
 												 image_getHeight(*listbox->itemImage)) : font_getCharHeight(*widget_getFont(listbox))) * listbox->selected;
 		scroll.height = (listbox->itemImage ? MAX(font_getCharHeight(*widget_getFont(listbox)),
 												  image_getHeight(*listbox->itemImage)) : font_getCharHeight(*widget_getFont(listbox)));
-		((guiContainer_vf_t *)(((guiContainer *)par)->widget.v))->c_showWidgetPart((guiContainer *)par, (guiWidget_t *)listbox, scroll);
+		((guiContainer_vf_t *)(((guiContainer *)par)->widget.v))->c_showWidgetPart((guiContainer *)par, (guiWidget *)listbox, scroll);
 	}
 
 }
 
-void listbox_addItem(guiListBox_t *listbox, const string_t *item)
+void listbox_addItem(guiListBox *listbox, const string_t *item)
 {
 	string_t *add = string_new_string(item);
 	list_push_back(listbox->items, add);
 	listbox_adjustSize(listbox);
 }
 
-void listbox_addItemAt(guiListBox_t *listbox, const string_t *item, size_t index)
+void listbox_addItemAt(guiListBox *listbox, const string_t *item, size_t index)
 {
 	string_t *add = string_new_string(item);
 	list_insert(listbox->items, list_get(listbox->items, index), true, add);
 	listbox_adjustSize(listbox);
 }
 
-void listbox_removeItemAt(guiListBox_t *listbox, size_t index)
+void listbox_removeItemAt(guiListBox *listbox, size_t index)
 {
 	list_erase(listbox->items, list_get(listbox->items, index));
 	listbox_adjustSize(listbox);
 }
 
-void listbox_mousePressed(void *widget, mouseEvent_t *mouseEvent)
+void listbox_mousePressed(void *widget, guiMouseEvent *mouseEvent)
 {
-	guiListBox_t *listbox = (guiListBox_t *)widget;
+	guiListBox *listbox = (guiListBox *)widget;
 	if (mouseEvent->button == MB_LEFT) {
 		listbox_setSelected(listbox, mouseEvent->pos.y /
 							(listbox->itemImage ? MAX(font_getCharHeight(*widget_getFont(listbox)),
 													  image_getHeight(*listbox->itemImage)) : font_getCharHeight(*widget_getFont(listbox))));
-		widgetEvent_t *changed = widgetEvent_new(listbox, WE_VALUE_CHANGED);
-		widget_handleEvent((guiWidget_t *)listbox, (event_t *)changed, true);
+		guiWidgetEvent *changed = widgetEvent_new(listbox, WE_VALUE_CHANGED);
+		widget_handleEvent((guiWidget *)listbox, (guiEvent *)changed, true);
 	}
 }
 

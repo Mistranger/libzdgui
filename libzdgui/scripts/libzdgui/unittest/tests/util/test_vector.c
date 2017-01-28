@@ -79,13 +79,13 @@ void test_vector_inserterase(CuTest *tc)
 
 void test_vector_insertwidgets(CuTest *tc)
 {
-	guiGUI_t *gui = new (guiGUI_t);
+	guiGUI *gui = new (guiGUI);
 	gui_init(gui, 640, 480);
 	gui_setTop(gui, NULL);
 
 	string_t *str = string_new_char("Hello world");
-	vector_t *v = vector_new(sizeof(guiWidget_t *));
-	CuAssertIntEquals(tc, sizeof(guiWidget_t *), v->elemSize);
+	vector_t *v = vector_new(sizeof(guiWidget *));
+	CuAssertIntEquals(tc, sizeof(guiWidget *), v->elemSize);
 	string_assign_char(str, "shithappens");
 	guiButton *button = button_new(gui, str);
 	string_assign_char(str, "shithappens2");

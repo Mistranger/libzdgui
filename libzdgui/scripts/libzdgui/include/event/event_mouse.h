@@ -15,32 +15,32 @@ typedef enum mouseEventType {
 	ME_DRAGGED,
 } mouseEventType_t;
 
-typedef struct mouseEvent_s {
-	event_t event;
-	vec2i_t pos;
-	mouseButtons_t button;
+typedef struct guiMouseEvent {
+	guiEvent event;
+	vec2i pos;
+	guiMouseButtons button;
 	mouseEventType_t type;
-} mouseEvent_t;
+} guiMouseEvent;
 
-typedef struct mouseListener_s {
-	eventListener_t listener;
+typedef struct guiMouseListener {
+	guiEventListener listener;
 	union {
-		void (*listen)(void *widget, mouseEvent_t *mouseEvent);
-		void (*mouseMoved)(void *widget, mouseEvent_t *mouseEvent);
-		void (*mousePressed)(void *widget, mouseEvent_t *mouseEvent);
-		void (*mouseReleased)(void *widget, mouseEvent_t *mouseEvent);
-		void (*mouseEntered)(void *widget, mouseEvent_t *mouseEvent);
-		void (*mouseLeft)(void *widget, mouseEvent_t *mouseEvent);
-		void (*mouseClicked)(void *widget, mouseEvent_t *mouseEvent);
-		void (*mouseDragged)(void *widget, mouseEvent_t *mouseEvent);
+		void (*listen)(void *widget, guiMouseEvent *mouseEvent);
+		void (*mouseMoved)(void *widget, guiMouseEvent *mouseEvent);
+		void (*mousePressed)(void *widget, guiMouseEvent *mouseEvent);
+		void (*mouseReleased)(void *widget, guiMouseEvent *mouseEvent);
+		void (*mouseEntered)(void *widget, guiMouseEvent *mouseEvent);
+		void (*mouseLeft)(void *widget, guiMouseEvent *mouseEvent);
+		void (*mouseClicked)(void *widget, guiMouseEvent *mouseEvent);
+		void (*mouseDragged)(void *widget, guiMouseEvent *mouseEvent);
 	} types;
 	mouseEventType_t type;
-} mouseListener_t;
+} guiMouseListener;
 
-mouseEvent_t *mouseEvent_new(void *source, const vec2i_t *pos, mouseButtons_t button, mouseEventType_t eventType);
+guiMouseEvent *mouseEvent_new(void *source, const vec2i *pos, guiMouseButtons button, mouseEventType_t eventType);
 
-mouseListener_t *mouseListener_new(void *handler, mouseEventType_t eventType, void (*func)(void *widget, mouseEvent_t *mouseEvent));
-void mouse_handleEvent(eventListener_t *listener, event_t *event);
+guiMouseListener *mouseListener_new(void *handler, mouseEventType_t eventType, void (*func)(void *widget, guiMouseEvent *mouseEvent));
+void mouse_handleEvent(guiEventListener *listener, guiEvent *event);
 
 
 

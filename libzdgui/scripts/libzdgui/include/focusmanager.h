@@ -16,48 +16,48 @@
 -- Types
 ----------------------------------------------------------------------------*/
 
-typedef struct focusManager_s {
+typedef struct guiFocusManager {
 	vector_t *widgets;
-	guiWidget_t *focusedWidget;
-	guiWidget_t *draggedWidget;
-	guiWidget_t *lastPressed;
-	guiWidget_t *lastWithMouse;
-	guiWidget_t *lastWithModalFocus;
-	guiWidget_t *lastWithModalMouseInputFocus;
-	guiWidget_t *modalFocusedWidget;
-	guiWidget_t *modalMouseInputFocusedWidget;
-} guiFocusManager_t;
+	guiWidget *focusedWidget;
+	guiWidget *draggedWidget;
+	guiWidget *lastPressed;
+	guiWidget *lastWithMouse;
+	guiWidget *lastWithModalFocus;
+	guiWidget *lastWithModalMouseInputFocus;
+	guiWidget *modalFocusedWidget;
+	guiWidget *modalMouseInputFocusedWidget;
+} guiFocusManager;
 
 /*----------------------------------------------------------------------------
 --  Functions
 ----------------------------------------------------------------------------*/
 
-guiFocusManager_t *focusManager_new();
-void focusManager_delete(guiFocusManager_t *focusManager);
+guiFocusManager *focusManager_new();
+void focusManager_delete(guiFocusManager *focusManager);
 
-void focus_requestFocus(guiFocusManager_t *focusManager, guiWidget_t *widget);
-void focus_requestModalFocus(guiFocusManager_t *focusManager, guiWidget_t *widget);
-void focus_requestModalMouseInputFocus(guiFocusManager_t *focusManager, guiWidget_t *widget);
-void focus_releaseModalFocus(guiFocusManager_t *focusManager, guiWidget_t *widget);
-void focus_releaseModalMouseInputFocus(guiFocusManager_t *focusManager, guiWidget_t *widget);
-void focus_addToManager(guiFocusManager_t *focusManager, guiWidget_t *widget);
-void focus_removeFromManager(guiFocusManager_t *focusManager, guiWidget_t *widget);
-void focus_focusNone(guiFocusManager_t *focusManager);
+void focus_requestFocus(guiFocusManager *focusManager, guiWidget *widget);
+void focus_requestModalFocus(guiFocusManager *focusManager, guiWidget *widget);
+void focus_requestModalMouseInputFocus(guiFocusManager *focusManager, guiWidget *widget);
+void focus_releaseModalFocus(guiFocusManager *focusManager, guiWidget *widget);
+void focus_releaseModalMouseInputFocus(guiFocusManager *focusManager, guiWidget *widget);
+void focus_addToManager(guiFocusManager *focusManager, guiWidget *widget);
+void focus_removeFromManager(guiFocusManager *focusManager, guiWidget *widget);
+void focus_focusNone(guiFocusManager *focusManager);
 
-#define focus_getLastPressed(_focus) (((guiFocusManager_t*)_focus)->lastPressed)
-#define focus_setLastPressed(_focus, _widget) { ((guiFocusManager_t*)_focus)->lastPressed = _widget; }
-#define focus_getLastWithModalFocus(_focus) (((guiFocusManager_t*)_focus)->lastWithModalFocus)
-#define focus_setLastWithModalFocus(_focus, _widget) { ((guiFocusManager_t*)_focus)->lastWithModalFocus = _widget; }
-#define focus_getLastWithModalMouseInputFocus(_focus) (((guiFocusManager_t*)_focus)->lastWithModalMouseInputFocus)
-#define focus_setLastWithModalMouseInputFocus(_focus, _widget) { ((guiFocusManager_t*)_focus)->lastWithModalMouseInputFocus = _widget; }
-#define focus_getWithMouse(_focus) (((guiFocusManager_t*)_focus)->lastWithMouse)
-#define focus_setWithMouse(_focus, _widget) { ((guiFocusManager_t*)_focus)->lastWithMouse = _widget; }
-#define focus_getDragged(_focus) (((guiFocusManager_t*)_focus)->draggedWidget)
-#define focus_setDragged(_focus, _widget) { ((guiFocusManager_t*)_focus)->draggedWidget = _widget; }
-#define focus_getFocused(_focus) (((guiFocusManager_t*)_focus)->focusedWidget)
-#define focus_getModalFocused(_focus) (((guiFocusManager_t*)_focus)->modalFocusedWidget)
-#define focus_getModalMouseInputFocused(_focus) (((guiFocusManager_t*)_focus)->modalMouseInputFocusedWidget)
-#define focus_isFocused(_focus, _widget) (((guiFocusManager_t*)_focus)->focusedWidget == _widget)
+#define focus_getLastPressed(_focus) (((guiFocusManager*)_focus)->lastPressed)
+#define focus_setLastPressed(_focus, _widget) { ((guiFocusManager*)_focus)->lastPressed = _widget; }
+#define focus_getLastWithModalFocus(_focus) (((guiFocusManager*)_focus)->lastWithModalFocus)
+#define focus_setLastWithModalFocus(_focus, _widget) { ((guiFocusManager*)_focus)->lastWithModalFocus = _widget; }
+#define focus_getLastWithModalMouseInputFocus(_focus) (((guiFocusManager*)_focus)->lastWithModalMouseInputFocus)
+#define focus_setLastWithModalMouseInputFocus(_focus, _widget) { ((guiFocusManager*)_focus)->lastWithModalMouseInputFocus = _widget; }
+#define focus_getWithMouse(_focus) (((guiFocusManager*)_focus)->lastWithMouse)
+#define focus_setWithMouse(_focus, _widget) { ((guiFocusManager*)_focus)->lastWithMouse = _widget; }
+#define focus_getDragged(_focus) (((guiFocusManager*)_focus)->draggedWidget)
+#define focus_setDragged(_focus, _widget) { ((guiFocusManager*)_focus)->draggedWidget = _widget; }
+#define focus_getFocused(_focus) (((guiFocusManager*)_focus)->focusedWidget)
+#define focus_getModalFocused(_focus) (((guiFocusManager*)_focus)->modalFocusedWidget)
+#define focus_getModalMouseInputFocused(_focus) (((guiFocusManager*)_focus)->modalMouseInputFocusedWidget)
+#define focus_isFocused(_focus, _widget) (((guiFocusManager*)_focus)->focusedWidget == _widget)
 
 
 #endif // FOCUSMANAGER_H_INCLUDED
