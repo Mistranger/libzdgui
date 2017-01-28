@@ -78,17 +78,17 @@ void scroll_destructor(guiScrollArea_t *scrollarea)
 	scroll_setContent(scrollarea, NULL);
 	free(scrollarea->dimListener);
 	free(scrollarea->lifecycleListener);
-	container_destructor((guiContainer_t *)scrollarea);
+	container_destructor((guiContainer *)scrollarea);
 }
 
 void scroll_death(void *widget, lifecycleEvent_t *event)
 {
 	guiScrollArea_t *scrollarea = (guiScrollArea_t *)widget;
-	listNode_t *remove = list_find(((guiContainer_t *)scrollarea)->children, event_getSource(event));
+	listNode_t *remove = list_find(((guiContainer *)scrollarea)->children, event_getSource(event));
 	if (!remove) {
 		guiError("There is no such widget in this container.");
 	}
-	list_erase(((guiContainer_t *)scrollarea)->children, remove);
+	list_erase(((guiContainer *)scrollarea)->children, remove);
 }
 
 void scroll_checkPolicies(guiScrollArea_t *scrollarea)
@@ -164,17 +164,17 @@ void scroll_checkPolicies(guiScrollArea_t *scrollarea)
 void scroll_setContent(guiScrollArea_t *scrollarea, guiWidget_t *content)
 {
 	if (content) {
-		container_add((guiContainer_t *)scrollarea, content);
+		container_add((guiContainer *)scrollarea, content);
 		widget_setPosition(scrollarea, ((vec2i_t) {0, 0}));
 		widget_addListener(content, scrollarea->dimListener);
 	} else {
-		if (list_size(((guiContainer_t *)scrollarea)->children)) {
-			guiWidget_t *w = (guiWidget_t*)list_front(((guiContainer_t *)scrollarea)->children)->data;
+		if (list_size(((guiContainer *)scrollarea)->children)) {
+			guiWidget_t *w = (guiWidget_t*)list_front(((guiContainer *)scrollarea)->children)->data;
 			widget_removeListener(w, scrollarea->dimListener);
 			widget_removeListener(w, scrollarea->lifecycleListener);
 		}
 		
-		container_clear((guiContainer_t *)scrollarea);
+		container_clear((guiContainer *)scrollarea);
 	}
 
 	scroll_checkPolicies(scrollarea);
@@ -221,7 +221,7 @@ void scroll_showWidgetPart(guiScrollArea_t *scrollarea, guiWidget_t *widget, gui
 		guiWarning("Widget not content widget");
 	}
 
-	container_showWidgetPart((guiContainer_t *)scrollarea, widget, area);
+	container_showWidgetPart((guiContainer *)scrollarea, widget, area);
 
 	scroll_setHorizontalScrollAmount(scrollarea, -widget_getX(scroll_getContent(scrollarea)));
 	scroll_setVerticalScrollAmount(scrollarea, -widget_getY(scroll_getContent(scrollarea)));

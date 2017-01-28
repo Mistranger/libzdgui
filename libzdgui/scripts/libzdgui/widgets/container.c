@@ -19,14 +19,14 @@ guiContainer_vf_t guiContainer_vtable = {
 
 const char *ContainerType = "Container";
 
-const char *container_typename(guiContainer_t *widget)
+const char *container_typename(guiContainer *widget)
 {
 	return ContainerType;
 }
 
-guiContainer_t *container_new(guiGUI_t *gui)
+guiContainer *container_new(guiGUI_t *gui)
 {
-	guiContainer_t *container = new (guiContainer_t);
+	guiContainer *container = new (guiContainer);
 
 	container_init(container);
 	gui_addWidget(gui, container);
@@ -34,7 +34,7 @@ guiContainer_t *container_new(guiGUI_t *gui)
 	return container;
 }
 
-void container_clear(guiContainer_t *container)
+void container_clear(guiContainer *container)
 {
 	for (listNode_t *node = container->children->head; node; node = node->next) {
 		guiWidget_t *w = node->data;
@@ -45,7 +45,7 @@ void container_clear(guiContainer_t *container)
 	list_clear(container->children);
 }
 
-void container_destructor(guiContainer_t *container)
+void container_destructor(guiContainer *container)
 {
 	container_clear(container);
 
@@ -55,7 +55,7 @@ void container_destructor(guiContainer_t *container)
 	widget_destructor((guiWidget_t *)container);
 }
 
-void container_init(guiContainer_t *container)
+void container_init(guiContainer *container)
 {
 	widget_init(&container->widget);
 	container->widget.v = (guiWidget_vf_t *)&guiContainer_vtable;
@@ -68,7 +68,7 @@ void container_init(guiContainer_t *container)
 
 void container_death(void *widget, lifecycleEvent_t *event)
 {
-	guiContainer_t *container = (guiContainer_t *)widget;
+	guiContainer *container = (guiContainer *)widget;
 	listNode_t *remove = list_find(container->children, event_getSource(event));
 	if (!remove) {
 		guiError("There is no such widget in this container.");
@@ -76,7 +76,7 @@ void container_death(void *widget, lifecycleEvent_t *event)
 	list_erase(container->children, remove);
 }
 
-void container_add(guiContainer_t *container, guiWidget_t *widget)
+void container_add(guiContainer *container, guiWidget_t *widget)
 {
 	list_push_back(container->children, (void *)widget);
 	widget_setParent(widget, &container->widget);
@@ -84,14 +84,14 @@ void container_add(guiContainer_t *container, guiWidget_t *widget)
 	widget_addListener(widget, (eventListener_t *)container->listener);
 }
 
-void container_addAt(guiContainer_t *container, guiWidget_t *widget, vec2i_t pos)
+void container_addAt(guiContainer *container, guiWidget_t *widget, vec2i_t pos)
 {
 	widget_setPosition(widget, pos);
 	container_add(container, widget);
 	guiInfo("container item added");
 }
 
-void container_remove(guiContainer_t *container, guiWidget_t *widget)
+void container_remove(guiContainer *container, guiWidget_t *widget)
 {
 	for (listNode_t *node = container->children->head; node; node = node->next) {
 		if ((guiWidget_t *)node->data == widget) {
@@ -104,7 +104,7 @@ void container_remove(guiContainer_t *container, guiWidget_t *widget)
 	}
 }
 
-void container_draw(const guiContainer_t *container, guiGraphics_t *graphics)
+void container_draw(const guiContainer *container, guiGraphics_t *graphics)
 {
 	guiDebugPrint("drawing container");
 
@@ -125,12 +125,12 @@ void container_draw(const guiContainer_t *container, guiGraphics_t *graphics)
 	graph_popClipArea(graphics);
 }
 
-guiRectangle_t *container_getChildrenArea(const guiContainer_t *container)
+guiRectangle_t *container_getChildrenArea(const guiContainer *container)
 {
 	return &(guiRectangle_t) {0, 0, container->widget.dim.width, container->widget.dim.height};
 }
 
-guiWidget_t *container_getWidgetAt(const guiContainer_t *container, vec2i_t pos)
+guiWidget_t *container_getWidgetAt(const guiContainer *container, vec2i_t pos)
 {
 	guiRectangle_t *r = container->widget.v->w_getChildrenArea(&container->widget);
 
@@ -153,10 +153,10 @@ guiWidget_t *container_getWidgetAt(const guiContainer_t *container, vec2i_t pos)
 	return NULL;
 }
 
-void container_tick(guiContainer_t *widget)
+void container_tick(guiContainer *widget)
 {
 	guiDebugPrint("container wtick");
-	guiContainer_t *container = (guiContainer_t *)widget;
+	guiContainer *container = (guiContainer *)widget;
 	guiWidget_t *it;
 	for (listNode_t *node = container->children->head; node; node = node->next) {
 		it = (guiWidget_t *)node->data;
@@ -167,9 +167,9 @@ void container_tick(guiContainer_t *widget)
 	}
 }
 
-bool container_isWidgetExisting(guiContainer_t *widget, const guiWidget_t *exist)
+bool container_isWidgetExisting(guiContainer *widget, const guiWidget_t *exist)
 {
-	guiContainer_t *container = (guiContainer_t *)widget;
+	guiContainer *container = (guiContainer *)widget;
 	guiWidget_t *it;
 	for (listNode_t *node = container->children->head; node; node = node->next) {
 		it = (guiWidget_t *)node->data;
@@ -180,9 +180,9 @@ bool container_isWidgetExisting(guiContainer_t *widget, const guiWidget_t *exist
 	return false;
 }
 
-void container_setFocusManager(guiContainer_t *widget, void *focus)
+void container_setFocusManager(guiContainer *widget, void *focus)
 {
-	guiContainer_t *container = (guiContainer_t *)widget;
+	guiContainer *container = (guiContainer *)widget;
 	widget_setFocusManager((guiWidget_t *)widget, focus);
 
 	guiWidget_t *it;
@@ -192,7 +192,7 @@ void container_setFocusManager(guiContainer_t *widget, void *focus)
 	}
 }
 
-void container_showWidgetPart(guiContainer_t *container, guiWidget_t *widget, guiRectangle_t area)
+void container_showWidgetPart(guiContainer *container, guiWidget_t *widget, guiRectangle_t area)
 {
 	guiRectangle_t widgetArea = *container_getChildrenArea(container);
 	area.pos.x += widget_getX(widget);
@@ -215,7 +215,7 @@ void container_showWidgetPart(guiContainer_t *container, guiWidget_t *widget, gu
 	}
 }
 
-void container_moveToTop(guiContainer_t *container, guiWidget_t *widget)
+void container_moveToTop(guiContainer *container, guiWidget_t *widget)
 {
 	if (list_size(container->children) < 2) { // nothing in container or already on top
 		return;
@@ -229,7 +229,7 @@ void container_moveToTop(guiContainer_t *container, guiWidget_t *widget)
 	}
 }
 
-void container_moveToBottom(guiContainer_t *container, guiWidget_t *widget)
+void container_moveToBottom(guiContainer *container, guiWidget_t *widget)
 {
 	if (list_size(container->children) < 2) { // nothing in container or already on top
 		return;

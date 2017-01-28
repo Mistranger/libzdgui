@@ -22,17 +22,15 @@ typedef struct guiGUI_s {
 } guiGUI_t;
 
 // Constructor
-void gui_init(guiGUI_t *gui);
+void gui_init(guiGUI_t *gui, int screenWidth, int screenHeight);
 void gui_destroy(guiGUI_t *gui);
 
 guiWidget_t *gui_getTop(guiGUI_t *gui);
 void gui_setTop(guiGUI_t *gui, guiWidget_t *newTop);
-guiGraphics_t *gui_getGraphics(guiGUI_t *gui);
-void gui_setGraphics(guiGUI_t *gui, guiGraphics_t *newGraphics);
-guiInput_t *gui_getInput(const guiGUI_t *gui);
-void gui_setInput(guiGUI_t *gui, guiInput_t *newInput);
-guiMouse_t *gui_getMouse(const guiGUI_t *gui);
-void gui_setMouse(guiGUI_t *gui, guiMouse_t *newMouse);
+#define gui_getTop(_gui) (((guiGUI_t*)_gui)->top)
+#define gui_getMouse(_gui) (((guiGUI_t*)_gui)->mouse)
+#define gui_getInput(_gui) (((guiGUI_t*)_gui)->input)
+#define gui_getGraphics(_gui) (((guiGUI_t*)_gui)->graphics)
 
 // Widget access and management
 guiWidget_t *gui_getWidgetAt(guiGUI_t *gui, vec2i_t *pos);

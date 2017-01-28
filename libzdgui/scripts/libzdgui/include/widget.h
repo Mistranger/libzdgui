@@ -37,23 +37,24 @@ typedef struct guiWidget_vf {
  * @brief Generic widget structure. Used as a base class by other widget types.
  */
 typedef struct guiWidget_s {
-	// List holding all listeners for widget.
-	list_t *eventListeners;
-	// Dimensions of widget (position and size)
-	guiRectangle_t dim;
-	// Parent widget (e.g. container)
-	struct guiWidget_s *parent;
-	void *focusManager;
+	void *gui;                            /// GUI object (used for some system requests, e.g. cursor change)
+	
+	list_t *eventListeners;               /// List holding all listeners for widget.
+	
+	guiRectangle_t dim;                   /// Dimensions of widget (position and size)
+	
+	struct guiWidget_s *parent;           /// Parent widget (e.g. container)
+	void *focusManager;                   /// Focus manager, which handles all focus events
 
 	// Flags
-	bool isContainer;
-	bool isEnabled;
-	bool isFocusable;
-	bool isVisible;
-	// Font used for drawing
-	guiFont_t *font;
-	// Virtual functions table
-	guiWidget_vf_t *v;
+	bool isContainer;                     /// Can contain other widgets
+	bool isEnabled;                       /// Can handle events and interact with other widgets
+	bool isFocusable;                     /// Handle focus gain/lose events (otherwise it won't handle other events)
+	bool isVisible;                       /// Is visible on screen
+	
+	guiFont_t *font;                      /// Font used for drawing
+	
+	guiWidget_vf_t *v;                    /// Virtual functions table
 } guiWidget_t;
 
 /*----------------------------------------------------------------------------

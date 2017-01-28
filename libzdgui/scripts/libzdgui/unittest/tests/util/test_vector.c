@@ -79,17 +79,8 @@ void test_vector_inserterase(CuTest *tc)
 
 void test_vector_insertwidgets(CuTest *tc)
 {
-	guiGraphics_t *graphics = new (guiGraphics_t);
-	graph_init(graphics, 640, 480);
-	guiInput_t *input = new (guiInput_t);
-	input_init(input);
-	guiMouse_t *mouse = new (guiMouse_t);
-	mouse_init(mouse);
 	guiGUI_t *gui = new (guiGUI_t);
-	gui_init(gui);
-	gui_setGraphics(gui, graphics);
-	gui_setInput(gui, input);
-	gui_setMouse(gui, mouse);
+	gui_init(gui, 640, 480);
 	gui_setTop(gui, NULL);
 
 	string_t *str = string_new_char("Hello world");

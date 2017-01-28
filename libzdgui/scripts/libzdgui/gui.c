@@ -10,13 +10,19 @@
 #include "util/util.h"
 #include "widgets/container.h"
 
-void gui_init(guiGUI_t *gui)
-{
+void gui_init(guiGUI_t *gui, int screenWidth, int screenHeight)
+{	
 	gui->top = NULL;
-	gui->graphics = NULL;
+	gui->graphics = new (guiGraphics_t);
+	graph_init(gui->graphics, screenWidth, screenHeight);
+	gui->input = new (guiInput_t);
+	input_init(gui->input);
+	gui->mouse = new (guiMouse_t);
+	mouse_init(gui->mouse);
 	gui->allWidgets = list_new();
 	gui->widgetsUnderMouse = list_new();
 	gui->focusManager = focusManager_new();
+	guiInfo("gui system initialized");
 }
 
 void gui_destroy(guiGUI_t *gui)
@@ -30,11 +36,6 @@ void gui_destroy(guiGUI_t *gui)
 	list_delete(gui->allWidgets);
 }
 
-guiWidget_t *gui_getTop(guiGUI_t *gui)
-{
-	return gui->top;
-}
-
 void gui_setTop(guiGUI_t *gui, guiWidget_t *newTop)
 {
 	if (gui->top) {
@@ -44,16 +45,6 @@ void gui_setTop(guiGUI_t *gui, guiWidget_t *newTop)
 		newTop->v->w_setFocusManager(newTop, gui->focusManager);
 	}
 	gui->top = newTop;
-}
-
-guiGraphics_t *gui_getGraphics(guiGUI_t *gui)
-{
-	return gui->graphics;
-}
-
-void gui_setGraphics(guiGUI_t *gui, guiGraphics_t *newGraphics)
-{
-	gui->graphics = newGraphics;
 }
 
 void gui_handleMouseMove(guiGUI_t *gui, mouseEvent_t *event)
@@ -323,26 +314,6 @@ void gui_tick(guiGUI_t *gui)
 	}
 
 	guiDebugPrint("gui tick end");
-}
-
-void gui_setInput(guiGUI_t *gui, guiInput_t *newInput)
-{
-	gui->input = newInput;
-}
-
-guiInput_t *gui_getInput(const guiGUI_t *gui)
-{
-	return gui->input;
-}
-
-void gui_setMouse(guiGUI_t *gui, guiMouse_t *newMouse)
-{
-	gui->mouse = newMouse;
-}
-
-guiMouse_t *gui_getMouse(const guiGUI_t *gui)
-{
-	return gui->mouse;
 }
 
 void gui_handleMouseInput(guiGUI_t *gui)

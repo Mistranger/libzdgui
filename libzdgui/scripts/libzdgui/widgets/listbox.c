@@ -116,7 +116,7 @@ void listbox_setSelected(guiListBox_t *listbox, int selected)
 												 image_getHeight(*listbox->itemImage)) : font_getCharHeight(*widget_getFont(listbox))) * listbox->selected;
 		scroll.height = (listbox->itemImage ? MAX(font_getCharHeight(*widget_getFont(listbox)),
 												  image_getHeight(*listbox->itemImage)) : font_getCharHeight(*widget_getFont(listbox)));
-		((guiContainer_vf_t *)(((guiContainer_t *)par)->widget.v))->c_showWidgetPart((guiContainer_t *)par, (guiWidget_t *)listbox, scroll);
+		((guiContainer_vf_t *)(((guiContainer *)par)->widget.v))->c_showWidgetPart((guiContainer *)par, (guiWidget_t *)listbox, scroll);
 	}
 
 }

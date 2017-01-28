@@ -36,7 +36,7 @@ void window_destructor(guiWindow_t *window)
 
 void window_init(guiWindow_t *window, const string_t *caption, guiImage_t *background)
 {
-	container_init((guiContainer_t *)window);
+	container_init((guiContainer *)window);
 	((guiWidget_t *)(&window->widget))->v = (guiWidget_vf_t *)&guiWindow_vtable;
 
 	window->caption = string_new();
@@ -87,7 +87,7 @@ void window_draw(const guiWindow_t *window, guiGraphics_t *graphics)
 		graph_drawImageScaled(graphics, 0, 0, image_getWidth(*window->background), image_getHeight(*window->background),
 							  widget_getWidth(window), widget_getHeight(window), image_getImage(*window->background));
 	}
-	container_draw((guiContainer_t *)window, graphics);
+	container_draw((guiContainer *)window, graphics);
 }
 
 guiRectangle_t *window_getChildrenArea(const guiWindow_t *window)
@@ -102,7 +102,7 @@ void window_mousePressed(void *widget, mouseEvent_t *mouseEvent)
 {
 	guiWindow_t *window = (guiWindow_t *)widget;
 	if (widget_getParent(widget) != NULL) {
-		container_moveToTop((guiContainer_t *)widget_getParent(widget), (guiWidget_t *)widget);
+		container_moveToTop((guiContainer *)widget_getParent(widget), (guiWidget_t *)widget);
 	}
 	if (window->isSizable) {
 		vec2i_t absPos;

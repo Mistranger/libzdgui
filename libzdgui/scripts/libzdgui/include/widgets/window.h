@@ -35,15 +35,15 @@ typedef struct guiWindow_vf {
 	const char *(*w_typename)(struct guiWindow_s *widget);
 	void (*w_destructor)(struct guiWindow_s *widget);
 	struct guiRectangle_s *(*w_getChildrenArea)(const struct guiWindow_s *window);
-	struct guiWidget_s *(*w_getWidgetAt)(const struct guiContainer_s *widget, vec2i_t pos);
+	struct guiWidget_s *(*w_getWidgetAt)(const struct guiContainer *widget, vec2i_t pos);
 	void (*w_draw)(const struct guiWindow_s *window, guiGraphics_t *graphics);
-	void (*w_tick)(struct guiContainer_s *widget);
-	bool (*w_isWidgetExisting)(struct guiContainer_s *widget, const struct guiWidget_s *exist);
-	void(*w_setFocusHandler)(struct guiContainer_s *widget, void *focus);
+	void (*w_tick)(struct guiContainer *widget);
+	bool (*w_isWidgetExisting)(struct guiContainer *widget, const struct guiWidget_s *exist);
+	void(*w_setFocusHandler)(struct guiContainer *widget, void *focus);
 } guiWindow_vf_t;
 
 typedef struct guiWindow_s {
-	guiContainer_t widget;
+	guiContainer widget;
 	string_t *caption;
 	bool canDrag;
 	bool isSizable;

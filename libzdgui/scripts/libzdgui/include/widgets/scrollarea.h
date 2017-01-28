@@ -37,14 +37,14 @@ typedef struct guiScrollArea_vf {
 	struct guiWidget_s *(*w_getWidgetAt)(const struct guiScrollArea_s *widget, vec2i_t pos);
 	void(*w_draw)(const struct guiScrollArea_s *scrollarea, guiGraphics_t *graphics);
 	void(*w_tick)(struct guiScrollArea_s *scrollarea);
-	bool(*w_isWidgetExisting)(struct guiContainer_s *widget, const struct guiWidget_s *exist);
-	void(*w_setFocusHandler)(struct guiContainer_s *widget, void *focus);
+	bool(*w_isWidgetExisting)(struct guiContainer *widget, const struct guiWidget_s *exist);
+	void(*w_setFocusHandler)(struct guiContainer *widget, void *focus);
 
 	void (*c_showWidgetPart)(struct guiScrollArea_s *container, guiWidget_t *widget, guiRectangle_t area);
 } guiScrollArea_vf_t;
 
 typedef struct guiScrollArea_s {
-	guiContainer_t widget;
+	guiContainer widget;
 
 	bool hBarVisible, vBarVisible;
 	int scrollBarWidth;
@@ -96,7 +96,7 @@ void scroll_draw(const guiScrollArea_t *scrollarea, guiGraphics_t *graphics);
 void scroll_tick(guiScrollArea_t *scrollarea);
 
 #define scroll_getContent(_widget) \
-	(list_size(((guiContainer_t*)_widget)->children) > 0 ? ((guiWidget_t*)list_front(((guiContainer_t*)_widget)->children)->data) : NULL)
+	(list_size(((guiContainer*)_widget)->children) > 0 ? ((guiWidget_t*)list_front(((guiContainer*)_widget)->children)->data) : NULL)
 void scroll_setContent(guiScrollArea_t *scrollarea, guiWidget_t *content);
 guiRectangle_t *scroll_getContentDimension(const guiScrollArea_t *scrollarea);
 void scroll_showWidgetPart(guiScrollArea_t *scrollarea, guiWidget_t *widget, guiRectangle_t area);

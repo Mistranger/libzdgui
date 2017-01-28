@@ -4,23 +4,13 @@
 [[call("ScriptS"), script("Enter")]]
 void initLibZDGui(void)
 {
-	guiGraphics_t *graphics = new (guiGraphics_t);
-	graph_init(graphics, 640, 480);
-	guiDebugPrint("graph init");
-	guiInput_t *input = new (guiInput_t);
-	input_init(input);
-	guiDebugPrint("input init");
-	guiMouse_t *mouse = new (guiMouse_t);
-	mouse_init(mouse);
+	
 	guiGUI_t *gui = new (guiGUI_t);
-	gui_init(gui);
-	gui_setGraphics(gui, graphics);
-	gui_setInput(gui, input);
-	gui_setMouse(gui, mouse);
+	gui_init(gui, 640, 480);
 	gui_setTop(gui, NULL);
-	guiDebugPrint("gui init");
+	
 
-	mouse_registerCursor(gui->mouse, s"DEFCURS", 32, 32, 0, 0);
+	mouse_registerCursor(gui_getMouse(gui), s"DEFCURS", 32, 32, 0, 0);
 	string_t *str = string_new_char("Hello world");
 	guiImage_t panel = {288, 256, s"panel_2"};
 	guiWindow_t *window = window_new(gui, str, &panel);
@@ -109,10 +99,10 @@ void initLibZDGui(void)
 	scroll_setHBarImage(scroll2, slider_horiz);
 	scroll_setVBarImage(scroll2, slider_vert);
 
-	container_addAtXY((guiContainer_t *)window, (guiWidget_t *)button, 0, 20);
-	container_addAtXY((guiContainer_t *)window, (guiWidget_t *)button2, 0, 40);
-	container_addAtXY((guiContainer_t *)window, (guiWidget_t *)button3, 0, 120);
-	container_addAtXY((guiContainer_t *)window, (guiWidget_t *)scroll2, 0, 120);
+	container_addAtXY((guiContainer *)window, (guiWidget_t *)button, 0, 20);
+	container_addAtXY((guiContainer *)window, (guiWidget_t *)button2, 0, 40);
+	container_addAtXY((guiContainer *)window, (guiWidget_t *)button3, 0, 120);
+	container_addAtXY((guiContainer *)window, (guiWidget_t *)scroll2, 0, 120);
 
 	//container_addAtXY((guiContainer_t*)window, (guiWidget_t*)scroll, 20, 20);
 
@@ -121,9 +111,9 @@ void initLibZDGui(void)
 		
 		gui_tick(gui);
 		gui_draw(gui);
-		int *m = new(int);
+		/*int *m = new(int);
 		guiInfo("Memory leak test: %p" _C_ m);
-		free(m);
+		free(m);*/
 		ACS_Delay(1);
 	}
 	return;

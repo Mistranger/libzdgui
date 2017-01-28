@@ -96,8 +96,6 @@ void graph_setFont(guiGraphics_t *graphics, __str font)
 
 void graph_drawImage(guiGraphics_t *graphics, int x, int y, __str image)
 {
-#pragma fixed on
-
 	int dx = x, dy = y;
 	guiClipRectangle_t *top = (guiClipRectangle_t *)vecstack_top(graphics->clipStack);
 	dx += top->offset.x;
