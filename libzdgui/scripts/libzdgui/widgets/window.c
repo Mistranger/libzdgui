@@ -10,8 +10,13 @@ guiWindow_vf_t guiWindow_vtable = {
 	window_draw,
 	container_tick,
 	container_isWidgetExisting,
-	container_setFocusManager
+	container_setFocusManager,
+	widget_getMinimalSize,
+	container_showWidgetPart,
 };
+
+const guiImage windowDefForeground = {402, 302, s"NEWINDOW"};
+const guiImage windowDefBackground = {402, 302, s"NDWINDOW"};
 
 const char *WindowType = "Window";
 
@@ -20,10 +25,10 @@ const char *window_typename(guiWindow *widget)
 	return WindowType;
 }
 
-guiWindow *window_new(guiGUI *gui, const string_t *caption, guiImage *background)
+guiWindow *window_new(guiGUI *gui, const string_t *caption)
 {
 	guiWindow *window = new (guiWindow);
-	window_init(window, caption, background);
+	window_init(window, caption);
 	gui_addWidget(gui, window);
 	return window;
 }
@@ -34,7 +39,7 @@ void window_destructor(guiWindow *window)
 	widget_destructor((guiWidget *)window);
 }
 
-void window_init(guiWindow *window, const string_t *caption, guiImage *background)
+void window_init(guiWindow *window, const string_t *caption)
 {
 	container_init((guiContainer *)window);
 	((guiWidget *)(&window->widget))->v = (guiWidget_vf_t *)&guiWindow_vtable;
@@ -50,9 +55,10 @@ void window_init(guiWindow *window, const string_t *caption, guiImage *backgroun
 	window->isVerticalRightResizing = false;
 	window->isHorizontalLeftResizing = false;
 	window->isVerticalLeftResizing = false;
-	window_setPadding(window, 0);
+	window_setPadding(window, 6);
 	window->titleBarHeight = 16;
-	window->background = background;
+	window->background = (guiImage*)&windowDefBackground;
+	window->foreground = (guiImage*)&windowDefForeground;
 	
 	window->isDragging = false;
 	window->dragOffset = (vec2i){0, 0};
@@ -93,9 +99,22 @@ void window_resizeToContent(const guiWindow *window)
 
 void window_draw(const guiWindow *window, guiGraphics *graphics)
 {
-	if (window->background) {
-		graph_drawImageScaled(graphics, 0, 0, image_getWidth(*window->background), image_getHeight(*window->background),
-							  widget_getWidth(window), widget_getHeight(window), image_getImage(*window->background));
+	guiImage *img = NULL;
+	guiWidget *c = widget_getParent(window);
+	if (c && widget_isContainer(c)) {
+		if (list_back(((guiContainer*)c)->children)->data == window) {
+			img = window->foreground;
+		} else {
+			img = window->background;
+		}
+	}
+	
+	if (img) {
+		graph_drawImageScaled(graphics, 0, 0, image_getWidth(*img), image_getHeight(*img),
+							  widget_getWidth(window), widget_getHeight(window), image_getImage(*img));
+	}
+	if (window->caption) {
+		graph_drawText(graphics, widget_getFont(window), 3, 3, widget_getFontColor(window), string_cstr(window->caption));
 	}
 	container_draw((guiContainer *)window, graphics);
 	if (window->canDrag && window->isDragging) {
@@ -139,27 +158,27 @@ void window_mousePressed(void *widget, guiMouseEvent *mouseEvent)
 	}
 	
 	guiWindow *window = (guiWindow *)widget;
-	if (widget_getParent(widget) != NULL) {
+	if (widget_getParent(widget)) {
 		container_moveToTop((guiContainer *)widget_getParent(widget), (guiWidget *)widget);
 	}
 	window->newDim = (guiRectangle){0, 0, 0, 0};
 	
-	if (window->canDrag && mouseEvent->pos.y >= 5 && mouseEvent->pos.y <= window->titleBarHeight) {
+	if (window->canDrag && mouseEvent->pos.y >= 4 && mouseEvent->pos.y <= window->titleBarHeight) {
 		window->isDragging = true;
 		window->dragOffset = (vec2i){mouseEvent->pos.x, mouseEvent->pos.y};
 	} else if (window->isSizable) {
-		if (abs(widget_getWidth(window) - 1 - mouseEvent->pos.x) < 5) {
+		if (abs(widget_getWidth(window) - 1 - mouseEvent->pos.x) < 4) {
 			window->isHorizontalRightResizing = true;
 			window->resizePos.x = mouseEvent->pos.x;
-		} else if (abs(mouseEvent->pos.x) < 5) {
+		} else if (abs(mouseEvent->pos.x) < 4) {
 			
 			window->isHorizontalLeftResizing = true;
 			window->resizePos.x = mouseEvent->pos.x;
 		}
-		if (abs(widget_getHeight(window) - 1 - mouseEvent->pos.y) < 5) {
+		if (abs(widget_getHeight(window) - 1 - mouseEvent->pos.y) < 4) {
 			window->isVerticalRightResizing = true;
 			window->resizePos.y = mouseEvent->pos.y;
-		} else if (abs(mouseEvent->pos.y) < 5) {
+		} else if (abs(mouseEvent->pos.y) < 4) {
 			window->isVerticalLeftResizing = true;
 			window->resizePos.y = mouseEvent->pos.y;
 		}

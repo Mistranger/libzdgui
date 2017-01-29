@@ -21,6 +21,14 @@
 --  Defines
 ----------------------------------------------------------------------------*/
 
+#define LIBZDGUI_VERSION_MAJOR 0
+#define LIBZDGUI_VERSION_MINOR 0
+#define LIBZDGUI_VERSION_PATCH 1
+
+#define _stringify_(s) #s
+#define _stringify(s) _stringify_(s)
+#define libzdgui_getVersion() (_stringify(LIBZDGUI_VERSION_MAJOR) "." _stringify(LIBZDGUI_VERSION_MINOR) "." _stringify(LIBZDGUI_VERSION_PATCH))
+
 // ZDoom script types
 
 #define EXT [[extern("ACS")]]
@@ -55,5 +63,12 @@ int ACS_HudMessageExt(int flags, int id, int color, fixed x, fixed y, fixed hold
 int ACS_HudMessageColorExt(int flags, int id, __str color, fixed x, fixed y, fixed holdTime, fixed alpha, __str format, ...);
 int ACS_PrintLog(const char *format, ...);
 int ACS_PrintLogStr(__str format, ...);
+
+#define CharToStr(_cstr) \
+  ( \
+   ACS_BeginStrParam(), \
+   __nprintf(_cstr), \
+   ACS_EndStrParam() \
+  )
 
 #endif // SYSTEM_H_INCLUDED

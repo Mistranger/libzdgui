@@ -41,8 +41,8 @@ typedef struct guiMouseInput {
 
 typedef struct guiMouse {
 	list_t *cursors;                           /// All cursors that are available
-	guiCursor *currentCursor;                /// Current cursor in use
-	vec2i cursorPos;                         /// Cursor position
+	guiCursor *currentCursor;                  /// Current cursor in use
+	vec2i cursorPos;                           /// Cursor position
 	int mouseSensitivity;                      /// Overall mouse move sensitivity
 	int doubleClickDelay;                      /// Delay for double clicks
 
@@ -50,10 +50,10 @@ typedef struct guiMouse {
 	int lastMousePressTime;                    /// Internal: timestamp of mouse last press
 	int lastMousePressButton;                  /// Internal: last pressed button
 	int lastMouseDragButton;                   /// Internal: last button used for dragging
-	vec2i lastMousePos;                      /// Internal: last mouse position
+	vec2i lastMousePos;                        /// Internal: last mouse position
 
 	queue_t *mouseEventQueue;                  /// All mouse generated input first goes here
-	guiMouseInput *mouseInput, *oldMouseInput;  /// Mouse input data for current and last tic
+	guiMouseInput *mouseInput, *oldMouseInput; /// Mouse input data for current and last tic
 } guiMouse;
 
 /*----------------------------------------------------------------------------
@@ -104,6 +104,8 @@ void mouse_registerCursor(guiMouse *mouse, __str image, int width, int height, i
 void mouse_grabMouseInput(guiMouse *mouse);
 void mouse_releaseMouseInput(guiMouse *mouse);
 void mouse_getInput(guiMouse *input, guiGraphics *graphics);
+#define mouse_getSensitivity(_mouse) (((guiMouse*)_mouse)->mouseSensitivity)
+#define mouse_setSensitivity(_mouse, _sens) { ((guiMouse*)_mouse)->mouseSensitivity = _sens; }
 #define mouse_getLastPressButton(_mouse) (((guiMouse*)_mouse)->lastMousePressButton)
 #define mouse_setLastPressButton(_mouse, _button) { ((guiMouse*)_mouse)->lastMousePressButton = _button; }
 #define mouse_getLastDragButton(_mouse) (((guiMouse*)_mouse)->lastMouseDragButton)

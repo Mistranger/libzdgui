@@ -14,6 +14,8 @@ void mouse_init(guiMouse *mouse)
 	mouse->mouseEventQueue = queue_init();
 	mouse->currentCursor = NULL;
 
+	mouse->mouseSensitivity = 25;
+	mouse->doubleClickDelay = 300;
 	mouse->lastMousePressButton = MB_EMPTY;
 	mouse->lastMouseDragButton = MB_EMPTY;
 	mouse->lastMousePos = (vec2i) {0, 0};
@@ -69,8 +71,9 @@ void mouse_getInput(guiMouse *mouse, guiGraphics *graphics)
 
 	int dx = ACS_GetPlayerInput(-1, INPUT_YAW);
 	int dy = ACS_GetPlayerInput(-1, INPUT_PITCH);
-	mouse->mouseInput->pos.x += -dx	/ 35;
-	mouse->mouseInput->pos.y += -dy	/ 25;
+	fixed aspectRatio = (fixed)graph_getScreenWidth(graphics)/graph_getScreenHeight(graphics);
+	mouse->mouseInput->pos.x += -dx	/ (mouse_getSensitivity(mouse) * aspectRatio);
+	mouse->mouseInput->pos.y += -dy	/ mouse_getSensitivity(mouse);
 	clamp(mouse->mouseInput->pos.x, 0, graph_getScreenWidth(graphics));
 	clamp(mouse->mouseInput->pos.y, 0, graph_getScreenHeight(graphics));
 	mouse->cursorPos.x = mouse->mouseInput->pos.x;

@@ -27,6 +27,7 @@ typedef struct guiWidget_vf {
 	void (*w_tick)(struct guiWidget *widget);
 	bool (*w_isWidgetExisting)(struct guiWidget *widget, const struct guiWidget *exist);
 	void (*w_setFocusManager)(struct guiWidget *widget, void *focus);
+	struct vec2i* (*w_getMinimalSize)(const struct guiWidget *widget);
 } guiWidget_vf_t;
 
 
@@ -110,6 +111,7 @@ void widget_tick(guiWidget *widget);
 bool widget_isWidgetExisting(guiWidget *widget, const guiWidget *exist);
 #define widget_getFocusManager(_widget) (((guiWidget*)_widget)->focusManager)
 void widget_setFocusManager(guiWidget *widget, void *focus);
+vec2i* widget_getMinimalSize(const guiWidget *widget);
 
 void widget_requestFocus(guiWidget *widget);
 void widget_requestModalFocus(guiWidget *widget);

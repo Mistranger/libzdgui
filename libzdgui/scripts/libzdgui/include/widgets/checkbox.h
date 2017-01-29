@@ -33,6 +33,7 @@ typedef struct guiCheckBox_vf {
 	void(*w_tick)(struct guiWidget *widget);
 	bool(*w_isWidgetExisting)(struct guiWidget *widget, const struct guiWidget *exist);
 	void(*w_setFocusHandler)(struct guiWidget *widget, void *focus);
+	struct vec2i* (*w_getMinimalSize)(const struct guiWidget *widget);
 } guiCheckBox_vf_t;
 
 typedef struct guiCheckBox {

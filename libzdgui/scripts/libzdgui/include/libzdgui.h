@@ -9,8 +9,13 @@
 #include "fonts.h"
 #include "graphics.h"
 #include "gui.h"
-#include "input.h"
 #include "widget.h"
+
+#include "event/event_dimension.h"
+#include "event/event_focus.h"
+#include "event/event_lifecycle.h"
+#include "event/event_mouse.h"
+#include "event/event_widget.h"
 
 #include "widgets/button.h"
 #include "widgets/checkbox.h"

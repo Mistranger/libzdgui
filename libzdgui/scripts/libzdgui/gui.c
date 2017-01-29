@@ -15,8 +15,6 @@ void gui_init(guiGUI *gui, int screenWidth, int screenHeight)
 	gui->top = NULL;
 	gui->graphics = new (guiGraphics);
 	graph_init(gui->graphics, screenWidth, screenHeight);
-	gui->input = new (guiInput);
-	input_init(gui->input);
 	gui->mouse = new (guiMouse);
 	mouse_init(gui->mouse);
 	gui->allWidgets = list_new();
@@ -24,8 +22,6 @@ void gui_init(guiGUI *gui, int screenWidth, int screenHeight)
 	gui->focusManager = focusManager_new();
 	guiInfo("gui system initialized");
 }
-
-
 
 void gui_destroy(guiGUI *gui)
 {
@@ -38,6 +34,16 @@ void gui_destroy(guiGUI *gui)
 	list_delete(gui->allWidgets);
 }
 
+/**
+ * @brief Sets the top(root) widget.
+ *
+ * It's recommended to use screen-size invisible container as top widget for correct
+ * handling of widget focus events (otherwise the unused screen space will become "void")
+ * and some events won't be delivered to widgets when mouse in "void" space
+ *
+ * @param gui GUI object
+ * @param newTop New top widget
+ */
 void gui_setTop(guiGUI *gui, guiWidget *newTop)
 {
 	if (gui->top) {
@@ -49,6 +55,14 @@ void gui_setTop(guiGUI *gui, guiWidget *newTop)
 	gui->top = newTop;
 }
 
+/**
+ * @brief Handles mouse movement events
+ *
+ * This also includes widget dragging and focus acquiring/losing.
+ *
+ * @param gui GUI object
+ * @param event Event to handle
+ */
 void gui_handleMouseMove(guiGUI *gui, guiMouseEvent *event)
 {
 	listNode_t *it;
@@ -142,6 +156,14 @@ void gui_handleMouseMove(guiGUI *gui, guiMouseEvent *event)
 
 }
 
+/**
+ * @brief Handle mouse events
+ *
+ * All queued mouse events are processed here. 
+ *
+ * @param gui GUI object
+ * @param event Event to handle
+ */
 void gui_handleMouse(guiGUI *gui, guiMouseEvent *event)
 {
 	if (event->type == ME_MOVED) {

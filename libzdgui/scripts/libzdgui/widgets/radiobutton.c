@@ -22,7 +22,8 @@ guiRadioButton_vf_t guiRadioButton_vtable = {
 	radio_draw,
 	widget_tick,
 	widget_isWidgetExisting,
-	widget_setFocusManager
+	widget_setFocusManager,
+	widget_getMinimalSize,
 };
 
 const char *RadioButtonType = "RadioButton";

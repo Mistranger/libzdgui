@@ -21,7 +21,10 @@ guiFocusManager *focusManager_new()
 
 void focusManager_delete(guiFocusManager *focusManager)
 {
-	// FIXME remove vector
+	if (focusManager) {
+		vector_delete(focusManager->widgets);
+		free(focusManager);
+	}
 }
 
 void focus_requestFocus(guiFocusManager *focusManager, guiWidget *widget)
@@ -31,8 +34,6 @@ void focus_requestFocus(guiFocusManager *focusManager, guiWidget *widget)
 	}
 	int focused = -1;
 	for (size_t i = 0; i < vector_size(focusManager->widgets); ++i)	{
-		guiWidget *w = vector_get(focusManager->widgets, i, guiWidget *);
-
 		if (vector_get(focusManager->widgets, i, guiWidget *) == widget) {
 			focused = i;
 			break;
@@ -119,7 +120,6 @@ void focus_removeFromManager(guiFocusManager *focusManager, guiWidget *widget)
 		focusManager->focusedWidget = NULL;
 	}
 
-	guiWidget *w;
 	for (size_t i = 0; i < vector_size(focusManager->widgets); ++i) {
 		if (vector_get(focusManager->widgets, i, guiWidget *) == widget) {
 			vector_erase(focusManager->widgets, i);

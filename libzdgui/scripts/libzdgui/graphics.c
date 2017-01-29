@@ -182,13 +182,3 @@ void graph_drawText(guiGraphics *graphics, guiFont *font, int x, int y, __str fo
 				   (fixed)(y + top->offset.y) + 0.1, 0.03k, text);
 }
 
-int graph_getScreenWidth(guiGraphics *graphics)
-{
-	return graphics->screenWidth;
-}
-
-int graph_getScreenHeight(guiGraphics *graphics)
-{
-	return graphics->screenHeight;
-}
-

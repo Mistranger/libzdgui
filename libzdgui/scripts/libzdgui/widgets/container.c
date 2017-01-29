@@ -14,7 +14,8 @@ guiContainer_vf_t guiContainer_vtable = {
 	container_tick,
 	container_isWidgetExisting,
 	container_setFocusManager,
-	container_showWidgetPart
+	widget_getMinimalSize,
+	container_showWidgetPart,
 };
 
 const char *ContainerType = "Container";

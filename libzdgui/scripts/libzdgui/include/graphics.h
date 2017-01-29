@@ -9,6 +9,14 @@
 
 #define HUDMESSAGE_ID 0x0000FFFF
 
+typedef enum guiAlignment {
+	ALIGN_LEFT = 0,
+	ALIGN_CENTER,
+	ALIGN_RIGHT,
+	ALIGN_TOP,
+	ALIGN_BOTTOM,
+} guiAlignment;
+
 typedef struct guiGraphics {
 	vecstack_t *clipStack;
 	__str fontName;
@@ -22,8 +30,8 @@ void graph_beginDraw(guiGraphics *graphics);
 void graph_endDraw(guiGraphics *graphics);
 void graph_pushClipArea(guiGraphics *graphics, const guiRectangle area);
 void graph_popClipArea(guiGraphics *graphics);
-int graph_getScreenWidth(guiGraphics *graphics);
-int graph_getScreenHeight(guiGraphics *graphics);
+#define graph_getScreenWidth(_graphics) ((_graphics)->screenWidth)
+#define graph_getScreenHeight(_graphics) ((_graphics)->screenHeight)
 
 void graph_setFont(guiGraphics *graphics, __str font);
 void graph_drawRect(guiGraphics *graphics, int x, int y, int width, int height, __str color);

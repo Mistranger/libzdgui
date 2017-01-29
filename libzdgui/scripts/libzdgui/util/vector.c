@@ -12,13 +12,12 @@ vector_t *vector_new(size_t elemSize)
 	return vector;
 }
 
-inline size_t vector_size(vector_t *vector)
+void vector_delete(vector_t *vector)
 {
-	if (!vector) {
-		guiError("null vector");
-		return 0;
+	if (vector) {
+		free(vector->data);
+		free(vector);
 	}
-	return vector->size;
 }
 
 size_t vector_capacity(vector_t *vector)

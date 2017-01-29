@@ -13,7 +13,8 @@ guiSlider_vf_t guiSlider_vtable = {
 	slider_draw,
 	widget_tick,
 	widget_isWidgetExisting,
-	widget_setFocusManager
+	widget_setFocusManager,
+	widget_getMinimalSize,
 };
 
 const guiImage sliderDefImageBack = {170, 13, s"SLIDBACK"};

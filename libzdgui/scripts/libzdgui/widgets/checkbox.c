@@ -12,7 +12,8 @@ guiCheckBox_vf_t guiCheckBox_vtable = {
 	checkbox_draw,
 	widget_tick,
 	widget_isWidgetExisting,
-	widget_setFocusManager
+	widget_setFocusManager,
+	widget_getMinimalSize
 };
 
 const guiImage cboxDefImage = {15, 15, s"CHECKOFF"};

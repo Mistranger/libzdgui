@@ -22,6 +22,7 @@ typedef struct guiButton_vf {
 	void (*w_tick)(struct guiWidget *widget);
 	bool (*w_isWidgetExisting)(struct guiWidget *widget, const struct guiWidget *exist);
 	void(*w_setFocusHandler)(struct guiWidget *widget, void *focus);
+	struct vec2i* (*w_getMinimalSize)(const struct guiWidget *widget);
 } guiButton_vf_t;
 
 typedef struct guiButton {
@@ -30,6 +31,7 @@ typedef struct guiButton {
 	bool isPressed;
 	bool hasMouse;
 
+	guiAlignment textAlign;
 	string_t *caption;
 	guiImage *image;
 	guiImage *imageDisabled;
@@ -49,6 +51,9 @@ void button_init(guiButton *button, const string_t *caption);
 void button_setCaption(guiButton *button, const string_t *caption);
 const string_t *button_getCaption(const guiButton *button);
 void button_adjustSize(guiButton *button);
+
+#define button_getAlignment(_widget) (((guiButton*)_widget)->textAlign)
+#define button_setAlignment(_widget, _align) { ((guiButton*)_widget)->textAlign = _align; }
 
 #define button_isPressed(_widget) (((guiButton*)_widget)->isPressed)
 #define button_setPressed(_widget, _state) { ((guiButton*)_widget)->isPressed = _state; }

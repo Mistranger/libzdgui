@@ -5,7 +5,6 @@
 #include "event.h"
 #include "event/event_mouse.h"
 #include "focusmanager.h"
-#include "input.h"
 #include "mouse.h"
 #include "widget.h"
 
@@ -13,7 +12,6 @@ typedef struct guiGUI {
 	// The top widget
 	guiWidget *top;
 	guiGraphics *graphics;
-	guiInput *input;
 	guiMouse *mouse;
 	guiFocusManager *focusManager;
 
@@ -29,7 +27,6 @@ guiWidget *gui_getTop(guiGUI *gui);
 void gui_setTop(guiGUI *gui, guiWidget *newTop);
 #define gui_getTop(_gui) (((guiGUI*)_gui)->top)
 #define gui_getMouse(_gui) (((guiGUI*)_gui)->mouse)
-#define gui_getInput(_gui) (((guiGUI*)_gui)->input)
 #define gui_getGraphics(_gui) (((guiGUI*)_gui)->graphics)
 
 // Widget access and management

@@ -38,10 +38,10 @@ string_t *string_new_string(const string_t *s);
 string_t *string_new_char(const char *s);
 void string_delete(string_t *s);
 
-size_t string_size(const string_t *s);
+#define string_size(_string) ((_string) ? (_string)->len : 0)
 void string_resize(string_t *str, size_t newSize);
 
-inline const char *string_cstr(const string_t *s);
+#define string_cstr(_string) ((const char *)_string->s)
 inline uchar string_get(const string_t *s, size_t at);
 uchar string_at(const string_t *s, size_t at);
 

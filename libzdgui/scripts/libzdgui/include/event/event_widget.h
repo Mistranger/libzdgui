@@ -27,7 +27,7 @@ typedef struct guiWidgetListener {
 
 guiWidgetEvent *widgetEvent_new(void *source, guiWidgetEventType eventType);
 
-guiWidgetListener *widgetListener_new(void *handler, guiWidgetEventType eventType, void (*func)(void *widget, guiWidgetEvent *mouseEvent));
+guiWidgetListener *widgetListener_new(void *handler, guiWidgetEventType eventType, void (*func)(void *widget, guiWidgetEvent *widgetEvent));
 void widgetListener_handleEvent(guiEventListener *listener, guiEvent *event);
 
 

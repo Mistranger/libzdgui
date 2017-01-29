@@ -7,6 +7,7 @@
 ----------------------------------------------------------------------------*/
 
 #include "gui.h"
+#include "graphics.h"
 #include "widget.h"
 #include "event/event_dimension.h"
 #include "util/string.h"
@@ -18,14 +19,6 @@
 /*----------------------------------------------------------------------------
 -- Types
 ----------------------------------------------------------------------------*/
-
-typedef enum labelAlignment {
-	ALIGN_LEFT = 0,
-	ALIGN_CENTER,
-	ALIGN_RIGHT,
-	ALIGN_TOP,
-	ALIGN_BOTTOM,
-} guiLabelAlignment;
 
 extern const char *LabelType;
 
@@ -40,6 +33,7 @@ typedef struct guiLabel_vf {
 	void (*w_tick)(struct guiWidget *widget);
 	bool (*w_isWidgetExisting)(struct guiWidget *widget, const struct guiWidget *exist);
 	void(*w_setFocusHandler)(struct guiWidget *widget, void *focus);
+	struct vec2i* (*w_getMinimalSize)(const struct guiWidget *widget);
 } guiLabel_vf_t;
 
 typedef struct guiLabel {
@@ -48,8 +42,8 @@ typedef struct guiLabel {
 	string_t *textWrap;
 	int wrapLines;
 	bool isMultiline;
-	guiLabelAlignment horizAlign;
-	guiLabelAlignment vertAlign;
+	guiAlignment horizAlign;
+	guiAlignment vertAlign;
 } guiLabel;
 
 /*----------------------------------------------------------------------------

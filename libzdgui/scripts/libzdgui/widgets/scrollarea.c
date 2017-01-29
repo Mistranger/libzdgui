@@ -11,8 +11,21 @@ guiScrollArea_vf_t guiScrollArea_vtable = {
 	scroll_tick,
 	container_isWidgetExisting,
 	container_setFocusManager,
+	widget_getMinimalSize,
 	scroll_showWidgetPart,
 };
+
+guiImage defScrollVert = {13, 170, s"SLIDVERT"};
+guiImage defScrollKnob = {20, 20, s"SLIDKNOB"};
+guiImage defScrollDownPressed ={20, 20, s"SCDOWNPR"};
+guiImage defScrollDown = {20, 20, s"SCDOWN"};
+guiImage defScrollUpPressed = {20, 20, s"SCUPPR"};
+guiImage defScrollUp = {20, 20, s"SCUP"};
+guiImage defScrollLeft = {20, 20, s"SCLEFT"};
+guiImage defScrollLeftPressed = {20, 20, s"SCLEFTPR"};
+guiImage defScrollRightPressed = {20, 20, s"SCRITEPR"};
+guiImage defScrollRight = {20, 20, s"SCRITE"};
+guiImage defSliderHoriz = {170, 13, s"SLIDHORZ"};
 
 const char *ScrollAreaType = "ScrollArea";
 
@@ -34,17 +47,17 @@ void scroll_init(guiScrollArea *scrollarea, guiWidget *content)
 	container_init(&scrollarea->widget);
 	scrollarea->widget.widget.v = (guiWidget_vf_t *)&guiScrollArea_vtable;
 
-	scrollarea->upButtonImage = NULL;
-	scrollarea->upPressedButtonImage = NULL;
-	scrollarea->downButtonImage = NULL;
-	scrollarea->downPressedButtonImage = NULL;
-	scrollarea->leftButtonImage = NULL;
-	scrollarea->leftPressedButtonImage = NULL;
-	scrollarea->rightButtonImage = NULL;
-	scrollarea->rightPressedButtonImage = NULL;
-	scrollarea->hBarImage = NULL;
-	scrollarea->vBarImage = NULL;
-	scrollarea->markerImage = NULL;
+	scrollarea->upButtonImage = &defScrollUp;
+	scrollarea->upPressedButtonImage = &defScrollUpPressed;
+	scrollarea->downButtonImage = &defScrollDown;
+	scrollarea->downPressedButtonImage = &defScrollDownPressed;
+	scrollarea->leftButtonImage = &defScrollLeft;
+	scrollarea->leftPressedButtonImage = &defScrollLeftPressed;
+	scrollarea->rightButtonImage = &defScrollRight;
+	scrollarea->rightPressedButtonImage = &defScrollRightPressed;
+	scrollarea->hBarImage = &defSliderHoriz;
+	scrollarea->vBarImage = &defScrollVert;
+	scrollarea->markerImage = &defScrollKnob;
 
 	scrollarea->scrollPos = (vec2i) { 0, 0 };
 	scrollarea->scrollBarWidth = 20;
@@ -187,8 +200,7 @@ int scroll_getHorizontalMaxScroll(const guiScrollArea *scrollarea)
 	}
 
 	guiWidget *content = scroll_getContent(scrollarea);
-	//FIXME
-	int value = widget_getWidth(content) ;//- (&(guiRectangle_t)scroll_getChildrenArea(scrollarea)).width;
+	int value = widget_getWidth(content) - scroll_getChildrenArea(scrollarea)->width;
 	return value < 0 ? 0 : value;
 }
 
@@ -199,8 +211,7 @@ int scroll_getVerticalMaxScroll(const guiScrollArea *scrollarea)
 	}
 
 	guiWidget *content = scroll_getContent(scrollarea);
-
-	int value = widget_getHeight(content);// - scroll_getChildrenArea(scrollarea).height;
+	int value = widget_getHeight(content) - scroll_getChildrenArea(scrollarea)->height;
 	return value < 0 ? 0 : value;
 }
 
@@ -284,14 +295,6 @@ guiRectangle *scroll_getVerticalBarDimension(const guiScrollArea *scrollarea)
 	}
 
 	if (scrollarea->hBarVisible) {
-		guiDebugPrint("vertbar %d %d %d %d"
-					  _C_ widget_getWidth(scrollarea) - scrollarea->scrollBarWidth
-					  _C_(scroll_getUpButtonDimension(scrollarea))->height
-					  _C_ scrollarea->scrollBarWidth
-					  _C_ widget_getHeight(scrollarea)
-					  - (scroll_getUpButtonDimension(scrollarea))->height
-					  - (scroll_getDownButtonDimension(scrollarea))->height
-					  - scrollarea->scrollBarWidth);
 		return &(guiRectangle) {
 			widget_getWidth(scrollarea) - scrollarea->scrollBarWidth,
 							(scroll_getUpButtonDimension(scrollarea))->height,
@@ -482,11 +485,6 @@ guiRectangle *scroll_getHorizontalMarkerDimension(const guiScrollArea *scrollare
 		barDim.pos.x + pos, barDim.pos.y, length, scrollarea->scrollBarWidth
 	};
 }
-/*
-#define scroll_drawButton(_scrollarea, _dimfunc, _graphics) { \
-
-}
-*/
 
 static void scroll_drawHBar(const guiScrollArea *scrollarea, guiGraphics *graphics)
 {

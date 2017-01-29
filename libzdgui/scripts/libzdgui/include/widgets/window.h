@@ -40,6 +40,8 @@ typedef struct guiWindow_vf {
 	void (*w_tick)(struct guiContainer *widget);
 	bool (*w_isWidgetExisting)(struct guiContainer *widget, const struct guiWidget *exist);
 	void(*w_setFocusHandler)(struct guiContainer *widget, void *focus);
+	struct vec2i* (*w_getMinimalSize)(const struct guiWidget *widget);
+	void (*c_showWidgetPart)(struct guiContainer *container, guiWidget *widget, guiRectangle area);
 } guiWindow_vf_t;
 
 typedef struct guiWindow {
@@ -63,6 +65,7 @@ typedef struct guiWindow {
 	size_t padding;
 	size_t titleBarHeight;
 	guiImage *background;
+	guiImage *foreground;
 } guiWindow;
 
 /*----------------------------------------------------------------------------
@@ -75,8 +78,8 @@ typedef struct guiWindow {
  * @brief              Constructor (window initialization with caption)
  * @param caption      title caption
  */
-guiWindow *window_new(guiGUI *gui, const string_t *caption, guiImage *background);
-void window_init(guiWindow *window, const string_t *caption, guiImage *background);
+guiWindow *window_new(guiGUI *gui, const string_t *caption);
+void window_init(guiWindow *window, const string_t *caption);
 void window_destructor(guiWindow *window);
 
 // Virtual inherited from guiWidget_t
@@ -97,6 +100,11 @@ void window_setCaption(guiWindow *window, const string_t *caption);
  * @param window
  */
 string_t *window_getCaption(const guiWindow *window);
+
+#define window_getBackground(_window) (((guiWindow*)_window)->background)
+#define window_setBackground(_window, _image) { ((guiWindow*)_window)->background = _image; }
+#define window_getForeground(_window) (((guiWindow*)_window)->foreground)
+#define window_setForeground(_window, _image) { ((guiWindow*)_window)->foreground = _image; }
 
 #define window_getPadding(_window) (window->padding)
 #define window_setPadding(_window, _padding) { _window->padding = _padding; }

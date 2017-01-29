@@ -14,7 +14,8 @@ guiLabel_vf_t guiLabel_vtable = {
 	label_draw,
 	widget_tick,
 	widget_isWidgetExisting,
-	widget_setFocusManager
+	widget_setFocusManager,
+	widget_getMinimalSize
 };
 
 const char *LabelType = "Label";
@@ -43,11 +44,11 @@ void label_init(guiLabel *label, const string_t *caption, const guiFont *font)
 	widget_init((guiWidget *)label);
 	label->widget.v = (guiWidget_vf_t *)&guiLabel_vtable;
 
-	label->isMultiline = true;
+	label->isMultiline = false;
 	label->horizAlign = ALIGN_LEFT;
 	label->vertAlign = ALIGN_TOP;
 	label->caption = string_new_string(caption);
-	label->textWrap = NULL;
+	label->textWrap = string_new_count(string_size(caption) * 2);
 	label->wrapLines = 0;
 	widget_setFont(label, (guiFont *)font);
 
@@ -67,13 +68,19 @@ void label_setCaption(guiLabel *label, const string_t *caption)
 	if (label->isMultiline) {
 		if (label->textWrap) {
 			string_resize(label->textWrap, string_size(caption) * 2);
-		} else {
-			label->textWrap = string_new_count(string_size(caption) * 2);
 		}
 		label_wordWrap(label);
 	}
 }
 
+/**
+ * @brief Adjusts the label's size to fit the caption size.
+ *
+ * Use this method to quickly change actual widget dimensions, so label will 
+ * use less space in container.
+ *
+ * @param label Label which needs size adjustment
+ */
 void label_adjustSize(guiLabel *label)
 {
 	int width = 0;
@@ -148,7 +155,6 @@ static void label_wordWrap(guiLabel *label)
 		return;
 	}
 	
-
 	guiFont *font = widget_getFont(label);
 	int lineWidth = widget_getWidth(label);
 	const string_t *caption = label_getCaption(label);
@@ -161,7 +167,7 @@ static void label_wordWrap(guiLabel *label)
 	int i = 0, j = 0, counter = 0;
 
 	while (i < string_size(caption)) {
-		for (counter = 0; counter < lineWidth; counter += font_getCharWidth(*font)) {
+		for (counter = 0; counter + font_getCharWidth(*font) < lineWidth; counter += font_getCharWidth(*font)) {
 			if (i == string_size(caption) - 1) {
 				label->textWrap->s[i] = '\0';
 				return;
@@ -179,7 +185,6 @@ static void label_wordWrap(guiLabel *label)
 			++label->wrapLines;
 		} else {
 			for (j = i; j >= 0; --j) {
-				
 				if (isspace(caption->s[j])) {
 					label->textWrap->s[j] = '\n';
 					i = j + 1;

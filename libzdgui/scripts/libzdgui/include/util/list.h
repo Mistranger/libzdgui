@@ -10,13 +10,19 @@ typedef struct listNode_s {
 	void *data;
 } listNode_t;
 
+/**
+ * @class list_s
+ * @file list.h
+ * @brief STL-like double liked list
+ */
 typedef struct list_s {
-	unsigned int count;
-	listNode_t *head, *tail;
+	unsigned int count;         /// List size
+	listNode_t *head, *tail;    /// Pointers to begining and end
 } list_t;
 
 list_t *list_new();
 void list_delete(list_t *list);
+#define list_size(_list) ((_list)->count)
 unsigned int list_size(const list_t *list);
 void list_push_back(list_t *list, void *data);
 void list_push_front(list_t *list, void *data);
@@ -25,7 +31,7 @@ void list_pop_front(list_t *list);
 #define list_front(list) (list->head)
 #define list_back(list) (list->tail)
 void list_insert(list_t *list, listNode_t *at, bool before, void *data);
-void *list_get(list_t *list, size_t index);
+listNode_t *list_get(list_t *list, size_t index);
 listNode_t *list_find(list_t *list, void *data);
 void list_erase(list_t *list, const listNode_t *what);
 void list_remove(list_t *list, const void *data);

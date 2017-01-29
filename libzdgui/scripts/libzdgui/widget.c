@@ -16,7 +16,8 @@ guiWidget_vf_t guiWidget_vtable = {
 	widget_draw,
 	widget_tick,
 	widget_isWidgetExisting,
-	widget_setFocusManager
+	widget_setFocusManager,
+	widget_getMinimalSize
 };
 
 const char *widget_typename(struct guiWidget *widget)
@@ -91,12 +92,17 @@ void widget_init(guiWidget *widget)
 
 	widget->eventListeners = list_new();
 	widget->font = (guiFont *)&FONT_CONFONT;
-	widget->fontColor = s"Gray";
+	widget->fontColor = s"Black";
 	widget->parent = NULL;
 	widget->gui = NULL;
 	widget->v = &guiWidget_vtable;
 
 	guiInfo("new widget created");
+}
+
+vec2i* widget_getMinimalSize(const guiWidget* widget)
+{
+	return &(vec2i) {16, 16};
 }
 
 guiRectangle *widget_getChildrenArea(const guiWidget *widget)

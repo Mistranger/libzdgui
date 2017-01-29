@@ -20,6 +20,7 @@ typedef struct guiContainer_vf {
 	void (*w_tick)(struct guiContainer *widget);
 	bool (*w_isWidgetExisting)(struct guiContainer *widget, const struct guiWidget *exist);
 	void(*w_setFocusHandler)(struct guiContainer *widget, void *focus);
+	struct vec2i* (*w_getMinimalSize)(const struct guiWidget *widget);
 
 	void (*c_showWidgetPart)(struct guiContainer *container, guiWidget *widget, guiRectangle area);
 } guiContainer_vf_t;

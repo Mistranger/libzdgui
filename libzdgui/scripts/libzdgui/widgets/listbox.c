@@ -12,7 +12,8 @@ guiListBox_vf_t guiListBox_vtable = {
 	listbox_draw,
 	widget_tick,
 	widget_isWidgetExisting,
-	widget_setFocusManager
+	widget_setFocusManager,
+	widget_getMinimalSize
 };
 
 const guiImage listDefImageItem = {200, 19, s"LISTITEM"};
@@ -39,9 +40,11 @@ void listbox_init(guiListBox *listbox, guiScrollArea *scrollarea)
 
 	listbox->selected = -1;
 	listbox->items = list_new();
-	listbox->selectedFontColor = s"Yellow";
+	listbox->selectedFontColor = s"Cyan";
 	listbox->itemImage = (guiImage*)&listDefImageItem;
 	scroll_setContent(scrollarea, (guiWidget *)listbox);
+	
+	widget_addMouseListener(&listbox->widget, ME_PRESSED, listbox_mousePressed);
 }
 
 void listbox_destructor(guiListBox *listbox)
@@ -62,8 +65,9 @@ void listbox_draw(const guiListBox *listbox, guiGraphics *graphics)
 
 	int i = 0;
 	int y = 0;
+	string_t *s;
 	for (listNode_t *node = listbox->items->head; node; node = node->next) {
-		string_t *s = (string_t *)node->data;
+		s = (string_t *)node->data;
 		if (img) {
 			graph_drawImage(graphics, 0, y, image_getImage(*img));
 		}
@@ -75,12 +79,13 @@ void listbox_draw(const guiListBox *listbox, guiGraphics *graphics)
 				widget_getFontColor(listbox), string_cstr(s));
 		}
 		y += height;
+		++i;
 	}
 }
 
 void listbox_adjustSize(guiListBox *listbox)
 {
-	int i, l;
+	int l;
 	int width = widget_getWidth(listbox);
 
 	for (listNode_t *node = listbox->items->head; node; node = node->next) {
@@ -102,7 +107,7 @@ void listbox_setSelected(guiListBox *listbox, int selected)
 	if (!list_size(listbox->items)) {
 		listbox->selected = -1;
 	} else {
-		if (listbox->selected < 0) {
+		if (selected < 0) {
 			listbox->selected = -1;
 		} else if (selected >= listbox_getSize(listbox)) {
 			listbox->selected = listbox_getSize(listbox) - 1;
@@ -151,10 +156,9 @@ void listbox_mousePressed(void *widget, guiMouseEvent *mouseEvent)
 	guiListBox *listbox = (guiListBox *)widget;
 	if (mouseEvent->button == MB_LEFT) {
 		listbox_setSelected(listbox, mouseEvent->pos.y /
-							(listbox->itemImage ? MAX(font_getCharHeight(*widget_getFont(listbox)),
-													  image_getHeight(*listbox->itemImage)) : font_getCharHeight(*widget_getFont(listbox))));
+			(listbox->itemImage ? MAX(font_getCharHeight(*widget_getFont(listbox)),
+			image_getHeight(*listbox->itemImage)) : font_getCharHeight(*widget_getFont(listbox))));
 		guiWidgetEvent *changed = widgetEvent_new(listbox, WE_VALUE_CHANGED);
 		widget_handleEvent((guiWidget *)listbox, (guiEvent *)changed, true);
 	}
 }
-

@@ -10,7 +10,8 @@ guiImageWidget_vf_t guiImage_vtable = {
 	wimage_draw,
 	widget_tick,
 	widget_isWidgetExisting,
-	widget_setFocusManager
+	widget_setFocusManager,
+	widget_getMinimalSize
 };
 
 const char *ImageWidgetType = "ImageWidget";

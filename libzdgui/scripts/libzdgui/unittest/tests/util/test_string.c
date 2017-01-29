@@ -40,6 +40,7 @@ void test_string_erase(CuTest *tc)
 	string_t *str = string_new_char("Hello world!");
 	string_t *str2 = string_new_string(str);
 	string_t *str3 = string_new_string(str);
+	//CuAssertStrEquals(tc, "Hello world!", (char *)str->s);
 	string_erase(str, 4, 1);
 	string_erase(str2, 0, string_size(str2));
 	string_erase(str3, 4, 666);

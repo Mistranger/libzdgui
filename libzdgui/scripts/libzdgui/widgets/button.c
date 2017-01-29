@@ -15,7 +15,8 @@ guiButton_vf_t guiButton_vtable = {
 	button_draw,
 	widget_tick,
 	widget_isWidgetExisting,
-	widget_setFocusManager
+	widget_setFocusManager,
+	widget_getMinimalSize
 };
 
 const guiImage buttonDefImage = {80, 15, s"B1"};
@@ -54,6 +55,7 @@ void button_init(guiButton *button, const string_t *caption)
 	widget_setFocusable(button, true);
 	button->isPressed = false;
 	button->hasMouse = false;
+	button->textAlign = ALIGN_LEFT;
 	button->image = (guiImage*)&buttonDefImage;
 	button->imageDisabled = (guiImage*)&buttonDefImageDisabled;
 	button->imagePressed = (guiImage*)&buttonDefImagePressed;
@@ -74,7 +76,6 @@ void button_init(guiButton *button, const string_t *caption)
 
 void button_draw(const guiButton *button, guiGraphics *graphics)
 {
-	guiDebugPrint("drawing button");
 	guiImage *img = button->image;
 	if (!widget_isEnabled(button)) {
 		img = button->imageDisabled ? button->imageDisabled : button->image;
@@ -86,7 +87,28 @@ void button_draw(const guiButton *button, guiGraphics *graphics)
 	if (img) {
 		graph_drawImage(graphics, 0, 0, image_getImage(*img));
 	}
-	graph_drawText(graphics, widget_getFont(button), button_isPressed(button) ? 1 : 0, button_isPressed(button) ? 1 : 0,
+	
+	int textX;
+	int textY = widget_getHeight(button) / 2 - font_getCharHeight(*widget_getFont(button)) / 2;
+
+	switch (button_getAlignment(button)) {
+		case ALIGN_LEFT:
+			textX = 4;
+			break;
+		case ALIGN_CENTER:
+			textX = widget_getWidth(button) / 2;
+			break;
+		case ALIGN_RIGHT:
+			textX = widget_getWidth(button) - 4;
+			break;
+		default:
+			textX = 0;
+			guiWarning("Unknown alignment.");
+	}
+	textX +=  button_isPressed(button) ? 1 : 0;
+	textY +=  button_isPressed(button) ? 1 : 0;
+	
+	graph_drawText(graphics, widget_getFont(button), textX, textY,
 		widget_getFontColor(button), button_getCaption(button)->s);
 }
 

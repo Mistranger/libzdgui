@@ -39,6 +39,7 @@ typedef struct guiScrollArea_vf {
 	void(*w_tick)(struct guiScrollArea *scrollarea);
 	bool(*w_isWidgetExisting)(struct guiContainer *widget, const struct guiWidget *exist);
 	void(*w_setFocusHandler)(struct guiContainer *widget, void *focus);
+	struct vec2i* (*w_getMinimalSize)(const struct guiWidget *widget);
 
 	void (*c_showWidgetPart)(struct guiScrollArea *container, guiWidget *widget, guiRectangle area);
 } guiScrollArea_vf_t;
@@ -102,7 +103,13 @@ guiRectangle *scroll_getContentDimension(const guiScrollArea *scrollarea);
 void scroll_showWidgetPart(guiScrollArea *scrollarea, guiWidget *widget, guiRectangle area);
 
 // Scroll bars
+
 void scroll_checkPolicies(guiScrollArea *scrollarea);
+#define scroll_setScrollPolicy(_widget, _h, _v) {            \
+		((guiScrollArea*)_widget)->hPolicy = _h;             \
+		((guiScrollArea*)_widget)->vPolicy = _v;             \
+		scroll_checkPolicies((guiScrollArea*)_widget);       \
+	}
 int scroll_getHorizontalMaxScroll(const guiScrollArea *scrollarea);
 int scroll_getVerticalMaxScroll(const guiScrollArea *scrollarea);
 guiRectangle *scroll_getVerticalBarDimension(const guiScrollArea *scrollarea);

@@ -54,14 +54,6 @@ void string_delete(string_t *s)
 	free(s);
 }
 
-size_t string_size(const string_t *s)
-{
-	if (!s) {
-		return 0;
-	}
-	return s->len;
-}
-
 void string_resize(string_t *str, size_t newSize)
 {
 	if (newSize > str->capacity) {
@@ -78,11 +70,6 @@ void string_resize(string_t *str, size_t newSize)
 			str->len = str->capacity;
 		}
 	}
-}
-
-inline const char *string_cstr(const string_t *s)
-{
-	return (const char *)s->s;
 }
 
 inline uchar string_get(const string_t *s, size_t at)
